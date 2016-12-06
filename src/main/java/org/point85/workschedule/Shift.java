@@ -1,42 +1,78 @@
 package org.point85.workschedule;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Shift {
-	// definition of the shift
-	private ShiftDefinition shiftDefinition;
+public class Shift extends TimePeriod {
 
-	// start date and time of day
-	private LocalDateTime startTime;
+	// breaks
+	private List<BreakPeriod> breaks = new ArrayList<>();
 
-	public Shift(ShiftDefinition shiftDefinition, LocalDateTime startTime) {
-		this.setShiftDefinition(shiftDefinition);
-		this.setStartTime(startTime);
+	Shift(String name, String description, LocalTime start, Duration duration) {
+		super(name, description, start, duration);
 	}
 
-	public ShiftDefinition getShiftDefinition() {
-		return shiftDefinition;
+	public List<BreakPeriod> getBreaks() {
+		return this.breaks;
 	}
 
-	public void setShiftDefinition(ShiftDefinition shiftDefinition) {
-		this.shiftDefinition = shiftDefinition;
+	public void setBreaks(List<BreakPeriod> breaks) {
+		this.breaks = breaks;
 	}
 
-	public LocalDateTime getStartTime() {
-		return startTime;
+	public void addBreak(BreakPeriod breakPeriod) {
+
+		if (!this.breaks.contains(breakPeriod)) {
+			this.breaks.add(breakPeriod);
+		}
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
+	public void removeBreak(NonWorkingPeriod breakDefinition) {
+		if (this.breaks.contains(breakDefinition)) {
+			this.breaks.remove(breakDefinition);
+		}
+	}
+
+	public Duration calculateWorkingTime() {
+		// add up breaks
+		Duration breakDurations = Duration.ofSeconds(0);
+
+		for (BreakPeriod breakDefinition : this.breaks) {
+			breakDurations.plus(breakDefinition.getDuration());
+		}
+
+		// subtract from shift duration
+		return this.duration.minus(breakDurations);
 	}
 
 	@Override
 	public String toString() {
-		String n = "Name: " + getShiftDefinition().getName();
-		String s = ", Start: " + getStartTime();
-		String d = ", Duration: "
-				+ getShiftDefinition().getDuration().toString();
-
-		return n + s + d;
+		String allBreaks = "";
+		for (BreakPeriod period : this.breaks) {
+			if (allBreaks.length() > 0) {
+				allBreaks += ",";
+			}
+			allBreaks += period.toString();
+		}
+		return super.toString() + ", Breaks [" + allBreaks + "]";
 	}
+
+
+	public BreakPeriod createBreak(String name, String description, LocalTime startTime, Duration duration) {
+		BreakPeriod period = new BreakPeriod(name, description, startTime, duration);
+		addBreak(period);
+		return period;
+	}
+	
+	public OffShift createOffShift() {
+		return new OffShift(name, description, startTime, duration);
+	}
+
+	@Override
+	public boolean isWorkingPeriod() {
+		return true;
+	}
+			
 }

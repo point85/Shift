@@ -1,13 +1,13 @@
 package org.point85.workschedule;
 
-abstract class Nameable {
+abstract class Named {
 	// name
-	private String name;
+	protected String name;
 
 	// description
-	private String description;
+	protected String description;
 
-	protected Nameable(String name, String description) {
+	protected Named(String name, String description) {
 		this.name = name;
 		this.description = description;
 	}
@@ -26,5 +26,10 @@ abstract class Nameable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@Override
+	public String toString() {
+		return name + " (" + description + ")";
 	}
 }
