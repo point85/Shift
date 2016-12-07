@@ -1,5 +1,6 @@
 package org.point85.workschedule.test;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,10 +17,13 @@ import org.point85.workschedule.WorkSchedule;
 public class TestSnapSchedule {
 
 	private void printTeams(List<Team> teams) throws Exception {
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
+		
 		for (Team team : teams) {
 			System.out.println("Team: " + team.getName() + ", rotation duration: " + team.getRotationDuration()
 					+ ", scheduled working time: " + team.getWorkingTime() + ", percentage worked: "
-					+ team.getPercentageWorked() + ", days in rotation: " + team.getShiftRotation().getDays()
+					+ df.format(team.getPercentageWorked()) + ", days in rotation: " + team.getShiftRotation().getDays()
 					+ ", avg hours worked per week: " + team.getHoursWorkedPerWeek());
 		}
 	}
@@ -34,7 +38,7 @@ public class TestSnapSchedule {
 		int days = workSchedule.getTeams().get(0).getShiftRotation().getDays();
 
 		for (int i = 0; i < days; i++) {
-			System.out.println("Shifts for day: " + day);
+			System.out.println("[" + (i+1) + "] Shifts for day: " + day);
 
 			List<ShiftInstance> instances = workSchedule.getShiftInstancesForDay(day);
 
@@ -48,12 +52,99 @@ public class TestSnapSchedule {
 	}
 
 	@Test
+	public void test8Plus12() throws Exception {
+		String description = "This is a fast rotation plan that uses 4 teams and a combination of three 8-hr shifts on weekdays "
+				+ "and two 12-hr shifts on weekends to provide 24/7 coverage.";
+
+		WorkSchedule workSchedule = WorkSchedule.instance("8 Plus 12 Plan", description);
+
+		// 4 teams, rotating through 5 shifts
+		Team team1 = workSchedule.createTeam("Team 1", "First team");
+		Team team2 = workSchedule.createTeam("Team 2", "Second team");
+		Team team3 = workSchedule.createTeam("Team 3", "Third team");
+		Team team4 = workSchedule.createTeam("Team 4", "Forth team");
+
+		// Day shift #1, starts at 07:00 for 12 hours
+		Shift dayShift1 = workSchedule.createShift("Day1", "Day shift #1", LocalTime.of(7, 0, 0), Duration.ofHours(12));
+
+		// Day shift #2, starts at 07:00 for 8 hours
+		Shift dayShift2 = workSchedule.createShift("Day2", "Day shift #2", LocalTime.of(7, 0, 0), Duration.ofHours(8));
+
+		// Swing shift, starts at 15:00 for 8 hours
+		Shift swingShift = workSchedule.createShift("Swing", "Swing shift", LocalTime.of(15, 0, 0),
+				Duration.ofHours(8));
+
+		// Night shift #1, starts at 19:00 for 12 hours
+		Shift nightShift1 = workSchedule.createShift("Night1", "Night shift #1", LocalTime.of(19, 0, 0),
+				Duration.ofHours(12));
+
+		// Night shift #2, starts at 23:00 for 8 hours
+		Shift nightShift2 = workSchedule.createShift("Night2", "Night shift #2", LocalTime.of(23, 0, 0),
+				Duration.ofHours(8));
+
+		/// off shifts
+		OffShift day1Off = dayShift1.createOffShift();
+
+		// Team1 rotation (28 days)
+		ShiftRotation team1Rotation = team1.createRotation(LocalDate.of(2016, 10, 31));
+		team1Rotation.addOn(dayShift2, 5);
+		team1Rotation.addOn(dayShift1, 2);
+		team1Rotation.addOff(day1Off, 3);
+		team1Rotation.addOn(nightShift2, 2);
+		team1Rotation.addOn(nightShift1, 2);
+		team1Rotation.addOn(nightShift2, 3);
+		team1Rotation.addOff(day1Off, 4);
+		team1Rotation.addOn(swingShift, 5);
+		team1Rotation.addOff(day1Off, 2);
+		
+		// Team2 rotation (28 days)
+		ShiftRotation team2Rotation = team2.createRotation(LocalDate.of(2016, 10, 31));
+		team2Rotation.addOff(day1Off, 3);
+		team2Rotation.addOn(nightShift2, 2);
+		team2Rotation.addOn(nightShift1, 2);
+		team2Rotation.addOn(nightShift2, 3);
+		team2Rotation.addOff(day1Off, 4);
+		team2Rotation.addOn(swingShift, 5);
+		team2Rotation.addOff(day1Off, 2);
+		team2Rotation.addOn(dayShift2, 5);
+		team2Rotation.addOn(dayShift1, 2);
+		
+		// Team3 rotation (28 days)
+		ShiftRotation team3Rotation = team3.createRotation(LocalDate.of(2016, 10, 31));
+		team3Rotation.addOn(nightShift2, 3);
+		team3Rotation.addOff(day1Off, 4);
+		team3Rotation.addOn(swingShift, 5);
+		team3Rotation.addOff(day1Off, 2);
+		team3Rotation.addOn(dayShift2, 5);
+		team3Rotation.addOn(dayShift1, 2);
+		team3Rotation.addOff(day1Off, 3);
+		team3Rotation.addOn(nightShift2, 2);
+		team3Rotation.addOn(nightShift1, 2);
+		
+		// Team4 rotation (28 days)
+		ShiftRotation team4Rotation = team4.createRotation(LocalDate.of(2016, 10, 31));
+		team4Rotation.addOn(swingShift, 5);
+		team4Rotation.addOff(day1Off, 2);
+		team4Rotation.addOn(dayShift2, 5);
+		team4Rotation.addOn(dayShift1, 2);
+		team4Rotation.addOff(day1Off, 3);
+		team4Rotation.addOn(nightShift2, 2);
+		team4Rotation.addOn(nightShift1, 2);
+		team4Rotation.addOn(nightShift2, 3);
+		team4Rotation.addOff(day1Off, 4);
+
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2016, 10, 31));
+	}
+
+	@Test
 	public void testNurseICU() throws Exception {
 		String description = "This plan supports a combination of 14-hr day shift , 15.5-hr cross-cover shift , and a 14-hr night shift for medical interns. "
 				+ "The day shift and the cross-cover shift have the same start time (7:00AM). "
-				+ "The night shift starts at around 10:00PM and ends at 12:00PM on the next day. ";
+				+ "The night shift starts at around 10:00PM and ends at 12:00PM on the next day.";
 
-		WorkSchedule workSchedule = WorkSchedule.instance("	ICU Interns Plan", description);
+		WorkSchedule workSchedule = WorkSchedule.instance("ICU Interns Plan", description);
 
 		Team team1 = workSchedule.createTeam("Team 1", "First team");
 		Team team2 = workSchedule.createTeam("Team 2", "Second team");
@@ -417,12 +508,12 @@ public class TestSnapSchedule {
 		TestSnapSchedule test = new TestSnapSchedule();
 
 		try {
-			System.out.println(Duration.ofHours(15).plusMinutes(30));
 			// test.testPanama();
 			// test.testTwoTeam();
 			// test.testDNO();
 			// test.testDupont();
-			test.testNurseICU();
+			//test.testNurseICU();
+			test.test8Plus12();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -6,13 +6,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public class WorkSchedule extends Named {
-	// list of treams
+	// list of teams
 	private List<Team> teams = new ArrayList<>();
+	
+	// list of shifts
+	private List<Shift> shifts = new ArrayList<>();
 
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
@@ -49,7 +52,7 @@ public class WorkSchedule extends Named {
 		}
 	}
 
-	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) {
+	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
 		if (this.nonWorkingPeriods.contains(day)) {
@@ -60,22 +63,11 @@ public class WorkSchedule extends Named {
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
-			ShiftRotation rotation = team.getShiftRotation();
-			LocalDate rotationStart = rotation.getRotationStart();
-
-			// calculate total number of days from start of rotation
-			long dayFrom = rotationStart.getLong(ChronoField.EPOCH_DAY);
-			long deltaDays = dayTo - dayFrom;
-
-			if (deltaDays < 0) {
-				throw new IllegalArgumentException(
-						"Start of rotation " + rotationStart + " must be earlier than " + day);
-			}
-
-			int dayInRotation = (int) (deltaDays % rotation.getDays());
+			ShiftRotation shiftRotation = team.getShiftRotation();
+			int dayInRotation = shiftRotation.getDayInRotation(day);
 
 			// shift or off shift
-			TimePeriod period = rotation.getRotation().get(dayInRotation);
+			TimePeriod period = shiftRotation.getPeriods().get(dayInRotation);
 
 			if (period.isWorkingPeriod()) {
 				LocalDateTime startDateTime = LocalDateTime.of(day, period.getStart());
@@ -83,13 +75,39 @@ public class WorkSchedule extends Named {
 				workingShifts.add(instance);
 			}
 		}
+		
+		Collections.sort(workingShifts);
 
 		return workingShifts;
 	}
+	
+	private long getNumberOfRotations(LocalDate from, LocalDate to) {
+		long dayFrom = from.getLong(ChronoField.EPOCH_DAY);
+		long dayTo = to.getLong(ChronoField.EPOCH_DAY);
+		long deltaDays = dayTo - dayFrom;
+		
+		return deltaDays / this.getRotationDays();	
+	}
+	
+	public int getRotationDays() {
+		int count = 0;
+		// each team has the same number of days in their rotation
+		if (getTeams().size() > 0) {
+			count = getTeams().get(0).getShiftRotation().getDays();
+		}
+		
+		return count;
+	}
+	
+	
 
 	@Override
 	public String toString() {
 		return super.toString() + " Teams: " + teams + ", Non-working: " + nonWorkingPeriods;
+	}
+	
+	public Duration calculateTeamWorkingTime(LocalDate from, LocalDate to) {
+	return null;
 	}
 
 	/*
@@ -126,33 +144,6 @@ public class WorkSchedule extends Named {
 		return this.nonWorkingPeriods.contains(date);
 	}
 
-	/*
-	public void printTeams(LocalDate from, LocalDate to) {
-		System.out.println(toString());
-			
-		LocalDate currentDate = from;
-
-		// iterate over each day
-		while (currentDate.isBefore(to)) {
-			List<TeamInstance> shifts = getTeamsForDay(currentDate);
-
-			if (shifts.size() == 0) {
-				String flag = isHoliday(currentDate) ? " (holiday)" : " (off)";
-
-				System.out.println("   no shifts for " + currentDate.toString() + flag);
-			} else {
-
-				System.out.println("   Teams for " + currentDate.toString());
-
-				for (TeamInstance shift : shifts) {
-					System.out.println("      " + shift.toString());
-				}
-			}
-
-			currentDate = currentDate.plusDays(1);
-		}
-	}
-*/
 	public Team createTeam(String name, String description) {
 		Team team = new Team(name, description);
 		this.addTeam(team);
@@ -160,7 +151,9 @@ public class WorkSchedule extends Named {
 	}
 	
 	public Shift createShift(String name, String description, LocalTime start, Duration duration) {
-		return new Shift(name, description, start, duration);
+		Shift shift = new Shift(name, description, start, duration);
+		shifts.add(shift);
+		return shift;
 	}
 	
 	public OffShift createOffShift(String name, String description, LocalTime start, Duration duration) {
@@ -193,11 +186,19 @@ public class WorkSchedule extends Named {
 		Duration sum = null;
 		for (Team team : teams) {
 			if (sum == null) {
-				sum = team.getWorkingTime();
+				sum = team.getShiftRotation().getWorkingTime();
 			} else {
-				sum = sum.plus(team.getWorkingTime());
+				sum = sum.plus(team.getShiftRotation().getWorkingTime());
 			}
 		}
 		return sum;
+	}
+
+	public List<Shift> getShifts() {
+		return shifts;
+	}
+
+	public void setShifts(List<Shift> shifts) {
+		this.shifts = shifts;
 	}
 }

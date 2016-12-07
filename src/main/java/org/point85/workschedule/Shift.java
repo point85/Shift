@@ -44,7 +44,7 @@ public class Shift extends TimePeriod {
 		}
 
 		// subtract from shift duration
-		return this.duration.minus(breakDurations);
+		return getDuration().minus(breakDurations);
 	}
 
 	@Override
@@ -67,12 +67,36 @@ public class Shift extends TimePeriod {
 	}
 	
 	public OffShift createOffShift() {
-		return new OffShift(name, description, startTime, duration);
+		return new OffShift(name, description, getStart(), getDuration());
 	}
 
 	@Override
 	public boolean isWorkingPeriod() {
 		return true;
+	}
+	
+	public Duration getWorkingTimeTo(LocalTime time) throws Exception {
+		Duration duration = null;
+		
+		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
+			duration = Duration.ZERO;
+		} else {
+			duration = Duration.ofSeconds(time.toSecondOfDay() - getStart().toSecondOfDay());
+		}
+		
+		return duration;
+	}
+	
+	public Duration getWorkingTimeFrom(LocalTime time) throws Exception {
+		Duration duration = null;
+		
+		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
+			duration = Duration.ZERO;
+		} else {
+			duration = Duration.ofSeconds(getEnd().toSecondOfDay() - time.toSecondOfDay());
+		}
+		
+		return duration;
 	}
 			
 }

@@ -5,10 +5,10 @@ import java.time.LocalTime;
 
 public abstract class TimePeriod extends Named {
 	// starting time of day
-	protected LocalTime startTime;
+	private LocalTime startTime;
 
 	// length of time period
-	protected Duration duration;
+	private Duration duration;
 
 	protected TimePeriod(String name, String description, LocalTime startTime, Duration duration) {
 		super(name, description);

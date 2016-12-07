@@ -27,41 +27,24 @@ public class Team extends Named {
 	}
 
 	public Duration getRotationDuration() throws Exception {
-		Duration sum = null;
-		for (TimePeriod period : rotation.getRotation()) {
-			if (sum == null) {
-				sum = period.getDuration();
-			} else {
-				sum = sum.plus(period.getDuration());
-			}
-		}
-
-		if (sum == null) {
+		if (rotation == null) {
 			throw new Exception("The rotation for " + getName() + " is not defined.");
 		}
-		return sum;
-	}
 
-	public Duration getWorkingTime() {
-		Duration sum = null;
-		for (TimePeriod period : rotation.getRotation()) {
-			if (period instanceof Shift) {
-				if (sum == null) {
-					sum = period.getDuration();
-				} else {
-					sum = sum.plus(period.getDuration());
-				}
-			}
-		}
-		return sum;
+		return Duration.ofDays(getShiftRotation().getDays());
 	}
 
 	public float getPercentageWorked() throws Exception {
-		return ((float) getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds()) * 100.0f;
+		return ((float) getShiftRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
+				* 100.0f;
 	}
 
 	public float getHoursWorkedPerWeek() {
 		float days = (float) getShiftRotation().getDays();
-		return ((float) getWorkingTime().getSeconds() / 3600.0f) * (7.0f / days);
+		return ((float) getShiftRotation().getWorkingTime().getSeconds() / 3600.0f) * (7.0f / days);
+	}
+
+	public Duration getWorkingTime() {
+		return getShiftRotation().getWorkingTime();
 	}
 }

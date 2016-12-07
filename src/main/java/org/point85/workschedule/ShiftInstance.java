@@ -2,7 +2,7 @@ package org.point85.workschedule;
 
 import java.time.LocalDateTime;
 
-public class ShiftInstance {
+public class ShiftInstance implements Comparable<ShiftInstance>{
 	// definition of the shift
 	private Shift shift;
 	
@@ -49,5 +49,10 @@ public class ShiftInstance {
 
 	public void setTeam(Team team) {
 		this.team = team;
+	}
+
+	@Override
+	public int compareTo(ShiftInstance other) {
+		return getStartTime().compareTo(other.getStartTime());
 	}
 }
