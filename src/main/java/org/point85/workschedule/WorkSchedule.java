@@ -64,7 +64,7 @@ public class WorkSchedule extends Named {
 		// for each team see if there is a working shift
 		for (Team team : teams) {
 			ShiftRotation shiftRotation = team.getShiftRotation();
-			int dayInRotation = shiftRotation.getDayInRotation(day);
+			int dayInRotation = team.getDayInRotation(day);
 
 			// shift or off shift
 			TimePeriod period = shiftRotation.getPeriods().get(dayInRotation);
@@ -144,8 +144,8 @@ public class WorkSchedule extends Named {
 		return this.nonWorkingPeriods.contains(date);
 	}
 
-	public Team createTeam(String name, String description) {
-		Team team = new Team(name, description);
+	public Team createTeam(String name, String description,  ShiftRotation rotation, LocalDate rotationStart) {
+		Team team = new Team(name, description, rotation, rotationStart);
 		this.addTeam(team);
 		return team;
 	}
