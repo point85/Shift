@@ -19,14 +19,14 @@ public class ShiftRotation {
 		this.periods = periods;
 	}
 
-	public ShiftRotation on(Shift shift, int count) {
+	public ShiftRotation on(int count, Shift shift) {
 		for (int i = 0; i < count; i++) {
 			periods.add(shift);
 		}
 		return this;
 	}
 
-	public ShiftRotation off(OffShift offShift, int count) {
+	public ShiftRotation off(int count, OffShift offShift) {
 		for (int i = 0; i < count; i++) {
 			periods.add(offShift);
 		}
