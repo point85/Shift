@@ -51,6 +51,10 @@ public class WorkSchedule extends Named {
 			this.nonWorkingPeriods.remove(period);
 		}
 	}
+	
+	public List<NonWorkingPeriod> getNonWorkingPeriods() {
+		return this.nonWorkingPeriods;
+	}
 
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();

@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 // non-working non-recurring periods, e.g. holidays
-public class NonWorkingPeriod extends Named {
+public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeriod> {
 	// starting date and time of day
 	private LocalDateTime startDateTime;
 
@@ -36,5 +36,10 @@ public class NonWorkingPeriod extends Named {
 	@Override
 	public String toString() {
 		return startDateTime + " (" + duration + ")";
+	}
+
+	@Override
+	public int compareTo(NonWorkingPeriod other) {
+		return getStartDateTime().compareTo(other.getStartDateTime());
 	}
 }
