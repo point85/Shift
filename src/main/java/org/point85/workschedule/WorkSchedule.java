@@ -20,7 +20,7 @@ public class WorkSchedule extends Named {
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
 
-	WorkSchedule(String name, String description) {
+	public WorkSchedule(String name, String description) {
 		super(name, description);
 	}
 
@@ -158,10 +158,6 @@ public class WorkSchedule extends Named {
 	
 	public OffShift createOffShift(String name, String description, LocalTime start, Duration duration) {
 		return new OffShift(name, description, start, duration);
-	}
-
-	public static WorkSchedule instance(String name, String description) {
-		return new WorkSchedule(name, description);
 	}
 	
 	public NonWorkingPeriod createNonWorkingPeriod(String name, String description, LocalDateTime startDateTime, Duration duration) {

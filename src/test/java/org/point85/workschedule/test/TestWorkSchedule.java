@@ -9,25 +9,71 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.point85.workschedule.OffShift;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
-public class TestWorkSchedule {
+public class TestWorkSchedule extends BaseTest {
 
 	@Test
-	public void testNursingShifts() {
+	public void testNursingICUShifts() throws Exception {
 		// ER nursing schedule
-		WorkSchedule workSchedule = WorkSchedule.instance("Nursing ICU",
+		WorkSchedule workSchedule = new WorkSchedule("Nursing ICU",
 				"Two 12 hr back-to-back shifts, rotating every 14 days");
-		
-		Team teamA = workSchedule.createTeam("A", "Team A"); 
 
-		// A shift, starts at 06:00 for 12 hours
-		Shift shiftA = workSchedule.createShift("A", "A shift", LocalTime.of(6, 0, 0),
+		// day shift, starts at 06:00 for 12 hours
+		Shift day = workSchedule.createShift("Day", "Day shift", LocalTime.of(6, 0, 0),
 				Duration.ofHours(12));
+		
+		OffShift dayOff = day.createOffShift();
+		
+		// night shift, starts at 18:00 for 12 hours
+		Shift night = workSchedule.createShift("Night", "Night shift", LocalTime.of(18, 0, 0),
+				Duration.ofHours(12));
+		
+		OffShift nightOff = night.createOffShift();
+		
+		// day rotation
+		ShiftRotation dayRotation = new ShiftRotation();
+		dayRotation.on(day, 3);
+		dayRotation.off(dayOff, 4);
+		dayRotation.on(day, 4);
+		dayRotation.off(dayOff, 3);
+		
+		// inverse day rotation
+		ShiftRotation inverseDayRotation = new ShiftRotation();
+		inverseDayRotation.off(dayOff, 3);
+		inverseDayRotation.on(day, 4);
+		inverseDayRotation.off(dayOff, 4);
+		inverseDayRotation.on(day, 3);
+		
+		// night rotation
+		ShiftRotation nightRotation = new ShiftRotation();
+		nightRotation.on(night, 4);
+		nightRotation.off(nightOff, 3);
+		nightRotation.on(night, 3);
+		nightRotation.off(nightOff, 4);
+		
+		// inverse night rotation
+		ShiftRotation inverseNightRotation = new ShiftRotation();
+		inverseNightRotation.off(nightOff, 4);
+		inverseNightRotation.on(night, 3);
+		inverseNightRotation.off(nightOff, 3);
+		inverseNightRotation.on(night, 4);
+		
+		Team A = workSchedule.createTeam("A", "Day shift", dayRotation, LocalDate.of(2014, 1, 6));
+		Team B = workSchedule.createTeam("B", "Day inverse shift", inverseDayRotation, LocalDate.of(2014, 1, 6));
+		Team C = workSchedule.createTeam("C", "Night shift", nightRotation, LocalDate.of(2014, 1, 6));
+		Team D = workSchedule.createTeam("D", "Night inverse shift", inverseNightRotation, LocalDate.of(2014, 1, 6));
+		
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2014, 2, 1)); 
+		
 
+		/*
 		// 3 days ON, 4 OFF, 4 ON, 3 OFF
 		TimePeriod offShiftA = workSchedule.createOffShift("A off", "Off A Shift", LocalTime.of(18, 0, 0), Duration.ofHours(12));
 		ShiftRotation rotationA = teamA.createRotation(LocalDate.of(2014, 1, 6));
@@ -36,12 +82,10 @@ public class TestWorkSchedule {
 		rotationA.addOn(4);
 		rotationA.addOff(3);
 
-		// B shift, starts at 18:00 for 12 hours
-		Shift shiftB = workSchedule.createShiftDefinition("B", "B shift", LocalTime.of(18, 0, 0),
-				Duration.ofHours(12));
+
 
 		// 4 days ON, 3 OFF, 3 ON, 4 OFF
-		ShiftRotation rotationB = shiftB.createRotation(LocalDate.of(2014, 1, 6));
+		ShiftRotation rotationB = night.createRotation(LocalDate.of(2014, 1, 6));
 		rotationB.addOn(4);
 		rotationB.addOff(3);
 		rotationB.addOn(3);
@@ -54,15 +98,16 @@ public class TestWorkSchedule {
 		LocalDate to = from.plusDays(14);
 		workSchedule.printShifts(from, to);
 		showWorkingTime(workSchedule, from, to);
+		*/
 	}
 
 	@Test
 	public void testPostalServiceShifts() {
 		// United States Postal Service
-		WorkSchedule workSchedule = WorkSchedule.instance("USPS", "Six 9 hr shifts, rotating every 42 days");
+		WorkSchedule workSchedule = new WorkSchedule("USPS", "Six 9 hr shifts, rotating every 42 days");
 
 		// A shift, start at 08:00 for 9 hours
-		Shift shiftA = workSchedule.createShiftDefinition("A", "A shift", LocalTime.of(8, 0, 0),
+		Shift shiftA = workSchedule.createShift("A", "A shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -79,7 +124,7 @@ public class TestWorkSchedule {
 		rotationA.addOff(7);
 
 		// B shift, start at 08:00 for 9 hours
-		Shift shiftB = workSchedule.createShiftDefinition("B", "B shift", LocalTime.of(8, 0, 0),
+		Shift shiftB = workSchedule.createShift("B", "B shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -96,7 +141,7 @@ public class TestWorkSchedule {
 		rotationB.addOff(7);
 
 		// C shift, start at 08:00 for 9 hours
-		Shift shiftC = workSchedule.createShiftDefinition("C", "C shift", LocalTime.of(8, 0, 0),
+		Shift shiftC = workSchedule.createShift("C", "C shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -113,7 +158,7 @@ public class TestWorkSchedule {
 		rotationC.addOff(7);
 
 		// D shift, start at 08:00 for 9 hours
-		Shift shiftD = workSchedule.createShiftDefinition("D", "D shift", LocalTime.of(8, 0, 0),
+		Shift shiftD = workSchedule.createShift("D", "D shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -130,7 +175,7 @@ public class TestWorkSchedule {
 		rotationD.addOff(7);
 
 		// E shift, start at 08:00 for 9 hours
-		Shift shiftE = workSchedule.createShiftDefinition("E", "E shift", LocalTime.of(8, 0, 0),
+		Shift shiftE = workSchedule.createShift("E", "E shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -147,7 +192,7 @@ public class TestWorkSchedule {
 		rotationE.addOff(7);
 
 		// F shift, start at 08:00 for 9 hours
-		Shift shiftF = workSchedule.createShiftDefinition("F", "F shift", LocalTime.of(8, 0, 0),
+		Shift shiftF = workSchedule.createShift("F", "F shift", LocalTime.of(8, 0, 0),
 				Duration.ofHours(9));
 
 		// 3 days ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF, 1 ON, 7 OFF
@@ -173,23 +218,35 @@ public class TestWorkSchedule {
 	}
 
 	@Test
-	public void testFirefighterShifts2() {
+	public void testFirefighterShifts2() throws Exception {
 		// Seattle, WA fire shifts
-		WorkSchedule workSchedule = WorkSchedule.instance("Seattle", "Four 24 hour alternating shifts");
+		WorkSchedule workSchedule = new WorkSchedule("Seattle", "Four 24 hour alternating shifts");
 
-		// A shift, start at 07:00 for 24 hours
-		Shift shiftA = workSchedule.createShiftDefinition("A", "A shift", LocalTime.of(7, 0, 0),
+		// shift, start at 07:00 for 24 hours
+		Shift shift = workSchedule.createShift("24 Hours", "24 hour shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
+		
+		// off shift
+		OffShift offShift = shift.createOffShift();
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
-		ShiftRotation rotationA = shiftA.createRotation(LocalDate.of(2014, 2, 2));
-		rotationA.addOn(1);
-		rotationA.addOff(4);
-		rotationA.addOn(1);
-		rotationA.addOff(2);
+		ShiftRotation rotation = new ShiftRotation();
+		rotation.on(shift, 1);
+		rotation.off(offShift, 4);
+		rotation.on(shift, 1);
+		rotation.off(offShift, 2);
+		
+		Team teamA = workSchedule.createTeam("A", "A Shift", rotation, LocalDate.of(2014, 2, 2));
+		Team teamB = workSchedule.createTeam("B", "B Shift", rotation, LocalDate.of(2014, 2, 4));
+		Team teamC = workSchedule.createTeam("C", "C Shift", rotation, LocalDate.of(2014, 1, 31));
+		Team teamD = workSchedule.createTeam("D", "D Shift", rotation, LocalDate.of(2014, 1, 29));
 
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2016, 7, 1));
+/*
 		// B shift, start at 07:00 for 24 hours
-		Shift shiftB = workSchedule.createShiftDefinition("B", "B shift", LocalTime.of(7, 0, 0),
+		Shift shiftB = workSchedule.createShift("B", "B shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
@@ -200,7 +257,7 @@ public class TestWorkSchedule {
 		rotationB.addOff(2);
 
 		// C shift, start at 07:00 for 24 hours
-		Shift shiftC = workSchedule.createShiftDefinition("C", "C shift", LocalTime.of(7, 0, 0),
+		Shift shiftC = workSchedule.createShift("C", "C shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
@@ -211,7 +268,7 @@ public class TestWorkSchedule {
 		rotationC.addOff(2);
 
 		// D shift, start at 07:00 for 24 hours
-		Shift shiftD = workSchedule.createShiftDefinition("D", "D shift", LocalTime.of(7, 0, 0),
+		Shift shiftD = workSchedule.createShift("D", "D shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
@@ -228,166 +285,125 @@ public class TestWorkSchedule {
 		LocalDate to = from.plusDays(16);
 		workSchedule.printShifts(from, to);
 		showWorkingTime(workSchedule, from, to);
+		*/
 	}
 
 	@Test
-	public void testFirefighterShifts3() {
+	public void testFirefighterShifts3() throws Exception {
 		// Lansing, MI fire shifts
-		WorkSchedule workSchedule = WorkSchedule.instance("Lansing MI R-1", "Three 24 hour shifts");
+		WorkSchedule workSchedule = new WorkSchedule("Lansing MI R-1", "Three 24 hour shifts");
 
-		// Red shift, start at 07:00 for 24 hours
-		Shift shiftRed = workSchedule.createShiftDefinition("RED", "Red shift", LocalTime.of(7, 0, 0),
+		// shift, start at 07:00 for 24 hours
+		Shift shift = workSchedule.createShift("24 Hours", "24 hour shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
+		
+		// off shift
+		OffShift offShift = shift.createOffShift();
 
 		// 1 day ON, 1 OFF, 1 ON, 1 OFF, 1 ON, 1 OFF,
-		ShiftRotation redRotation = shiftRed.createRotation(LocalDate.of(2017, 1, 1));
-		redRotation.addOn(1);
-		redRotation.addOff(1);
-		redRotation.addOn(1);
-		redRotation.addOff(1);
-		redRotation.addOn(1);
-		redRotation.addOff(1);
-
-		// Black shift, start at 07:00 for 24 hours
-		Shift shiftBlack = workSchedule.createShiftDefinition("BLACK", "Black shift", LocalTime.of(7, 0, 0),
-				Duration.ofHours(24));
+		ShiftRotation blackRotation = new ShiftRotation();
+		blackRotation.on(shift, 1);
+		blackRotation.off(offShift, 1);
+		blackRotation.on(shift, 1);
+		blackRotation.off(offShift, 1);
+		blackRotation.on(shift, 1);
+		blackRotation.off(offShift, 1);
 
 		// 1 day ON, 1 OFF, 1 ON, 3 OFF
-		ShiftRotation blackRotation = shiftBlack.createRotation(LocalDate.of(2017, 1, 6));
-		blackRotation.addOn(1);
-		blackRotation.addOff(1);
-		blackRotation.addOn(1);
-		blackRotation.addOff(3);
-
-		// Green shift, start at 07:00 for 24 hours
-		Shift shiftGreen = workSchedule.createShiftDefinition("GREEN", "Green shift", LocalTime.of(7, 0, 0),
-				Duration.ofHours(24));
+		ShiftRotation redRotation = new ShiftRotation();
+		redRotation.on(shift, 1);
+		redRotation.off(offShift, 1);
+		redRotation.on(shift, 1);
+		redRotation.off(offShift, 3);
 
 		// 1 ON, 5 OFF,
-		ShiftRotation greenRotation = shiftGreen.createRotation(LocalDate.of(2017, 1, 4));
-		greenRotation.addOn(1);
-		greenRotation.addOff(5);
+		ShiftRotation fushiaRotation = new ShiftRotation();
+		fushiaRotation.on(shift, 1);
+		fushiaRotation.off(offShift, 5);
 
-		int Y = 2017;
-		int M = 2;
-		int D = 1;
-		LocalDate from = LocalDate.of(Y, M, D);
-		LocalDate to = from.plusDays(28);
-		workSchedule.printShifts(from, to);
-		showWorkingTime(workSchedule, from, to);
+		Team team1 = workSchedule.createTeam("Red", "Red Shift", redRotation, LocalDate.of(2017, 1, 6));
+		Team team2 = workSchedule.createTeam("Black", "Black Shift", blackRotation, LocalDate.of(2017, 1, 3));
+		Team team3 = workSchedule.createTeam("Fushia", "Fushia Shift", fushiaRotation, LocalDate.of(2017, 1, 4));
+
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2017, 2, 1)); 
 	}
 
 	@Test
-	public void testFirefighterShifts1() {
+	public void testFirefighterShifts1() throws Exception {
 		// Kern Co, CA
-		WorkSchedule workSchedule = WorkSchedule.instance("Kern Co.", "Three 24 hour alternating shifts");
+		WorkSchedule workSchedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
 
-		// Red shift, start 07:00 for 24 hours
-		Shift shiftRed = workSchedule.createShiftDefinition("RED", "Red shift", LocalTime.of(7, 0, 0),
+		// shift, start 07:00 for 24 hours
+		Shift shift = workSchedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(24));
+		
+		// off shift
+		OffShift offShift = shift.createOffShift();
 
 		// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-		ShiftRotation redRotation = shiftRed.createRotation(LocalDate.of(2014, 1, 6));
-		redRotation.addOn(2);
-		redRotation.addOff(2);
-		redRotation.addOn(2);
-		redRotation.addOff(2);
-		redRotation.addOn(2);
-		redRotation.addOff(8);
+		ShiftRotation rotation = new ShiftRotation();
+		rotation.on(shift, 2);
+		rotation.off(offShift, 2);
+		rotation.on(shift, 2);
+		rotation.off(offShift, 2);
+		rotation.on(shift, 2);
+		rotation.off(offShift, 8);
+		
+		Team team1 = workSchedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
+		Team team2 = workSchedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
+		Team team3 = workSchedule.createTeam("Green", "C Shift", rotation, LocalDate.of(2017, 1, 2));
 
-		// Black shift, start 07:00 for 24 hours
-		Shift shiftBlack = workSchedule.createShiftDefinition("BLACK", "Black shift", LocalTime.of(7, 0, 0),
-				Duration.ofHours(24));
-
-		// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-		ShiftRotation blackRotation = shiftBlack.createRotation(LocalDate.of(2014, 1, 12));
-		blackRotation.addOn(2);
-		blackRotation.addOff(2);
-		blackRotation.addOn(2);
-		blackRotation.addOff(2);
-		blackRotation.addOn(2);
-		blackRotation.addOff(8);
-
-		// Green shift, start 07:00 for 24 hours
-		Shift shiftGreen = workSchedule.createShiftDefinition("GREEN", "Green shift", LocalTime.of(7, 0, 0),
-				Duration.ofHours(24));
-
-		// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-		ShiftRotation greenRotation = shiftGreen.createRotation(LocalDate.of(2014, 1, 18));
-		greenRotation.addOn(2);
-		greenRotation.addOff(2);
-		greenRotation.addOn(2);
-		greenRotation.addOff(2);
-		greenRotation.addOn(2);
-		greenRotation.addOff(8);
-
-		int Y = 2014;
-		int M = 2;
-		int D = 1;
-
-		LocalDate from = LocalDate.of(Y, M, D);
-		LocalDate to = from.plusDays(18);
-		workSchedule.printShifts(from, to);
-		showWorkingTime(workSchedule, from, to);
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2017, 2, 1));
 	}
 
 	@Test
-	public void testManufacturingShifts() {
+	public void testManufacturingShifts() throws Exception {
 		// manufacturing company
-		WorkSchedule workSchedule = WorkSchedule.instance("Manufacturer - four twelves",
+		WorkSchedule workSchedule = new WorkSchedule("Manufacturing Company - four twelves",
 				"Four 12 hour alternating day/night shifts");
-
-		// first day shift, start at 07:00 for 12 hours
-		Shift shiftA = workSchedule.createShiftDefinition("A", "A day shift", LocalTime.of(7, 0, 0),
+		
+		// day shift, start at 07:00 for 12 hours
+		Shift day = workSchedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0),
 				Duration.ofHours(12));
-
-		// 7 days ON, 7 OFF
-		ShiftRotation rotationA = shiftA.createRotation(LocalDate.of(2014, 1, 2));
-		rotationA.addOn(7);
-		rotationA.addOff(7);
-
-		// second day shift, start at 07:00 for 12 hours
-		Shift shiftC = workSchedule.createShiftDefinition("C", "C day shift", LocalTime.of(7, 0, 0),
+		
+		// day off shift
+		OffShift dayOff = day.createOffShift();
+		
+		// night shift, start at 19:00 for 12 hours
+		Shift night = workSchedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0),
 				Duration.ofHours(12));
-
+		
+		// night off shift
+		OffShift nightOff = day.createOffShift();
+		
 		// 7 days ON, 7 OFF
-		ShiftRotation rotationC = shiftC.createRotation(LocalDate.of(2014, 1, 9));
-		rotationC.addOn(7);
-		rotationC.addOff(7);
+		ShiftRotation dayRotation = new ShiftRotation();
+		dayRotation.on(day, 7);
+		dayRotation.off(dayOff, 7);
+		
+		// 7 nights ON, 7 OFF
+		ShiftRotation nightRotation = new ShiftRotation();
+		nightRotation.on(night, 7);
+		nightRotation.off(nightOff, 7);
+		
+		Team A = workSchedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
+		Team B = workSchedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
+		Team C = workSchedule.createTeam("C", "C day shift", dayRotation, LocalDate.of(2014, 1, 9));
+		Team D = workSchedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
 
-		// first night shift, start at 19:00 for 12 hours
-		Shift shiftB = workSchedule.createShiftDefinition("B", "B night shift", LocalTime.of(19, 0, 0),
-				Duration.ofHours(12));
-
-		// 7 days ON, 7 OFF
-		ShiftRotation rotationB = shiftB.createRotation(LocalDate.of(2014, 1, 2));
-		rotationB.addOn(7);
-		rotationB.addOff(7);
-
-		// second night shift, start at 19:00 for 12 hours
-		Shift shiftD = workSchedule.createShiftDefinition("D", "D night shift", LocalTime.of(19, 0, 0),
-				Duration.ofHours(12));
-
-		// 7 days ON, 7 OFF
-		ShiftRotation rotationD = shiftD.createRotation(LocalDate.of(2014, 1, 9));
-		rotationD.addOn(7);
-		rotationD.addOff(7);
-
-		int Y = 2014;
-		int M = 2;
-		int D = 1;
-
-		LocalDate from = LocalDate.of(Y, M, D);
-		LocalDate to = from.plusDays(14);
-
-		workSchedule.printShifts(from, to);
-		showWorkingTime(workSchedule, from, to);
+		printWorkSchedule(workSchedule);
+		printTeams(workSchedule.getTeams());
+		printShiftInstances(workSchedule, LocalDate.of(2014, 2, 1)); 
 	}
 
 	@Test
 	public void testRegularShift() {
 		// regular work week
-		WorkSchedule workSchedule = WorkSchedule.instance("Regular 40 hour work week", "8 to 5");
+		WorkSchedule workSchedule = new WorkSchedule("Regular 40 hour work week", "8 to 5");
 		workSchedule.createNonWorkingPeriod("NEW YEARS", "New Years day", LocalDateTime.of(2016, 1, 1, 0, 0, 0),
 				Duration.ofHours(24));
 		workSchedule.createNonWorkingPeriod("MEMORIAL DAY", "Memorial day", LocalDateTime.of(2016, 5, 30, 0, 0, 0),
@@ -401,7 +417,7 @@ public class TestWorkSchedule {
 		workSchedule.createNonWorkingPeriod("CHRISTMAS", "Christmas and day after",
 				LocalDateTime.of(2016, 12, 26, 0, 0, 0), Duration.ofHours(48));
 
-		Shift regular = workSchedule.createShiftDefinition("regular", "A regular shift",
+		Shift regular = workSchedule.createShift("regular", "A regular shift",
 				LocalTime.of(8, 0, 0), Duration.ofHours(9));
 		regular.createBreak("LUNCH", "lunch", LocalTime.of(12, 0, 0), Duration.ofHours(1));
 
@@ -419,40 +435,15 @@ public class TestWorkSchedule {
 		workSchedule.printShifts(from, to);
 
 		showWorkingTime(workSchedule, from, to);
-	}
+	}	
 
-	private void showWorkingTime(WorkSchedule workSchedule, LocalDate from, LocalDate to) {
-		Map<Shift, Duration> workingTime = workSchedule.calculateShiftWorkingTime(from, to);
-
-		System.out.println("Working time from: " + from + " to: " + to);
-
-		Duration t = Duration.ofSeconds(0);
-
-		long dayFrom = from.getLong(ChronoField.EPOCH_DAY);
-		long dayTo = to.getLong(ChronoField.EPOCH_DAY);
-		long totalDays = dayTo - dayFrom;
-
-		for (Entry<Shift, Duration> entry : workingTime.entrySet()) {
-			t = t.plus(entry.getValue());
-
-			long totalHours = entry.getValue().toHours();
-			float avg = (float) totalHours / ((float) totalDays / 7.0f);
-
-			System.out.println("   Shift: " + entry.getKey().getName() + ", Time: " + entry.getValue().toString()
-					+ ", Avg Hrs/Week: " + avg);
-		}
-
-		System.out.println("Total working hours: " + t.toHours() + " out of days available: " + totalDays);
-	}
-	
-
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		TestWorkSchedule test = new TestWorkSchedule();
 		//test.testFirefighterShifts1();
 		//test.testFirefighterShifts2();
 		//test.testFirefighterShifts3();
 		//test.testManufacturingShifts();
-		//test.testNursingShifts();
+		test.testNursingICUShifts();
 		//test.testPostalServiceShifts();
 		//test.testRegularShift();
 		

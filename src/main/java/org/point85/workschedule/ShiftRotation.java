@@ -19,16 +19,18 @@ public class ShiftRotation {
 		this.periods = periods;
 	}
 
-	public void addOn(Shift shift, int count) {
+	public ShiftRotation on(Shift shift, int count) {
 		for (int i = 0; i < count; i++) {
 			periods.add(shift);
 		}
+		return this;
 	}
 
-	public void addOff(OffShift offShift, int count) {
+	public ShiftRotation off(OffShift offShift, int count) {
 		for (int i = 0; i < count; i++) {
 			periods.add(offShift);
 		}
+		return this;
 	}
 
 	public int getDays() {
