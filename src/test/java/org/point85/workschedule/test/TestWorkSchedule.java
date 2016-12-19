@@ -50,10 +50,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team B = schedule.createTeam("B", "Day inverse shift", inverseDayRotation, LocalDate.of(2014, 1, 6));
 		Team C = schedule.createTeam("C", "Night shift", nightRotation, LocalDate.of(2014, 1, 6));
 		Team D = schedule.createTeam("D", "Night inverse shift", inverseNightRotation, LocalDate.of(2014, 1, 6));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, LocalDate.of(2014, 2, 1));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28));
 	}
 
 	@Test
@@ -77,11 +76,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team teamD = schedule.createTeam("Team D", "D team", rotation, referenceDate.minusDays(21));
 		Team teamE = schedule.createTeam("Team E", "E team", rotation, referenceDate.minusDays(28));
 		Team teamF = schedule.createTeam("Team F", "F team", rotation, referenceDate.minusDays(35));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, referenceDate);
-
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
 	}
 
 	@Test
@@ -103,10 +100,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon2 = schedule.createTeam("B", "Platoon2", rotation, LocalDate.of(2014, 2, 4));
 		Team platoon3 = schedule.createTeam("C", "Platoon3", rotation, LocalDate.of(2014, 1, 31));
 		Team platoon4 = schedule.createTeam("D", "Platoon4", rotation, LocalDate.of(2014, 1, 29));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, LocalDate.of(2016, 7, 1));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30));
 	}
 
 	@Test
@@ -135,10 +131,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon1 = schedule.createTeam("Red", "Platoon1", redRotation, LocalDate.of(2017, 1, 6));
 		Team platoon2 = schedule.createTeam("Black", "Platoon2", blackRotation, LocalDate.of(2017, 1, 3));
 		Team platoon3 = schedule.createTeam("Fushia", "Platoon3", fushiaRotation, LocalDate.of(2017, 1, 4));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, LocalDate.of(2017, 2, 1));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -159,10 +154,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon1 = schedule.createTeam("Red", "Platoon1", rotation, LocalDate.of(2017, 1, 8));
 		Team platoon2 = schedule.createTeam("Black", "Platoon2", rotation, LocalDate.of(2017, 2, 1));
 		Team platoon3 = schedule.createTeam("Green", "Platoon3", rotation, LocalDate.of(2017, 1, 2));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, LocalDate.of(2017, 2, 1));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -195,10 +189,9 @@ public class TestWorkSchedule extends BaseTest {
 		Team B = schedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
 		Team C = schedule.createTeam("C", "C day shift", dayRotation, LocalDate.of(2014, 1, 9));
 		Team D = schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
-
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, LocalDate.of(2014, 2, 1));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -237,9 +230,8 @@ public class TestWorkSchedule extends BaseTest {
 		LocalDate referenceDate = LocalDate.of(2016, 1, 1);
 		Team company = schedule.createTeam("Company", "Scheduled working days", rotation, referenceDate);
 
-		printWorkSchedule(schedule);
-		printTeams(schedule.getTeams());
-		printShiftInstances(schedule, referenceDate);
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
 	}
 
 	public static void main(String[] args) throws Exception {

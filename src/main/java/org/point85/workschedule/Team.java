@@ -1,5 +1,6 @@
 package org.point85.workschedule;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
@@ -12,7 +13,7 @@ public class Team extends Named {
 	// shift rotation days
 	private ShiftRotation rotation;
 
-	public Team(String name, String description,  ShiftRotation rotation, LocalDate rotationStart) {
+	public Team(String name, String description, ShiftRotation rotation, LocalDate rotationStart) {
 		super(name, description);
 		this.rotation = rotation;
 		this.rotationStart = rotationStart;
@@ -120,6 +121,21 @@ public class Team extends Named {
 
 	@Override
 	public String toString() {
-		return "Start: " + rotationStart;
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
+
+		String text;
+		try {
+			text = super.toString() + ", rotation start: " + getRotationStart() + ", rotation duration: "
+					+ getRotationDuration() + ", days in rotation: " + getShiftRotation().getDays()
+					+ ", scheduled working time: " + getWorkingTime() + ", percentage worked: "
+					+ df.format(getPercentageWorked()) + "%" + ", avg hours worked per week: "
+					+ getHoursWorkedPerWeek();
+
+		} catch (Exception e) {
+			text = e.getMessage();
+		}
+
+		return text;
 	}
 }

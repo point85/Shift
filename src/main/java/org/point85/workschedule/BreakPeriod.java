@@ -14,5 +14,9 @@ public class BreakPeriod extends TimePeriod {
 	public boolean isWorkingPeriod() {
 		return false;
 	}
-
+	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

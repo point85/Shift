@@ -2,10 +2,10 @@ package org.point85.workschedule;
 
 import java.time.LocalDateTime;
 
-public class ShiftInstance implements Comparable<ShiftInstance>{
+public class ShiftInstance implements Comparable<ShiftInstance> {
 	// definition of the shift
 	private Shift shift;
-	
+
 	// team working it
 	private Team team;
 
@@ -33,14 +33,16 @@ public class ShiftInstance implements Comparable<ShiftInstance>{
 	public void setStartTime(LocalDateTime startTime) {
 		this.startDateTime = startTime;
 	}
-	
+
 	public LocalDateTime getEndTime() {
 		return startDateTime.plus(shift.getDuration());
 	}
 
 	@Override
 	public String toString() {
-		return shift.toString() + ", Starts on " + startDateTime.toString() + ", Ends on " + getEndTime();
+		String text = " Team: " + getTeam().getName() + ", shift: " + getShift().getName() + ", start: "
+				+ getStartTime() + ", end: " + getEndTime();
+		return text;
 	}
 
 	public Team getTeam() {

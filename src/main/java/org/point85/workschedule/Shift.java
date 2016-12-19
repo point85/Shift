@@ -47,25 +47,12 @@ public class Shift extends TimePeriod {
 		return getDuration().minus(breakDurations);
 	}
 
-	@Override
-	public String toString() {
-		String allBreaks = "";
-		for (BreakPeriod period : this.breaks) {
-			if (allBreaks.length() > 0) {
-				allBreaks += ",";
-			}
-			allBreaks += period.toString();
-		}
-		return super.toString() + ", Breaks [" + allBreaks + "]";
-	}
-
-
 	public BreakPeriod createBreak(String name, String description, LocalTime startTime, Duration duration) {
 		BreakPeriod period = new BreakPeriod(name, description, startTime, duration);
 		addBreak(period);
 		return period;
 	}
-	
+
 	public OffShift createOffShift() {
 		return new OffShift(name, description, getStart(), getDuration());
 	}
@@ -74,29 +61,43 @@ public class Shift extends TimePeriod {
 	public boolean isWorkingPeriod() {
 		return true;
 	}
-	
+
 	public Duration getWorkingTimeTo(LocalTime time) throws Exception {
 		Duration duration = null;
-		
+
 		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
 			duration = Duration.ZERO;
 		} else {
 			duration = Duration.ofSeconds(time.toSecondOfDay() - getStart().toSecondOfDay());
 		}
-		
+
 		return duration;
 	}
-	
+
 	public Duration getWorkingTimeFrom(LocalTime time) throws Exception {
 		Duration duration = null;
-		
+
 		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
 			duration = Duration.ZERO;
 		} else {
 			duration = Duration.ofSeconds(getEnd().toSecondOfDay() - time.toSecondOfDay());
 		}
-		
+
 		return duration;
 	}
-			
+
+	@Override
+	public String toString() {
+		String text = super.toString();
+
+		if (getBreaks().size() > 0) {
+			text += "\n      " + getBreaks().size() + " Breaks: ";
+		}
+
+		for (BreakPeriod breakPeriod : getBreaks()) {
+			text += "\n      " + breakPeriod.toString();
+		}
+		return text;
+	}
+
 }

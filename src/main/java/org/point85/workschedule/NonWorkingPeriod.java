@@ -25,6 +25,17 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 		this.startDateTime = startDateTime;
 	}
 
+	public LocalDateTime getEndDateTime() throws Exception {
+		if (startDateTime == null) {
+			throw new Exception("Start date and time is not defined.");
+		}
+
+		if (duration == null) {
+			throw new Exception("Duration is not defined.");
+		}
+		return startDateTime.plus(duration);
+	}
+
 	public Duration getDuration() {
 		return duration;
 	}
@@ -35,7 +46,13 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 
 	@Override
 	public String toString() {
-		return startDateTime + " (" + duration + ")";
+		String text = null;
+		try {
+			text = super.toString() + ", Start: " + startDateTime + " (" + duration + ")" + ", End: " + getEndDateTime();
+		} catch (Exception e) {
+			text = e.getMessage();
+		}
+		return text;
 	}
 
 	@Override

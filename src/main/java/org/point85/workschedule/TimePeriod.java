@@ -47,6 +47,13 @@ public abstract class TimePeriod extends Named {
 
 	@Override
 	public String toString() {
-		return super.toString() + ", Start: " + startTime + " (" + duration + ")";
+		String text = null;
+		try {
+			text = super.toString() + ", Start: " + startTime + " (" + duration + ")" + ", End: " + getEnd();
+		} catch (Exception e) {
+			text = e.getMessage();
+		}
+
+		return text;
 	}
 }
