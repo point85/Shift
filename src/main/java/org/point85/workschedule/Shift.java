@@ -9,6 +9,9 @@ public class Shift extends TimePeriod {
 
 	// breaks
 	private List<BreakPeriod> breaks = new ArrayList<>();
+	
+	// corresponding off-shift period
+	private OffShift offShift;
 
 	Shift(String name, String description, LocalTime start, Duration duration) {
 		super(name, description, start, duration);
@@ -98,6 +101,17 @@ public class Shift extends TimePeriod {
 			text += "\n      " + breakPeriod.toString();
 		}
 		return text;
+	}
+
+	public OffShift getOffShift() {
+		if (offShift == null) {
+			offShift = createOffShift();
+		}
+		return offShift;
+	}
+
+	public void setOffShift(OffShift offShift) {
+		this.offShift = offShift;
 	}
 
 }

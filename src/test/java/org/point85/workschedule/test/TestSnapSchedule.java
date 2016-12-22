@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.junit.Test;
-import org.point85.workschedule.OffShift;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
@@ -25,12 +24,9 @@ public class TestSnapSchedule extends BaseTest {
 		// Shift starts at 09:00 for 8 hours
 		Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(9, 0, 0), Duration.ofHours(8));
 
-		/// off shift
-		OffShift dayOff = day.createOffShift();
-
 		// Team1 rotation (5 days)
 		ShiftRotation rotation = new ShiftRotation();
-		rotation.on(5, day).off(2, dayOff);
+		rotation.on(5, day).off(2, day);
 
 		// 1 team, 1 shift
 		Team team = schedule.createTeam("Team", "One team", rotation, referenceDate);
@@ -62,13 +58,10 @@ public class TestSnapSchedule extends BaseTest {
 		// Night shift #2, starts at 23:00 for 8 hours
 		Shift night2 = schedule.createShift("Night2", "Night shift #2", LocalTime.of(23, 0, 0), Duration.ofHours(8));
 
-		/// off shifts
-		OffShift dayOff = day1.createOffShift();
-
 		// shift rotation (28 days)
 		ShiftRotation rotation = new ShiftRotation();
-		rotation.on(5, day2).on(2, day1).off(3, dayOff).on(2, night2).on(2, night1).on(3, night2).off(4, dayOff)
-				.on(5, swing).off(2, dayOff);
+		rotation.on(5, day2).on(2, day1).off(3, day1).on(2, night2).on(2, night1).on(3, night2).off(4, day1)
+				.on(5, swing).off(2, day1);
 
 		// 4 teams, rotating through 5 shifts
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
@@ -98,12 +91,9 @@ public class TestSnapSchedule extends BaseTest {
 		// Night shift, starts at 22:00 for 14 hours
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(22, 0, 0), Duration.ofHours(14));
 
-		/// off shifts
-		OffShift dayOff = day.createOffShift();
-
 		// Team1 rotation
 		ShiftRotation rotation = new ShiftRotation();
-		rotation.on(1, day).on(1, crossover).on(1, night).off(1, dayOff);
+		rotation.on(1, day).on(1, crossover).on(1, night).off(1, day);
 
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(3));
@@ -130,14 +120,9 @@ public class TestSnapSchedule extends BaseTest {
 		// Night shift, starts at 19:00 for 12 hours
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
-		/// off shifts
-		OffShift dayOff = day.createOffShift();
-		OffShift nightOff = night.createOffShift();
-
 		// Team1 rotation
 		ShiftRotation rotation = new ShiftRotation();
-		rotation.on(4, night).off(3, nightOff).on(3, day).off(1, dayOff).on(3, night).off(3, nightOff).on(4, day).off(7,
-				dayOff);
+		rotation.on(4, night).off(3, night).on(3, day).off(1, day).on(3, night).off(3, night).on(4, day).off(7, day);
 
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(7));
@@ -161,12 +146,9 @@ public class TestSnapSchedule extends BaseTest {
 		// Night shift, starts at 19:00 for 12 hours
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
-		// off shift
-		OffShift nightOff = night.createOffShift();
-
 		// rotation
 		ShiftRotation rotation = new ShiftRotation();
-		rotation.on(1, day).on(1, night).off(1, nightOff);
+		rotation.on(1, day).on(1, night).off(1, night);
 
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
@@ -188,30 +170,27 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Day shift, starts at 07:00 for 8 hours
 		Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0), Duration.ofHours(8));
-		OffShift dayOff = day.createOffShift();
 
 		// Swing shift, starts at 15:00 for 8 hours
 		Shift swing = schedule.createShift("Swing", "Swing shift", LocalTime.of(15, 0, 0), Duration.ofHours(8));
-		OffShift swingOff = swing.createOffShift();
 
 		// Night shift, starts at 15:00 for 8 hours
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(23, 0, 0), Duration.ofHours(8));
-		OffShift nightOff = night.createOffShift();
 
 		// day rotation
 		ShiftRotation dayRotation = new ShiftRotation();
-		dayRotation.on(6, day).off(3, dayOff).on(5, day).off(3, dayOff).on(6, day).off(2, dayOff).on(6, day)
-				.off(2, dayOff).on(6, day).off(2, dayOff).on(6, day).off(2, dayOff);
+		dayRotation.on(6, day).off(3, day).on(5, day).off(3, day).on(6, day).off(2, day).on(6, day).off(2, day)
+				.on(6, day).off(2, day).on(6, day).off(2, day);
 
 		// swing rotation
 		ShiftRotation swingRotation = new ShiftRotation();
-		swingRotation.on(6, swing).off(3, swingOff).on(5, swing).off(3, swingOff).on(6, swing).off(2, swingOff)
-				.on(6, swing).off(2, swingOff).on(6, swing).off(2, swingOff).on(6, swing).off(2, swingOff);
+		swingRotation.on(6, swing).off(3, swing).on(5, swing).off(3, swing).on(6, swing).off(2, swing).on(6, swing)
+				.off(2, swing).on(6, swing).off(2, swing).on(6, swing).off(2, swing);
 
 		// night rotation
 		ShiftRotation nightRotation = new ShiftRotation();
-		nightRotation.on(6, night).off(3, nightOff).on(5, night).off(3, nightOff).on(6, night).off(2, nightOff)
-				.on(6, night).off(2, nightOff).on(6, night).off(2, nightOff).on(6, night).off(2, nightOff);
+		nightRotation.on(6, night).off(3, night).on(5, night).off(3, night).on(6, night).off(2, night).on(6, night)
+				.off(2, night).on(6, night).off(2, night).on(6, night).off(2, night);
 
 		// day teams
 		Team team1 = schedule.createTeam("Team 1", "1st day team", dayRotation, referenceDate);
@@ -286,21 +265,19 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Day shift, starts at 07:00 for 12 hours
 		Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0), Duration.ofHours(12));
-		OffShift dayOff = day.createOffShift();
 
 		// Night shift, starts at 19:00 for 12 hours
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
-		OffShift nightOff = night.createOffShift();
 
 		// rotation
 		ShiftRotation rotation = new ShiftRotation();
 		// 2 days on, 2 off, 3 on, 2 off, 2 on, 3 off (and repeat)
-		rotation.on(2, day).off(2, dayOff).on(3, day).off(2, dayOff).on(2, day).off(3, dayOff).on(2, day).off(2, dayOff)
-				.on(3, day).off(2, dayOff).on(2, day).off(3, dayOff);
+		rotation.on(2, day).off(2, day).on(3, day).off(2, day).on(2, day).off(3, day).on(2, day).off(2, day).on(3, day)
+				.off(2, day).on(2, day).off(3, day);
 
 		// 2 nights on, 2 off, 3 on, 2 off, 2 on, 3 off (and repeat)
-		rotation.on(2, night).off(2, nightOff).on(3, night).off(2, nightOff).on(2, night).off(3, nightOff).on(2, night)
-				.off(2, nightOff).on(3, night).off(2, nightOff).on(2, night).off(3, nightOff);
+		rotation.on(2, night).off(2, night).on(3, night).off(2, night).on(2, night).off(3, night).on(2, night)
+				.off(2, night).on(3, night).off(2, night).on(2, night).off(3, night);
 
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(28));

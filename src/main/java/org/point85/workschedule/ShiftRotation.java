@@ -26,9 +26,9 @@ public class ShiftRotation {
 		return this;
 	}
 
-	public ShiftRotation off(int count, OffShift offShift) {
+	public ShiftRotation off(int count, Shift shift) {
 		for (int i = 0; i < count; i++) {
-			periods.add(offShift);
+			periods.add(shift.getOffShift());
 		}
 		return this;
 	}
