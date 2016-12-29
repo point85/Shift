@@ -1,5 +1,10 @@
 package org.point85.workschedule.test;
 
+import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +19,97 @@ public class TestSnapSchedule extends BaseTest {
 
 	// reference date for start of shift rotations
 	private LocalDate referenceDate = LocalDate.of(2016, 10, 31);
+	
+	@Test
+	public void testLowNight() throws Exception {
+		String description = "Low night demand";
+
+		WorkSchedule schedule = new WorkSchedule("Low Night Demand Plan", description);
+
+		// 3 shifts
+		Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0), Duration.ofHours(8));
+		Shift swing = schedule.createShift("Swing", "Swing shift", LocalTime.of(15, 0, 0), Duration.ofHours(8));
+		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(23, 0, 0), Duration.ofHours(8));
+
+		// Team rotation
+		ShiftRotation rotation = new ShiftRotation();
+		rotation.on(3, day).on(4, swing).off(3, day).on(4, day).on(3, swing).off(4, day).on(3, day).on(4, night).off(3, day).on(4, day).on(3, night).off(4, day);
+
+		// 6 teams
+		Team team1 = schedule.createTeam("Team1", "First team", rotation, referenceDate);
+		Team team2 = schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(21));
+		Team team3 = schedule.createTeam("Team3", "Third team", rotation, referenceDate.minusDays(7));
+		Team team4 = schedule.createTeam("Team4", "Fourth team", rotation, referenceDate.minusDays(28));
+		Team team5 = schedule.createTeam("Team5", "Fifth team", rotation, referenceDate.minusDays(14));
+		Team team6 = schedule.createTeam("Team6", "Sixth team", rotation, referenceDate.minusDays(35));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		
+		BigDecimal hrs = new BigDecimal(team1.getHoursWorkedPerWeek());
+		assertThat(hrs, closeTo(new BigDecimal("37.333", MATH_CONTEXT), DELTA3));
+		assertTrue(team1.getRotationDuration().toDays() == 42);
+	}
+	
+	@Test
+	public void test3TeamFixed24() throws Exception {
+		String description = "Fire departments";
+
+		WorkSchedule schedule = new WorkSchedule("3 Team Fixed 24 Plan", description);
+
+		// Shift starts at 00:00 for 24 hours
+		Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(0, 0, 0), Duration.ofHours(24));
+
+		// Team rotation
+		ShiftRotation rotation = new ShiftRotation();
+		rotation.on(1, shift).off(1, shift).on(1, shift).off(1, shift).on(1, shift).off(4, shift);
+
+		// 3 teams
+		Team team1 = schedule.createTeam("Team1", "First team", rotation, referenceDate);
+		Team team2 = schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(3));
+		Team team3 = schedule.createTeam("Team3", "Third team", rotation, referenceDate.minusDays(6));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		
+		assertTrue(team1.getHoursWorkedPerWeek() == 56.0f);
+		assertTrue(team2.getHoursWorkedPerWeek() == 56.0f);
+		assertTrue(team3.getHoursWorkedPerWeek() == 56.0f);
+		
+		assertTrue(team1.getRotationDuration().toDays() == 9);
+		assertTrue(team2.getRotationDuration().toDays() == 9);
+		assertTrue(team3.getRotationDuration().toDays() == 9);
+	}
+	
+	@Test
+	public void test549() throws Exception {
+		String description = "Compressed work schedule.";
+
+		WorkSchedule schedule = new WorkSchedule("5/4/9 Plan", description);
+
+		// Shift 1 starts at 07:00 for 9 hours
+		Shift day1 = schedule.createShift("Day1", "Day shift #1", LocalTime.of(7, 0, 0), Duration.ofHours(9));
+		
+		// Shift 2 starts at 07:00 for 8 hours
+		Shift day2 = schedule.createShift("Day2", "Day shift #2", LocalTime.of(7, 0, 0), Duration.ofHours(8));
+
+		// Team rotation (28 days)
+		ShiftRotation rotation = new ShiftRotation();
+		rotation.on(4, day1).on(1, day2).off(3, day1).on(4, day1).off(3, day1).on(4, day1).off(2, day2).on(4, day1).on(1, day2).off(2, day1);
+
+		// 2 teams
+		Team team1 = schedule.createTeam("Team1", "First team", rotation, referenceDate);
+		Team team2 = schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(14));
+		
+		System.out.println(schedule.toString());
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		
+		assertTrue(team1.getHoursWorkedPerWeek() == 40.0f);
+		assertTrue(team2.getHoursWorkedPerWeek() == 40.0f);
+		
+		assertTrue(team1.getRotationDuration().toDays() == 28);
+		assertTrue(team2.getRotationDuration().toDays() == 28);
+	}
 
 	@Test
 	public void test9to5() throws Exception {
@@ -292,6 +388,7 @@ public class TestSnapSchedule extends BaseTest {
 		TestSnapSchedule test = new TestSnapSchedule();
 
 		try {
+			/*
 			test.testPanama();
 			test.testTwoTeam();
 			test.testDNO();
@@ -300,6 +397,10 @@ public class TestSnapSchedule extends BaseTest {
 			test.test8Plus12();
 			test.test9to5();
 			test.test21TeamFixed();
+			*/
+			//test.test549();
+			//test.test3TeamFixed24();
+			test.testLowNight();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

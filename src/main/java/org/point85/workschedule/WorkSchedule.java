@@ -244,7 +244,7 @@ public class WorkSchedule extends Named {
 			throw new Exception("Start of " + start + " must be earlier than end of " + end);
 		}
 
-		long days = end.toEpochDay() - start.toEpochDay() + 1;
+		long days = end.toEpochDay() - start.toEpochDay();
 
 		LocalDate day = start;
 

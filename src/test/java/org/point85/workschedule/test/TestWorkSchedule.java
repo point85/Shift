@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.junit.Test;
-import org.point85.workschedule.OffShift;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
@@ -200,14 +199,14 @@ public class TestWorkSchedule extends BaseTest {
 		shift1.createBreak("10AM", "10 am break", LocalTime.of(10, 0, 0), Duration.ofMinutes(15));
 		shift1.createBreak("LUNCH", "lunch", LocalTime.of(12, 0, 0), Duration.ofHours(1));
 		shift1.createBreak("2PM", "2 pm break", LocalTime.of(14, 0, 0), Duration.ofMinutes(15));
-		
+
 		// shift 2, overlap 30 min
 		Shift shift2 = schedule.createShift("Shift2", "Shift #2", LocalTime.of(16, 30, 0), Duration.ofHours(9));
 
 		// shift 1, 5 days ON, 2 OFF
 		ShiftRotation rotation1 = new ShiftRotation();
 		rotation1.on(5, shift1).off(2, shift1);
-		
+
 		// shift 2, 5 days ON, 2 OFF
 		ShiftRotation rotation2 = new ShiftRotation();
 		rotation2.on(5, shift2).off(2, shift2);
@@ -222,12 +221,12 @@ public class TestWorkSchedule extends BaseTest {
 
 	public static void main(String[] args) throws Exception {
 		TestWorkSchedule test = new TestWorkSchedule();
-		//test.testFirefighterShifts1();
-		//test.testFirefighterShifts2();
-		//test.testFirefighterShifts3();
-		//test.testManufacturingShifts();
-		//test.testNursingICUShifts();
-		//test.testPostalServiceShifts();
+		// test.testFirefighterShifts1();
+		// test.testFirefighterShifts2();
+		// test.testFirefighterShifts3();
+		// test.testManufacturingShifts();
+		// test.testNursingICUShifts();
+		// test.testPostalServiceShifts();
 		test.testGenericShift();
 
 	}
