@@ -24,67 +24,42 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
+import java.time.Duration;
+import java.time.LocalTime;
+
 /**
- * The Named class represents a named object.
+ * Class Break is a recurring non-working time
  * 
  * @author Kent Randall
  *
  */
-abstract class Named {
-	// name
-	private String name;
-
-	// description
-	private String description;
-
-	protected Named(String name, String description) {
-		this.name = name;
-		this.description = description;
-	}
-
+public class Break extends TimePeriod {
 	/**
-	 * Get name
-	 * 
-	 * @return Name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Set name
+	 * Construct a period of time for a break
 	 * 
 	 * @param name
-	 *            Name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Get description
-	 * 
-	 * @return Description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * Set description
-	 * 
+	 *            Name of break
 	 * @param description
-	 *            Description
+	 *            Description of break
+	 * @param start
+	 *            Starting time of day
+	 * @param duration
+	 *            Duration of break
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public Break(String name, String description, LocalTime start, Duration duration) {
+		super(name, description, start, duration);
+	}
+
+	@Override
+	boolean isWorkingPeriod() {
+		return false;
 	}
 
 	/**
-	 * Get a string representation of a named object
+	 * Build a string representation of the break period
 	 */
 	@Override
 	public String toString() {
-		return WorkSchedule.getMessage("name") + " (" + WorkSchedule.getMessage("description") + ")";
+		return super.toString();
 	}
 }

@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2016 Kent Randall
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 package org.point85.workschedule;
 
 import java.time.Duration;
@@ -5,11 +29,17 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class Shift is a scheduled working time period
+ * 
+ * @author Kent Randall
+ *
+ */
 public class Shift extends TimePeriod {
 
 	// breaks
-	private List<BreakPeriod> breaks = new ArrayList<>();
-	
+	private List<Break> breaks = new ArrayList<>();
+
 	// corresponding off-shift period
 	private OffShift offShift;
 
@@ -17,32 +47,48 @@ public class Shift extends TimePeriod {
 		super(name, description, start, duration);
 	}
 
-	public List<BreakPeriod> getBreaks() {
+	/**
+	 * Get the break periods for this shift
+	 * 
+	 * @return List {@link Break}
+	 */
+	public List<Break> getBreaks() {
 		return this.breaks;
 	}
 
-	public void setBreaks(List<BreakPeriod> breaks) {
-		this.breaks = breaks;
-	}
-
-	public void addBreak(BreakPeriod breakPeriod) {
-
+	/**
+	 * Add a break period to this shift
+	 * 
+	 * @param breakPeriod
+	 *            {@link Break}
+	 */
+	public void addBreak(Break breakPeriod) {
 		if (!this.breaks.contains(breakPeriod)) {
 			this.breaks.add(breakPeriod);
 		}
 	}
 
-	public void removeBreak(NonWorkingPeriod breakDefinition) {
-		if (this.breaks.contains(breakDefinition)) {
-			this.breaks.remove(breakDefinition);
+	/**
+	 * Remove a break from this shift
+	 * 
+	 * @param breakDefinition
+	 */
+	public void removeBreak(Break breakPeriod) {
+		if (this.breaks.contains(breakPeriod)) {
+			this.breaks.remove(breakPeriod);
 		}
 	}
 
+	/**
+	 * Calculate the working time as the scheduled time less breaks
+	 * 
+	 * @return
+	 */
 	public Duration calculateWorkingTime() {
 		// add up breaks
 		Duration breakDurations = Duration.ofSeconds(0);
 
-		for (BreakPeriod breakDefinition : this.breaks) {
+		for (Break breakDefinition : this.breaks) {
 			breakDurations.plus(breakDefinition.getDuration());
 		}
 
@@ -50,21 +96,48 @@ public class Shift extends TimePeriod {
 		return getDuration().minus(breakDurations);
 	}
 
-	public BreakPeriod createBreak(String name, String description, LocalTime startTime, Duration duration) {
-		BreakPeriod period = new BreakPeriod(name, description, startTime, duration);
+	/**
+	 * Create a break for this shift
+	 * 
+	 * @param name
+	 *            Name of break
+	 * @param description
+	 *            Description of break
+	 * @param startTime
+	 *            Start of break
+	 * @param duration
+	 *            Duration of break
+	 * @return {@link Break}
+	 */
+	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) {
+		Break period = new Break(name, description, startTime, duration);
 		addBreak(period);
 		return period;
 	}
 
+	/**
+	 * Create an off-shift time period
+	 * 
+	 * @return {@link OffShift}
+	 */
 	public OffShift createOffShift() {
-		return new OffShift(name, description, getStart(), getDuration());
+		return new OffShift(getName(), getDescription(), getStart(), getDuration());
 	}
 
 	@Override
-	public boolean isWorkingPeriod() {
+	boolean isWorkingPeriod() {
 		return true;
 	}
 
+	/**
+	 * Calculate working time from the beginning of the shift to the specified
+	 * time
+	 * 
+	 * @param time
+	 *            Ending time
+	 * @return Duration
+	 * @throws Exception
+	 */
 	public Duration getWorkingTimeTo(LocalTime time) throws Exception {
 		Duration duration = null;
 
@@ -77,6 +150,15 @@ public class Shift extends TimePeriod {
 		return duration;
 	}
 
+	/**
+	 * Calculate the working time from the specified time to the end of the
+	 * shift
+	 * 
+	 * @param time
+	 *            Beginning time
+	 * @return Duration
+	 * @throws Exception
+	 */
 	public Duration getWorkingTimeFrom(LocalTime time) throws Exception {
 		Duration duration = null;
 
@@ -89,6 +171,13 @@ public class Shift extends TimePeriod {
 		return duration;
 	}
 
+	OffShift getOffShift() {
+		if (offShift == null) {
+			offShift = createOffShift();
+		}
+		return offShift;
+	}
+
 	@Override
 	public String toString() {
 		String text = super.toString();
@@ -97,21 +186,10 @@ public class Shift extends TimePeriod {
 			text += "\n      " + getBreaks().size() + " Breaks: ";
 		}
 
-		for (BreakPeriod breakPeriod : getBreaks()) {
+		for (Break breakPeriod : getBreaks()) {
 			text += "\n      " + breakPeriod.toString();
 		}
 		return text;
-	}
-
-	public OffShift getOffShift() {
-		if (offShift == null) {
-			offShift = createOffShift();
-		}
-		return offShift;
-	}
-
-	public void setOffShift(OffShift offShift) {
-		this.offShift = offShift;
 	}
 
 }

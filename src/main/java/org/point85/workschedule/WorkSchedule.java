@@ -1,3 +1,26 @@
+/*
+MIT License
+
+Copyright (c) 2016 Kent Randall
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 package org.point85.workschedule;
 
 import java.text.DecimalFormat;
@@ -9,8 +32,16 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class WorkSchedule extends Named {
+	// name of resource bundle with translatable strings for exception messages
+	static final String MESSAGES_BUNDLE_NAME = "Message";
+
+	// resource bundle for exception messages
+	private static ResourceBundle messages  = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
+	
 	// list of teams
 	private List<Team> teams = new ArrayList<>();
 
@@ -22,6 +53,11 @@ public class WorkSchedule extends Named {
 
 	public WorkSchedule(String name, String description) {
 		super(name, description);
+	}
+	
+	// get a particular message by its key
+	static String getMessage(String key) {
+		return messages.getString(key);
 	}
 
 	public void addTeam(Team team) {
@@ -90,17 +126,17 @@ public class WorkSchedule extends Named {
 		long dayTo = to.getLong(ChronoField.EPOCH_DAY);
 		long deltaDays = dayTo - dayFrom;
 
-		return deltaDays / this.getRotationDays();
+		return deltaDays / getRotationDays().toDays();
 	}
 
-	public int getRotationDays() {
-		int count = 0;
+	public Duration getRotationDays() {
+		Duration duration = null;
 		// each team has the same number of days in their rotation
 		if (getTeams().size() > 0) {
-			count = getTeams().get(0).getShiftRotation().getDays();
+			duration = getTeams().get(0).getShiftRotation().getDuration();
 		}
 
-		return count;
+		return duration;
 	}
 
 	@Override

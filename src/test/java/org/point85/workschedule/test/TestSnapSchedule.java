@@ -44,7 +44,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team6 = schedule.createTeam("Team6", "Sixth team", rotation, referenceDate.minusDays(35));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 		
 		BigDecimal hrs = new BigDecimal(team1.getHoursWorkedPerWeek());
 		assertThat(hrs, closeTo(new BigDecimal("37.333", MATH_CONTEXT), DELTA3));
@@ -70,7 +70,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team3 = schedule.createTeam("Team3", "Third team", rotation, referenceDate.minusDays(6));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 		
 		assertTrue(team1.getHoursWorkedPerWeek() == 56.0f);
 		assertTrue(team2.getHoursWorkedPerWeek() == 56.0f);
@@ -102,7 +102,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(14));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 		
 		assertTrue(team1.getHoursWorkedPerWeek() == 40.0f);
 		assertTrue(team2.getHoursWorkedPerWeek() == 40.0f);
@@ -128,7 +128,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team = schedule.createTeam("Team", "One team", rotation, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(21));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -197,7 +197,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(1));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(21));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -251,7 +251,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -381,7 +381,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	public static void main(String[] args) {

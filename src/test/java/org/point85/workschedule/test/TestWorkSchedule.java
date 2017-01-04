@@ -72,7 +72,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team teamF = schedule.createTeam("Team F", "F team", rotation, referenceDate.minusDays(35));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()));
 	}
 
 	public static void main(String[] args) throws Exception {
