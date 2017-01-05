@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Class ShiftRotation maintains a list of shift and off-shift time periods
  * 
- * @author Kent
+ * @author Kent Randall
  *
  */
 public class ShiftRotation {

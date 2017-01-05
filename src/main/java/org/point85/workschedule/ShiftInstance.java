@@ -26,6 +26,13 @@ package org.point85.workschedule;
 
 import java.time.LocalDateTime;
 
+/**
+ * Class ShiftInstance is an instance of a shift. A shift instance is worked by
+ * a {@link Team} during a {@link ShiftRotation}
+ * 
+ * @author Kent Randall
+ *
+ */
 public class ShiftInstance implements Comparable<ShiftInstance> {
 	// definition of the shift
 	private Shift shift;
@@ -36,49 +43,66 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 	// start date and time of day
 	private LocalDateTime startDateTime;
 
-	public ShiftInstance(Shift shiftDefinition, LocalDateTime startDateTime, Team team) {
-		this.setShiftDefinition(shiftDefinition);
-		this.setStartTime(startDateTime);
-		this.setTeam(team);
+	ShiftInstance(Shift shift, LocalDateTime startDateTime, Team team) {
+		this.shift = shift;
+		this.startDateTime = startDateTime;
+		this.team = team;
 	}
 
+	/**
+	 * Get the shift for this instance
+	 * 
+	 * @return {@link Shift}
+	 */
 	public Shift getShift() {
 		return shift;
 	}
 
-	public void setShiftDefinition(Shift shiftDefinition) {
-		this.shift = shiftDefinition;
-	}
-
+	/**
+	 * Get the starting date and time of day
+	 * 
+	 * @return LocalDateTime
+	 */
 	public LocalDateTime getStartTime() {
 		return startDateTime;
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
-		this.startDateTime = startTime;
-	}
-
+	/**
+	 * Get the end date and time of day
+	 * 
+	 * @return LocalDateTime
+	 */
 	public LocalDateTime getEndTime() {
 		return startDateTime.plus(shift.getDuration());
 	}
 
-	@Override
-	public String toString() {
-		String text = " Team: " + getTeam().getName() + ", shift: " + getShift().getName() + ", start: "
-				+ getStartTime() + ", end: " + getEndTime();
-		return text;
-	}
-
+	/**
+	 * Get the team
+	 * 
+	 * @return {@link Team}
+	 */
 	public Team getTeam() {
 		return team;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
 	}
 
 	@Override
 	public int compareTo(ShiftInstance other) {
 		return getStartTime().compareTo(other.getStartTime());
 	}
+
+	/**
+	 * Build a string representation of a shift instance
+	 */
+	@Override
+	public String toString() {
+		String t = WorkSchedule.getMessage("team");
+		String s = WorkSchedule.getMessage("shift");
+		String ps = WorkSchedule.getMessage("period.start");
+		String pe = WorkSchedule.getMessage("period.end");
+
+		String text = " " + t + ": " + getTeam().getName() + ", " + s + ": " + getShift().getName() + ", " + ps + ": "
+				+ getStartTime() + ", " + pe + ": " + getEndTime();
+		return text;
+	}
+
 }

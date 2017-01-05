@@ -28,7 +28,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 /**
- * Class OffShift is the schedule time off from a shift
+ * Class OffShift is the scheduled time off from a shift
  * @author Kent Randall
  *
  */

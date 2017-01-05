@@ -82,7 +82,7 @@ public class Shift extends TimePeriod {
 	/**
 	 * Calculate the working time as the scheduled time less breaks
 	 * 
-	 * @return
+	 * @return Duration
 	 */
 	public Duration calculateWorkingTime() {
 		// add up breaks
@@ -113,15 +113,6 @@ public class Shift extends TimePeriod {
 		Break period = new Break(name, description, startTime, duration);
 		addBreak(period);
 		return period;
-	}
-
-	/**
-	 * Create an off-shift time period
-	 * 
-	 * @return {@link OffShift}
-	 */
-	public OffShift createOffShift() {
-		return new OffShift(getName(), getDescription(), getStart(), getDuration());
 	}
 
 	@Override
@@ -173,17 +164,22 @@ public class Shift extends TimePeriod {
 
 	OffShift getOffShift() {
 		if (offShift == null) {
-			offShift = createOffShift();
+			offShift = new OffShift(getName(), getDescription(), getStart(), getDuration());
 		}
 		return offShift;
 	}
 
+	/**
+	 * Build a string representation of this shift
+	 * 
+	 * @return String
+	 */
 	@Override
 	public String toString() {
 		String text = super.toString();
 
 		if (getBreaks().size() > 0) {
-			text += "\n      " + getBreaks().size() + " Breaks: ";
+			text += "\n      " + getBreaks().size() + " " + WorkSchedule.getMessage("breaks") + ":";
 		}
 
 		for (Break breakPeriod : getBreaks()) {

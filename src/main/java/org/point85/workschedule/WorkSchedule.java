@@ -23,25 +23,32 @@ SOFTWARE.
 */
 package org.point85.workschedule;
 
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Class WorkSchedule represents a groyup of teams who collectively work one or
+ * more shifts.
+ * 
+ * @author Kent Randall
+ *
+ */
 public class WorkSchedule extends Named {
 	// name of resource bundle with translatable strings for exception messages
-	static final String MESSAGES_BUNDLE_NAME = "Message";
+	private static final String MESSAGES_BUNDLE_NAME = "Message";
 
 	// resource bundle for exception messages
-	private static ResourceBundle messages  = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
-	
+	private static ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
+
 	// list of teams
 	private List<Team> teams = new ArrayList<>();
 
@@ -51,55 +58,91 @@ public class WorkSchedule extends Named {
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
 
+	/**
+	 * Construct a work schedule
+	 * 
+	 * @param name
+	 *            Schedule name
+	 * @param description
+	 *            Schedule description
+	 */
 	public WorkSchedule(String name, String description) {
 		super(name, description);
 	}
-	
+
 	// get a particular message by its key
 	static String getMessage(String key) {
 		return messages.getString(key);
 	}
 
-	public void addTeam(Team team) {
+	private void addTeam(Team team) {
 		if (!this.teams.contains(team)) {
 			this.teams.add(team);
 		}
 	}
 
+	/**
+	 * Remove this team from the schedule
+	 * 
+	 * @param team
+	 *            {@link Team}
+	 */
 	public void removeTeam(Team team) {
 		if (this.teams.contains(team)) {
 			this.teams.remove(team);
 		}
 	}
 
+	/**
+	 * Get all teams
+	 * 
+	 * @return List of {@link Team}
+	 */
 	public List<Team> getTeams() {
 		return this.teams;
 	}
 
-	public void addNonWorkingPeriod(NonWorkingPeriod period) {
+	private void addNonWorkingPeriod(NonWorkingPeriod period) {
 		if (!this.nonWorkingPeriods.contains(period)) {
 			this.nonWorkingPeriods.add(period);
 		}
 	}
 
+	/**
+	 * Remove a non-working period from the schedule
+	 * 
+	 * @param period
+	 *            {@link NonWorkingPeriod}
+	 */
 	public void removeNonWorkingPeriod(NonWorkingPeriod period) {
 		if (this.nonWorkingPeriods.contains(period)) {
 			this.nonWorkingPeriods.remove(period);
 		}
 	}
 
+	/**
+	 * Get all non-working periods in the schedule
+	 * 
+	 * @return List of {@link NonWorkingPeriod}
+	 */
 	public List<NonWorkingPeriod> getNonWorkingPeriods() {
 		return this.nonWorkingPeriods;
 	}
 
+	/**
+	 * Get the list of shift instances for the specified date
+	 * 
+	 * @param day
+	 *            LocalDate
+	 * @return List of {@link ShiftInstance}
+	 * @throws Exception
+	 */
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
 		if (this.nonWorkingPeriods.contains(day)) {
 			return workingShifts;
 		}
-
-		long dayTo = day.getLong(ChronoField.EPOCH_DAY);
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
@@ -121,121 +164,57 @@ public class WorkSchedule extends Named {
 		return workingShifts;
 	}
 
-	private long getNumberOfRotations(LocalDate from, LocalDate to) {
-		long dayFrom = from.getLong(ChronoField.EPOCH_DAY);
-		long dayTo = to.getLong(ChronoField.EPOCH_DAY);
-		long deltaDays = dayTo - dayFrom;
-
-		return deltaDays / getRotationDays().toDays();
-	}
-
-	public Duration getRotationDays() {
-		Duration duration = null;
-		// each team has the same number of days in their rotation
-		if (getTeams().size() > 0) {
-			duration = getTeams().get(0).getShiftRotation().getDuration();
-		}
-
-		return duration;
-	}
-
-	@Override
-	public String toString() {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(2);
-
-		String text = "Schedule: " + super.toString();
-
-		try {
-			text += "\nRotation duration: " + getRotationDuration() + ", scheduled working time " + getWorkingTime();
-
-			// shifts
-			text += "\nShifts: ";
-			int count = 1;
-			for (Shift shift : getShifts()) {
-				text += "\n   (" + count + ") " + shift;
-				count++;
-			}
-
-			// teams
-			text += "\nTeams: ";
-			count = 1;
-			float teamPercent = 0.0f;
-			for (Team team : this.getTeams()) {
-				text += "\n   (" + count + ") " + team;
-				teamPercent += team.getPercentageWorked();
-				count++;
-			}
-			text += "\nTotal team coverage: " + df.format(teamPercent) + "%";
-
-			// non-working periods
-			if (getNonWorkingPeriods().size() > 0) {
-				text += "\nNon-working periods:";
-
-				Duration totalMinutes = Duration.ofMinutes(0);
-
-				count = 1;
-				for (NonWorkingPeriod period : getNonWorkingPeriods()) {
-					totalMinutes = totalMinutes.plusMinutes(period.getDuration().toMinutes());
-					text += "\n   (" + count + ") " + period;
-					count++;
-				}
-				text += "\nTotal non-working time: " + totalMinutes;
-			}
-
-		} catch (Exception e) {
-			text = e.getMessage();
-		}
-		return text;
-	}
-
-	public Duration calculateTeamWorkingTime(LocalDate from, LocalDate to) {
-		return null;
-	}
-
-	/*
-	 * public Map<Team, Duration> calculateTeamWorkingTime(LocalDate from,
-	 * LocalDate to) {
+	/**
+	 * Create a team
 	 * 
-	 * Map<Team, Duration> workingTime = new HashMap<Team, Duration>();
-	 * 
-	 * LocalDate currentDate = from;
-	 * 
-	 * // iterate over each day while (currentDate.isBefore(to)) {
-	 * List<TeamInstance> shifts = getTeamsForDay(currentDate);
-	 * 
-	 * for (TeamInstance shift : shifts) { Duration duration =
-	 * shift.getTeam().calculateWorkingTime();
-	 * 
-	 * Duration sum = workingTime.get(shift.getTeam());
-	 * 
-	 * if (sum == null) { sum = duration; } else { sum = sum.plus(duration); }
-	 * workingTime.put(shift.getTeam(), sum); }
-	 * 
-	 * currentDate = currentDate.plusDays(1); }
-	 * 
-	 * return workingTime; }
+	 * @param name
+	 *            Name of team
+	 * @param description
+	 *            Team description
+	 * @param rotation
+	 *            Shift rotation
+	 * @param rotationStart
+	 *            Start of rotation
+	 * @return {@link Team}
 	 */
-	public boolean isHoliday(LocalDate date) {
-		return this.nonWorkingPeriods.contains(date);
-	}
-
 	public Team createTeam(String name, String description, ShiftRotation rotation, LocalDate rotationStart) {
 		Team team = new Team(name, description, rotation, rotationStart);
 		this.addTeam(team);
 		return team;
 	}
 
+	/**
+	 * Create a shift
+	 * 
+	 * @param name
+	 *            Name of shift
+	 * @param description
+	 *            Description of shift
+	 * @param start
+	 *            Shift start time of day
+	 * @param duration
+	 *            Shift duration
+	 * @return {@link Shift}
+	 */
 	public Shift createShift(String name, String description, LocalTime start, Duration duration) {
 		Shift shift = new Shift(name, description, start, duration);
 		shifts.add(shift);
 		return shift;
 	}
 
-	public OffShift createOffShift(String name, String description, LocalTime start, Duration duration) {
-		return new OffShift(name, description, start, duration);
-	}
-
+	/**
+	 * Create a non-working period of time
+	 * 
+	 * @param name
+	 *            Name of period
+	 * @param description
+	 *            Description of period
+	 * @param startDateTime
+	 *            Starting date and time of day
+	 * @param duration
+	 *            Duration of period
+	 * @return {@link NonWorkingPeriod}
+	 */
 	public NonWorkingPeriod createNonWorkingPeriod(String name, String description, LocalDateTime startDateTime,
 			Duration duration) {
 		NonWorkingPeriod period = new NonWorkingPeriod(name, description, startDateTime, duration);
@@ -243,7 +222,7 @@ public class WorkSchedule extends Named {
 		return period;
 	}
 
-	public Duration getRotationDuration() throws Exception {
+	private Duration getRotationDuration() throws Exception {
 		Duration sum = null;
 		for (Team team : teams) {
 			if (sum == null) {
@@ -255,7 +234,7 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
-	public Duration getWorkingTime() {
+	private Duration getWorkingTime() {
 		Duration sum = null;
 		for (Team team : teams) {
 			if (sum == null) {
@@ -267,15 +246,27 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
+	/**
+	 * Get the list of shifts in this schedule
+	 * 
+	 * @return List of {@link Shift}
+	 */
 	public List<Shift> getShifts() {
 		return shifts;
 	}
 
-	public void setShifts(List<Shift> shifts) {
-		this.shifts = shifts;
-	}
-
-	public void printShiftInstances(LocalDate start, LocalDate end) throws Exception {
+	/**
+	 * Send shift instance output to a print stream
+	 * 
+	 * @param start
+	 *            Starting date
+	 * @param end
+	 *            Ending date
+	 * @param stream
+	 *            Output stream
+	 * @throws Exception
+	 */
+	public void printShiftInstances(LocalDate start, LocalDate end, PrintStream stream) throws Exception {
 		if (start.isAfter(end)) {
 			throw new Exception("Start of " + start + " must be earlier than end of " + end);
 		}
@@ -284,22 +275,85 @@ public class WorkSchedule extends Named {
 
 		LocalDate day = start;
 
-		System.out.println("Working shifts:");
+		stream.println("Working shifts:");
 		for (long i = 0; i < days; i++) {
-			System.out.println("[" + (i + 1) + "] Day: " + day);
+			stream.println("[" + (i + 1) + "] Day: " + day);
 
 			List<ShiftInstance> instances = getShiftInstancesForDay(day);
 
 			if (instances.size() == 0) {
-				System.out.println("   No working shifts");
+				stream.println("   No working shifts");
 			} else {
 				int count = 1;
 				for (ShiftInstance instance : instances) {
-					System.out.println("   (" + count + ")" + instance);
+					stream.println("   (" + count + ")" + instance);
 					count++;
 				}
 			}
 			day = day.plusDays(1);
 		}
+	}
+
+	/**
+	 * Build a string value for the work schedule
+	 * 
+	 * @return String
+	 */
+	@Override
+	public String toString() {
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
+		String sch = getMessage("schedule");
+		String rd = getMessage("rotation.duration");
+		String sw = getMessage("schedule.working");
+		String sf = getMessage("schedule.shifts");
+		String st = getMessage("schedule.teams");
+		String sc = getMessage("schedule.coverage");
+		String sn = getMessage("schedule.non");
+		String stn = getMessage("schedule.total");
+
+		String text = sch + ": " + super.toString();
+
+		try {
+			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getWorkingTime();
+
+			// shifts
+			text += "\n" + sf + ": ";
+			int count = 1;
+			for (Shift shift : getShifts()) {
+				text += "\n   (" + count + ") " + shift;
+				count++;
+			}
+
+			// teams
+			text += "\n" + st + ": ";
+			count = 1;
+			float teamPercent = 0.0f;
+			for (Team team : this.getTeams()) {
+				text += "\n   (" + count + ") " + team;
+				teamPercent += team.getPercentageWorked();
+				count++;
+			}
+			text += "\n" + sc + ": " + df.format(teamPercent) + "%";
+
+			// non-working periods
+			if (getNonWorkingPeriods().size() > 0) {
+				text += "\n" + sn + ":";
+
+				Duration totalMinutes = Duration.ofMinutes(0);
+
+				count = 1;
+				for (NonWorkingPeriod period : getNonWorkingPeriods()) {
+					totalMinutes = totalMinutes.plusMinutes(period.getDuration().toMinutes());
+					text += "\n   (" + count + ") " + period;
+					count++;
+				}
+				text += "\n" + stn + ": " + totalMinutes;
+			}
+
+		} catch (Exception e) {
+			text = e.getMessage();
+		}
+		return text;
 	}
 }

@@ -28,7 +28,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 /**
- * Class Break is a recurring non-working time
+ * Class Break is a recurring non-working time, e.g. lunch
  * 
  * @author Kent Randall
  *

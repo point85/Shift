@@ -47,7 +47,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team D = schedule.createTeam("D", "Night inverse shift", inverseNightRotation, LocalDate.of(2014, 1, 6));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28));
+		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28), System.out);
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team teamF = schedule.createTeam("Team F", "F team", rotation, referenceDate.minusDays(35));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon4 = schedule.createTeam("D", "Platoon4", rotation, LocalDate.of(2014, 1, 29));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30));
+		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30), System.out);
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon3 = schedule.createTeam("Fushia", "Platoon3", fushiaRotation, LocalDate.of(2017, 1, 4));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon3 = schedule.createTeam("Green", "Platoon3", rotation, LocalDate.of(2017, 1, 2));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team D = schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()), System.out);
 	}
 
 	public static void main(String[] args) throws Exception {

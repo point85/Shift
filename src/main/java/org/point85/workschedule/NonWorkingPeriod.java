@@ -27,7 +27,13 @@ package org.point85.workschedule;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-// non-working non-recurring periods, e.g. holidays
+/**
+ * Class NonWorkingPeriod represents non-working, non-recurring periods, e.g.
+ * holidays and scheduled outages
+ * 
+ * @author Kent Randall
+ *
+ */
 public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeriod> {
 	// starting date and time of day
 	private LocalDateTime startDateTime;
@@ -114,6 +120,10 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 		return text;
 	}
 
+	/**
+	 * Compare this non-working period to another such period
+	 * @return -1 if less than, 0 if equal and 1 if greater than
+	 */
 	@Override
 	public int compareTo(NonWorkingPeriod other) {
 		return getStartDateTime().compareTo(other.getStartDateTime());

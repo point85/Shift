@@ -44,7 +44,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team6 = schedule.createTeam("Team6", "Sixth team", rotation, referenceDate.minusDays(35));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 		
 		BigDecimal hrs = new BigDecimal(team1.getHoursWorkedPerWeek());
 		assertThat(hrs, closeTo(new BigDecimal("37.333", MATH_CONTEXT), DELTA3));
@@ -70,7 +70,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team3 = schedule.createTeam("Team3", "Third team", rotation, referenceDate.minusDays(6));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 		
 		assertTrue(team1.getHoursWorkedPerWeek() == 56.0f);
 		assertTrue(team2.getHoursWorkedPerWeek() == 56.0f);
@@ -102,7 +102,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(14));
 		
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 		
 		assertTrue(team1.getHoursWorkedPerWeek() == 40.0f);
 		assertTrue(team2.getHoursWorkedPerWeek() == 40.0f);
@@ -128,7 +128,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team = schedule.createTeam("Team", "One team", rotation, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(21));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -197,7 +197,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(1));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(21));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -251,7 +251,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	@Test
@@ -316,7 +316,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team21 = schedule.createTeam("Team 21", "7th night team", nightRotation, referenceDate.plusDays(42));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate.plusDays(49), referenceDate.plusDays(88));
+		schedule.printShiftInstances(referenceDate.plusDays(49), referenceDate.plusDays(88), System.out);
 
 	}
 
@@ -347,7 +347,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team 2", "Second team", team2Rotation, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(7));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(7), System.out);
 	}
 
 	@Test
@@ -381,7 +381,7 @@ public class TestSnapSchedule extends BaseTest {
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
 	}
 
 	public static void main(String[] args) {
