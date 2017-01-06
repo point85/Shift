@@ -85,6 +85,6 @@ abstract class Named {
 	 */
 	@Override
 	public String toString() {
-		return WorkSchedule.getMessage("name") + " (" + WorkSchedule.getMessage("description") + ")";
+		return getName() + " (" + getDescription() + ")";
 	}
 }

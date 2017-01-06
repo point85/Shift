@@ -23,8 +23,8 @@ SOFTWARE.
 */
 package org.point85.workschedule;
 
-import java.io.PrintStream;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -266,27 +266,28 @@ public class WorkSchedule extends Named {
 	 *            Output stream
 	 * @throws Exception
 	 */
-	public void printShiftInstances(LocalDate start, LocalDate end, PrintStream stream) throws Exception {
+	public void printShiftInstances(LocalDate start, LocalDate end) throws Exception {
 		if (start.isAfter(end)) {
-			throw new Exception("Start of " + start + " must be earlier than end of " + end);
+			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), start, end);
+			throw new Exception(msg);
 		}
 
 		long days = end.toEpochDay() - start.toEpochDay();
 
 		LocalDate day = start;
 
-		stream.println("Working shifts:");
+		System.out.println(getMessage("shifts.working"));
 		for (long i = 0; i < days; i++) {
-			stream.println("[" + (i + 1) + "] Day: " + day);
+			System.out.println("[" + (i + 1) + "] " + getMessage("shifts.day") + ": " + day);
 
 			List<ShiftInstance> instances = getShiftInstancesForDay(day);
 
 			if (instances.size() == 0) {
-				stream.println("   No working shifts");
+				System.out.println("   " + getMessage("shifts.non.working"));
 			} else {
 				int count = 1;
 				for (ShiftInstance instance : instances) {
-					stream.println("   (" + count + ")" + instance);
+					System.out.println("   (" + count + ")" + instance);
 					count++;
 				}
 			}

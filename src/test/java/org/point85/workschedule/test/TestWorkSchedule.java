@@ -1,5 +1,7 @@
 package org.point85.workschedule.test;
 
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,7 +49,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team D = schedule.createTeam("D", "Night inverse shift", inverseNightRotation, LocalDate.of(2014, 1, 6));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28), System.out);
+		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28));
 	}
 
 	@Test
@@ -72,7 +74,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team teamF = schedule.createTeam("Team F", "F team", rotation, referenceDate.minusDays(35));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()), System.out);
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	@Test
@@ -93,7 +95,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon4 = schedule.createTeam("D", "Platoon4", rotation, LocalDate.of(2014, 1, 29));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30), System.out);
+		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30));
 	}
 
 	@Test
@@ -121,7 +123,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon3 = schedule.createTeam("Fushia", "Platoon3", fushiaRotation, LocalDate.of(2017, 1, 4));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -136,12 +138,20 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation rotation = new ShiftRotation();
 		rotation.on(2, shift).off(2, shift).on(2, shift).off(2, shift).on(2, shift).off(8, shift);
 
-		Team platoon1 = schedule.createTeam("Red", "Platoon1", rotation, LocalDate.of(2017, 1, 8));
-		Team platoon2 = schedule.createTeam("Black", "Platoon2", rotation, LocalDate.of(2017, 2, 1));
-		Team platoon3 = schedule.createTeam("Green", "Platoon3", rotation, LocalDate.of(2017, 1, 2));
+		LocalDate platoon1Start = LocalDate.of(2017, 1, 8);
+		LocalDate platoon2Start = LocalDate.of(2017, 2, 1);
+		LocalDate platoon3Start = LocalDate.of(2017, 1, 2);
+
+		Team platoon1 = schedule.createTeam("Red", "Platoon1", rotation, platoon1Start);
+		Team platoon2 = schedule.createTeam("Black", "Platoon2", rotation, platoon2Start);
+		Team platoon3 = schedule.createTeam("Green", "Platoon3", rotation, platoon3Start);
+
+		assertTrue(platoon1.getRotationStart().equals(platoon1Start));
+		assertTrue(platoon2.getRotationStart().equals(platoon2Start));
+		assertTrue(platoon3.getRotationStart().equals(platoon3Start));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -170,7 +180,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team D = schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28), System.out);
+		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
 	}
 
 	@Test
@@ -216,18 +226,18 @@ public class TestWorkSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, referenceDate);
 
 		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()), System.out);
+		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()));
 	}
 
 	public static void main(String[] args) throws Exception {
 		TestWorkSchedule test = new TestWorkSchedule();
-		// test.testFirefighterShifts1();
+		test.testFirefighterShifts1();
 		// test.testFirefighterShifts2();
 		// test.testFirefighterShifts3();
 		// test.testManufacturingShifts();
 		// test.testNursingICUShifts();
 		// test.testPostalServiceShifts();
-		test.testGenericShift();
+		// test.testGenericShift();
 
 	}
 }

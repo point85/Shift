@@ -109,8 +109,8 @@ abstract class TimePeriod extends Named {
 	@Override
 	public String toString() {
 		String text = null;
-		String start = WorkSchedule.getMessage("start");
-		String end = WorkSchedule.getMessage("end");
+		String start = WorkSchedule.getMessage("period.start");
+		String end = WorkSchedule.getMessage("period.end");
 
 		try {
 			text = super.toString() + ", " + start + ": " + getStart() + " (" + getDuration() + ")" + ", " + end
