@@ -86,14 +86,14 @@ public class Shift extends TimePeriod {
 	 */
 	public Duration calculateWorkingTime() {
 		// add up breaks
-		Duration breakDurations = Duration.ofSeconds(0);
+		Duration breaksDuration = Duration.ofSeconds(0);
 
 		for (Break breakDefinition : this.breaks) {
-			breakDurations.plus(breakDefinition.getDuration());
+			breaksDuration = breaksDuration.plus(breakDefinition.getDuration());
 		}
 
 		// subtract from shift duration
-		return getDuration().minus(breakDurations);
+		return getDuration().minus(breaksDuration);
 	}
 
 	/**

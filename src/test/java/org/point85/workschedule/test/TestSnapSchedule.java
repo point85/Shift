@@ -43,6 +43,14 @@ public class TestSnapSchedule extends BaseTest {
 		Team team5 = schedule.createTeam("Team5", "Fifth team", rotation, referenceDate.minusDays(14));
 		Team team6 = schedule.createTeam("Team6", "Sixth team", rotation, referenceDate.minusDays(35));
 		
+		assertTrue(team1.getRotationDuration().toDays() == 42);
+		assertTrue(team2.getRotationDuration().toDays() == 42);
+		assertTrue(team3.getRotationDuration().toDays() == 42);
+		assertTrue(team4.getRotationDuration().toDays() == 42);
+		assertTrue(team5.getRotationDuration().toDays() == 42);
+		assertTrue(team6.getRotationDuration().toDays() == 42);
+		
+		
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 		
@@ -126,6 +134,8 @@ public class TestSnapSchedule extends BaseTest {
 
 		// 1 team, 1 shift
 		Team team = schedule.createTeam("Team", "One team", rotation, referenceDate);
+		
+		assertTrue(team.getRotationDuration().toDays() == 7);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -164,6 +174,11 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(7));
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(14));
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(21));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 28);
+		assertTrue(team2.getRotationDuration().toDays() == 28);
+		assertTrue(team3.getRotationDuration().toDays() == 28);
+		assertTrue(team4.getRotationDuration().toDays() == 28);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -195,6 +210,11 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(3));
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(1));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 4);
+		assertTrue(team2.getRotationDuration().toDays() == 4);
+		assertTrue(team3.getRotationDuration().toDays() == 4);
+		assertTrue(team4.getRotationDuration().toDays() == 4);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -224,6 +244,11 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(7));
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(14));
 		Team team4 = schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(21));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 28);
+		assertTrue(team2.getRotationDuration().toDays() == 28);
+		assertTrue(team3.getRotationDuration().toDays() == 28);
+		assertTrue(team4.getRotationDuration().toDays() == 28);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -249,6 +274,10 @@ public class TestSnapSchedule extends BaseTest {
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 3);
+		assertTrue(team2.getRotationDuration().toDays() == 3);
+		assertTrue(team3.getRotationDuration().toDays() == 3);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -314,6 +343,31 @@ public class TestSnapSchedule extends BaseTest {
 		Team team19 = schedule.createTeam("Team 19", "5th night team", nightRotation, referenceDate.plusDays(28));
 		Team team20 = schedule.createTeam("Team 20", "6th night team", nightRotation, referenceDate.plusDays(35));
 		Team team21 = schedule.createTeam("Team 21", "7th night team", nightRotation, referenceDate.plusDays(42));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 49);
+		assertTrue(team2.getRotationDuration().toDays() == 49);
+		assertTrue(team3.getRotationDuration().toDays() == 49);
+		assertTrue(team4.getRotationDuration().toDays() == 49);
+		assertTrue(team5.getRotationDuration().toDays() == 49);
+		assertTrue(team6.getRotationDuration().toDays() == 49);
+		assertTrue(team7.getRotationDuration().toDays() == 49);
+		
+		assertTrue(team8.getRotationDuration().toDays() == 49);
+		assertTrue(team9.getRotationDuration().toDays() == 49);
+		assertTrue(team10.getRotationDuration().toDays() == 49);
+		assertTrue(team11.getRotationDuration().toDays() == 49);
+		assertTrue(team12.getRotationDuration().toDays() == 49);
+		assertTrue(team13.getRotationDuration().toDays() == 49);
+		assertTrue(team14.getRotationDuration().toDays() == 49);
+		
+		assertTrue(team15.getRotationDuration().toDays() == 49);
+		assertTrue(team16.getRotationDuration().toDays() == 49);
+		assertTrue(team17.getRotationDuration().toDays() == 49);
+		assertTrue(team18.getRotationDuration().toDays() == 49);
+		assertTrue(team19.getRotationDuration().toDays() == 49);
+		assertTrue(team20.getRotationDuration().toDays() == 49);
+		assertTrue(team21.getRotationDuration().toDays() == 49);
+		
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate.plusDays(49), referenceDate.plusDays(88));
@@ -345,6 +399,9 @@ public class TestSnapSchedule extends BaseTest {
 
 		Team team1 = schedule.createTeam("Team 1", "First team", team1Rotation, referenceDate);
 		Team team2 = schedule.createTeam("Team 2", "Second team", team2Rotation, referenceDate);
+		
+		assertTrue(team1.getRotationDuration().toDays() == 1);
+		assertTrue(team2.getRotationDuration().toDays() == 1);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(7));
@@ -379,6 +436,11 @@ public class TestSnapSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(28));
 		Team team3 = schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(7));
 		Team team4 = schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
+		
+		assertTrue(team1.getRotationDuration().toDays() == 56);
+		assertTrue(team2.getRotationDuration().toDays() == 56);
+		assertTrue(team3.getRotationDuration().toDays() == 56);
+		assertTrue(team4.getRotationDuration().toDays() == 56);
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));

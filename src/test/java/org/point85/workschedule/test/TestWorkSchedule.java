@@ -1,7 +1,7 @@
 package org.point85.workschedule.test;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,10 +43,20 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation inverseNightRotation = new ShiftRotation();
 		inverseNightRotation.off(4, night).on(3, night).off(3, night).on(4, night);
 
-		Team A = schedule.createTeam("A", "Day shift", dayRotation, LocalDate.of(2014, 1, 6));
-		Team B = schedule.createTeam("B", "Day inverse shift", inverseDayRotation, LocalDate.of(2014, 1, 6));
-		Team C = schedule.createTeam("C", "Night shift", nightRotation, LocalDate.of(2014, 1, 6));
-		Team D = schedule.createTeam("D", "Night inverse shift", inverseNightRotation, LocalDate.of(2014, 1, 6));
+		LocalDate startA = LocalDate.of(2014, 1, 6);
+		LocalDate startB = LocalDate.of(2014, 1, 6);
+		LocalDate startC = LocalDate.of(2014, 1, 6);
+		LocalDate startD = LocalDate.of(2014, 1, 6);
+
+		Team A = schedule.createTeam("A", "Day shift", dayRotation, startA);
+		Team B = schedule.createTeam("B", "Day inverse shift", inverseDayRotation, startB);
+		Team C = schedule.createTeam("C", "Night shift", nightRotation, startC);
+		Team D = schedule.createTeam("D", "Night inverse shift", inverseNightRotation, startD);
+
+		assertTrue(A.getRotationStart().equals(startA));
+		assertTrue(B.getRotationStart().equals(startB));
+		assertTrue(C.getRotationStart().equals(startC));
+		assertTrue(D.getRotationStart().equals(startD));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(LocalDate.of(2014, 2, 1), LocalDate.of(2014, 2, 28));
@@ -63,15 +73,29 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation rotation = new ShiftRotation();
 		rotation.on(3, day).off(7, day).on(1, day).off(7, day).on(1, day).off(7, day).on(1, day).off(7, day).on(1, day)
 				.off(7, day);
+		
+		LocalDate referenceDate = LocalDate.of(2017, 1, 27);
+		LocalDate startA = referenceDate;
+		LocalDate startB = referenceDate.minusDays(7);
+		LocalDate startC = referenceDate.minusDays(14);
+		LocalDate startD = referenceDate.minusDays(21);
+		LocalDate startE = referenceDate.minusDays(28);
+		LocalDate startF = referenceDate.minusDays(35);
 
 		// day teams
-		LocalDate referenceDate = LocalDate.of(2017, 1, 27);
-		Team teamA = schedule.createTeam("Team A", "A team", rotation, referenceDate);
-		Team teamB = schedule.createTeam("Team B", "B team", rotation, referenceDate.minusDays(7));
-		Team teamC = schedule.createTeam("Team C", "C team", rotation, referenceDate.minusDays(14));
-		Team teamD = schedule.createTeam("Team D", "D team", rotation, referenceDate.minusDays(21));
-		Team teamE = schedule.createTeam("Team E", "E team", rotation, referenceDate.minusDays(28));
-		Team teamF = schedule.createTeam("Team F", "F team", rotation, referenceDate.minusDays(35));
+		Team teamA = schedule.createTeam("Team A", "A team", rotation, startA);
+		Team teamB = schedule.createTeam("Team B", "B team", rotation, startB);
+		Team teamC = schedule.createTeam("Team C", "C team", rotation, startC);
+		Team teamD = schedule.createTeam("Team D", "D team", rotation, startD);
+		Team teamE = schedule.createTeam("Team E", "E team", rotation, startE);
+		Team teamF = schedule.createTeam("Team F", "F team", rotation, startF);
+		
+		assertTrue(teamA.getRotationStart().equals(startA));
+		assertTrue(teamB.getRotationStart().equals(startB));
+		assertTrue(teamC.getRotationStart().equals(startC));
+		assertTrue(teamD.getRotationStart().equals(startD));
+		assertTrue(teamE.getRotationStart().equals(startE));
+		assertTrue(teamF.getRotationStart().equals(startF));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
@@ -89,10 +113,20 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation rotation = new ShiftRotation();
 		rotation.on(1, shift).off(4, shift).on(1, shift).off(2, shift);
 
-		Team platoon1 = schedule.createTeam("A", "Platoon1", rotation, LocalDate.of(2014, 2, 2));
-		Team platoon2 = schedule.createTeam("B", "Platoon2", rotation, LocalDate.of(2014, 2, 4));
-		Team platoon3 = schedule.createTeam("C", "Platoon3", rotation, LocalDate.of(2014, 1, 31));
-		Team platoon4 = schedule.createTeam("D", "Platoon4", rotation, LocalDate.of(2014, 1, 29));
+		LocalDate start1 = LocalDate.of(2014, 2, 2);
+		LocalDate start2 = LocalDate.of(2014, 2, 4);
+		LocalDate start3 = LocalDate.of(2014, 1, 31);
+		LocalDate start4 = LocalDate.of(2014, 1, 29);
+		
+		Team platoon1 = schedule.createTeam("A", "Platoon1", rotation, start1);
+		Team platoon2 = schedule.createTeam("B", "Platoon2", rotation, start2);
+		Team platoon3 = schedule.createTeam("C", "Platoon3", rotation, start3);
+		Team platoon4 = schedule.createTeam("D", "Platoon4", rotation, start4);
+		
+		assertTrue(platoon1.getRotationStart().equals(start1));
+		assertTrue(platoon2.getRotationStart().equals(start2));
+		assertTrue(platoon3.getRotationStart().equals(start3));
+		assertTrue(platoon4.getRotationStart().equals(start4));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 7, 30));
@@ -118,9 +152,17 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation fushiaRotation = new ShiftRotation();
 		fushiaRotation.on(1, shift).off(5, shift);
 
-		Team platoon1 = schedule.createTeam("Red", "Platoon1", redRotation, LocalDate.of(2017, 1, 6));
-		Team platoon2 = schedule.createTeam("Black", "Platoon2", blackRotation, LocalDate.of(2017, 1, 3));
-		Team platoon3 = schedule.createTeam("Fushia", "Platoon3", fushiaRotation, LocalDate.of(2017, 1, 4));
+		LocalDate start1 = LocalDate.of(2017, 1, 6);
+		LocalDate start2 = LocalDate.of(2017, 1, 3);
+		LocalDate start3 = LocalDate.of(2017, 1, 4);
+		
+		Team platoon1 = schedule.createTeam("Red", "Platoon1", redRotation, start1);
+		Team platoon2 = schedule.createTeam("Black", "Platoon2", blackRotation, start2);
+		Team platoon3 = schedule.createTeam("Fushia", "Platoon3", fushiaRotation, start3);
+		
+		assertTrue(platoon1.getRotationStart().equals(start1));
+		assertTrue(platoon2.getRotationStart().equals(start2));
+		assertTrue(platoon3.getRotationStart().equals(start3));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
@@ -142,9 +184,9 @@ public class TestWorkSchedule extends BaseTest {
 		LocalDate platoon2Start = LocalDate.of(2017, 2, 1);
 		LocalDate platoon3Start = LocalDate.of(2017, 1, 2);
 
-		Team platoon1 = schedule.createTeam("Red", "Platoon1", rotation, platoon1Start);
-		Team platoon2 = schedule.createTeam("Black", "Platoon2", rotation, platoon2Start);
-		Team platoon3 = schedule.createTeam("Green", "Platoon3", rotation, platoon3Start);
+		Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, platoon1Start);
+		Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, platoon2Start);
+		Team platoon3 = schedule.createTeam("Green", "C Shift", rotation, platoon3Start);
 
 		assertTrue(platoon1.getRotationStart().equals(platoon1Start));
 		assertTrue(platoon2.getRotationStart().equals(platoon2Start));
@@ -173,11 +215,21 @@ public class TestWorkSchedule extends BaseTest {
 		// 7 nights ON, 7 OFF
 		ShiftRotation nightRotation = new ShiftRotation();
 		nightRotation.on(7, night).off(7, night);
+		
+		LocalDate startA = LocalDate.of(2014, 1, 2);
+		LocalDate startB = LocalDate.of(2014, 1, 2);
+		LocalDate startC = LocalDate.of(2014, 1, 9);
+		LocalDate startD = LocalDate.of(2014, 1, 9);
 
-		Team A = schedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
-		Team B = schedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
-		Team C = schedule.createTeam("C", "C day shift", dayRotation, LocalDate.of(2014, 1, 9));
-		Team D = schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
+		Team A = schedule.createTeam("A", "A day shift", dayRotation, startA);
+		Team B = schedule.createTeam("B", "B night shift", nightRotation, startB);
+		Team C = schedule.createTeam("C", "C day shift", dayRotation, startC);
+		Team D = schedule.createTeam("D", "D night shift", nightRotation, startD);
+		
+		assertTrue(A.getRotationStart().equals(startA));
+		assertTrue(B.getRotationStart().equals(startB));
+		assertTrue(C.getRotationStart().equals(startC));
+		assertTrue(D.getRotationStart().equals(startD));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(LocalDate.of(2017, 2, 1), LocalDate.of(2017, 2, 28));
@@ -224,19 +276,22 @@ public class TestWorkSchedule extends BaseTest {
 		LocalDate referenceDate = LocalDate.of(2016, 1, 1);
 		Team team1 = schedule.createTeam("Team1", "Team #1", rotation1, referenceDate);
 		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, referenceDate);
+		
+		assertTrue(team1.getRotationStart().equals(referenceDate));
+		assertTrue(team2.getRotationStart().equals(referenceDate));
 
 		System.out.println(schedule.toString());
 		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation1.getDuration().toDays()));
 	}
 
 	public static void main(String[] args) throws Exception {
-		TestWorkSchedule test = new TestWorkSchedule();
-		test.testFirefighterShifts1();
+		//TestWorkSchedule test = new TestWorkSchedule();
+		// test.testFirefighterShifts1();
 		// test.testFirefighterShifts2();
 		// test.testFirefighterShifts3();
 		// test.testManufacturingShifts();
-		// test.testNursingICUShifts();
-		// test.testPostalServiceShifts();
+		//test.testNursingICUShifts();
+		 //test.testPostalServiceShifts();
 		// test.testGenericShift();
 
 	}

@@ -140,10 +140,6 @@ public class WorkSchedule extends Named {
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
-		if (this.nonWorkingPeriods.contains(day)) {
-			return workingShifts;
-		}
-
 		// for each team see if there is a working shift
 		for (Team team : teams) {
 			ShiftRotation shiftRotation = team.getShiftRotation();
@@ -272,7 +268,7 @@ public class WorkSchedule extends Named {
 			throw new Exception(msg);
 		}
 
-		long days = end.toEpochDay() - start.toEpochDay();
+		long days = end.toEpochDay() - start.toEpochDay() + 1;
 
 		LocalDate day = start;
 
