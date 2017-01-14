@@ -24,6 +24,7 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ import java.util.List;
  *
  */
 public class Shift extends TimePeriod {
+	
+	private static final int SEC_PER_DAY = 24*3600;
 
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
@@ -121,21 +124,38 @@ public class Shift extends TimePeriod {
 	}
 
 	/**
-	 * Calculate working time from the beginning of the shift to the specified
-	 * time
+	 * Calculate working time from the start of the shift to the specified time
 	 * 
-	 * @param time
+	 * @param to
 	 *            Ending time
 	 * @return Duration
 	 * @throws Exception
 	 */
-	public Duration getWorkingTimeTo(LocalTime time) throws Exception {
+	public Duration getWorkingTimeBetween(LocalTime from, LocalTime to) throws Exception {
 		Duration duration = null;
 
-		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
-			duration = Duration.ZERO;
+		LocalTime start = getStart();
+		LocalTime end = getEnd();
+
+		if (start.isBefore(end)) {
+			// shift did not cross midnight
+			duration = Duration.ofSeconds(to.toSecondOfDay() - from.toSecondOfDay());
 		} else {
-			duration = Duration.ofSeconds(time.toSecondOfDay() - getStart().toSecondOfDay());
+			// shift crossed midnight
+			if (to.toSecondOfDay() >= from.toSecondOfDay()) {
+				// after midnight
+				duration = Duration.ofSeconds(to.toSecondOfDay() - from.toSecondOfDay());
+			} else {
+				// before midnight				 
+				Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(from.toSecondOfDay()));
+				Duration fromMidnight = Duration.ofSeconds(to.toSecondOfDay());
+				duration = toMidnight.plus(fromMidnight);
+			}
+		}
+
+		if (duration.isNegative() || duration.getSeconds() > getDuration().getSeconds()) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("period.not.in.shift"), from, to, start, end);
+			throw new Exception(msg);
 		}
 
 		return duration;
@@ -150,17 +170,11 @@ public class Shift extends TimePeriod {
 	 * @return Duration
 	 * @throws Exception
 	 */
-	public Duration getWorkingTimeFrom(LocalTime time) throws Exception {
-		Duration duration = null;
-
-		if (time.isBefore(getStart()) || time.isAfter(getEnd())) {
-			duration = Duration.ZERO;
-		} else {
-			duration = Duration.ofSeconds(getEnd().toSecondOfDay() - time.toSecondOfDay());
-		}
-
-		return duration;
-	}
+	/*
+	 * public Duration getWorkingTimeFromToEnd(LocalTime time) throws Exception
+	 * { Duration to = getWorkingTimeBetween(time); return
+	 * getDuration().minus(to); }
+	 */
 
 	Break getOffShift() {
 		if (offShift == null) {

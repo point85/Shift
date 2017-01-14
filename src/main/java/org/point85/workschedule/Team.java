@@ -100,9 +100,17 @@ public class Team extends Named {
 	 * 
 	 * @return
 	 */
+	/*
 	public float getHoursWorkedPerWeek() {
 		float days = (float) getShiftRotation().getDuration().toDays();
 		return ((float) getShiftRotation().getWorkingTime().getSeconds() / 3600.0f) * (7.0f / days);
+	}
+	*/
+
+	public Duration getHoursWorkedPerWeek() {
+		float days = (float) getShiftRotation().getDuration().toDays();
+		float secPerWeek = (float) getShiftRotation().getWorkingTime().getSeconds() * (7.0f / days);
+		return Duration.ofSeconds((long) secPerWeek);
 	}
 
 	/**
@@ -110,7 +118,7 @@ public class Team extends Named {
 	 * 
 	 * @param date
 	 *            LocalDate
-	 * @return day number in the rotation, starting at 1
+	 * @return day number in the rotation, starting at 0
 	 * @throws Exception
 	 */
 	public int getDayInRotation(LocalDate date) throws Exception {
