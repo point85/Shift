@@ -16,9 +16,6 @@ import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
 public class TestSnapSchedule extends BaseTest {
-
-	// reference date for start of shift rotations
-	private LocalDate referenceDate = LocalDate.of(2016, 10, 31);
 	
 	//@Test
 	public void testLowNight() throws Exception {

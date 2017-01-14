@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -156,6 +157,22 @@ public class WorkSchedule extends Named {
 		}
 
 		Collections.sort(workingShifts);
+
+		return workingShifts;
+	}
+	
+	public List<ShiftInstance> getShiftInstancesForTime(LocalDateTime dateTime) throws Exception {
+		List<ShiftInstance> workingShifts = new ArrayList<>();
+		
+		// day
+		List<ShiftInstance> candidateShifts = getShiftInstancesForDay(dateTime.toLocalDate());
+		
+		// check time now
+		for (ShiftInstance instance : candidateShifts) {
+			if (instance.getShift().isInShift(dateTime.toLocalTime())) {
+				workingShifts.add(instance);
+			}
+		}
 
 		return workingShifts;
 	}

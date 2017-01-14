@@ -26,6 +26,7 @@ package org.point85.workschedule;
 
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +38,8 @@ import java.util.List;
  *
  */
 public class Shift extends TimePeriod {
-	
-	private static final int SEC_PER_DAY = 24*3600;
+
+	private static final int SEC_PER_DAY = 24 * 3600;
 
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
@@ -136,19 +137,22 @@ public class Shift extends TimePeriod {
 
 		LocalTime start = getStart();
 		LocalTime end = getEnd();
+		
+		int toSecond = to.toSecondOfDay();
+		int fromSecond = from.toSecondOfDay();
 
 		if (start.isBefore(end)) {
 			// shift did not cross midnight
-			duration = Duration.ofSeconds(to.toSecondOfDay() - from.toSecondOfDay());
+			duration = Duration.ofSeconds(toSecond - fromSecond);
 		} else {
 			// shift crossed midnight
-			if (to.toSecondOfDay() >= from.toSecondOfDay()) {
+			if (toSecond >= fromSecond) {
 				// after midnight
-				duration = Duration.ofSeconds(to.toSecondOfDay() - from.toSecondOfDay());
+				duration = Duration.ofSeconds(toSecond - fromSecond);
 			} else {
-				// before midnight				 
-				Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(from.toSecondOfDay()));
-				Duration fromMidnight = Duration.ofSeconds(to.toSecondOfDay());
+				// before midnight
+				Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(fromSecond));
+				Duration fromMidnight = Duration.ofSeconds(toSecond);
 				duration = toMidnight.plus(fromMidnight);
 			}
 		}
@@ -159,6 +163,37 @@ public class Shift extends TimePeriod {
 		}
 
 		return duration;
+	}
+
+	public boolean isInShift(LocalTime time) throws Exception {
+		boolean answer = false;
+
+		LocalTime start = getStart();
+		LocalTime end = getEnd();
+
+		int onStart = time.compareTo(start);
+		int onEnd = time.compareTo(end);
+		
+		int timeSecond = time.toSecondOfDay();
+
+		if (start.isBefore(end)) {
+			// shift did not cross midnight
+			if (onStart >= 0 && onEnd <= 0) {
+				answer = true;
+			}
+		} else {
+			// shift crossed midnight, check before and after midnight
+			if (timeSecond <= end.toSecondOfDay()) {
+				// after midnight
+				answer = true;
+			} else {
+				// before midnight
+				if (timeSecond >= start.toSecondOfDay()) {
+					answer = true;
+				}
+			}
+		}
+		return answer;
 	}
 
 	/**
