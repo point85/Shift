@@ -51,6 +51,10 @@ public class ShiftRotation {
 	public List<TimePeriod> getPeriods() {
 		return periods;
 	}
+	
+	public int getDayCount() {
+		return getPeriods().size();
+	}
 
 	/**
 	 * Define a working shift period of time

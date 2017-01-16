@@ -137,6 +137,11 @@ public class Shift extends TimePeriod {
 		
 		int toSecond = to.toSecondOfDay();
 		int fromSecond = from.toSecondOfDay();
+		
+		// midnight is a special case due to the discontinuity
+		if (toSecond == 0 && fromSecond == 0) {
+			return Duration.ofHours(24);
+		}
 
 		if (start.isBefore(end)) {
 			// shift did not cross midnight

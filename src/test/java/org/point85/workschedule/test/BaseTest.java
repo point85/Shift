@@ -20,6 +20,13 @@ import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
+/**
+ * Base class for testing shift plans from
+ * //community.bmscentral.com/learnss/Tutorials/SchedulePlans/
+ * 
+ * @author Kent
+ *
+ */
 public abstract class BaseTest {
 	public static final MathContext MATH_CONTEXT = MathContext.DECIMAL64;
 
@@ -32,7 +39,7 @@ public abstract class BaseTest {
 
 	@BeforeClass
 	public static void setFlags() {
-		testToString = false;
+		testToString = true;
 	}
 
 	private void testShifts(WorkSchedule ws) throws Exception {
@@ -55,36 +62,52 @@ public abstract class BaseTest {
 			assertTrue(worked.equals(total));
 
 			worked = shift.getWorkingTimeBetween(start, start);
-			assertTrue(worked.toMinutes() == 0);
+
+			// 24 hour shift on midnight is a special case
+			if (start.equals(LocalTime.MIDNIGHT) && end.equals(LocalTime.MIDNIGHT)) {
+				assertTrue(worked.toHours() == 24);
+			} else {
+				assertTrue(worked.toMinutes() == 0);
+			}
 
 			worked = shift.getWorkingTimeBetween(end, end);
-			assertTrue(worked.toMinutes() == 0);
+
+			if (start.equals(LocalTime.MIDNIGHT) && end.equals(LocalTime.MIDNIGHT)) {
+				assertTrue(worked.toHours() == 24);
+			} else {
+				assertTrue(worked.toMinutes() == 0);
+			}
 
 			try {
 				LocalTime t = start.minusMinutes(1);
 				worked = shift.getWorkingTimeBetween(t, end);
-				fail("Bad time");
+
+				if (!start.equals(LocalTime.MIDNIGHT) && !end.equals(LocalTime.MIDNIGHT)) {
+					fail("Bad working time");
+				}
 			} catch (Exception e) {
 			}
 
 			try {
 				LocalTime t = end.plusMinutes(1);
 				worked = shift.getWorkingTimeBetween(start, t);
-				fail("Bad time");
+				if (!start.equals(LocalTime.MIDNIGHT) && !end.equals(LocalTime.MIDNIGHT)) {
+					fail("Bad working time");
+				}
 			} catch (Exception e) {
 			}
 		}
 	}
 
-	private void testTeams(WorkSchedule ws, Duration avgHours, Duration rotationDays) throws Exception {
+	private void testTeams(WorkSchedule ws, Duration hoursPerRotation, Duration rotationDays) throws Exception {
 		assertTrue(ws.getTeams().size() > 0);
 
 		for (Team team : ws.getTeams()) {
 			assertTrue(team.getName().length() > 0);
 			assertTrue(team.getDescription().length() > 0);
 			assertTrue(team.getDayInRotation(team.getRotationStart()) == 0);
-			Duration hours = team.getHoursWorkedPerWeek();
-			assertTrue(hours.equals(avgHours));
+			Duration hours = team.getShiftRotation().getWorkingTime();
+			assertTrue(hours.equals(hoursPerRotation));
 			assertTrue(team.getPercentageWorked() > 0.0f);
 			assertTrue(team.getRotationDuration().equals(rotationDays));
 			assertTrue(team.getRotationStart() != null);
@@ -98,14 +121,14 @@ public abstract class BaseTest {
 		assertTrue(ws.getNonWorkingPeriods().size() >= 0);
 	}
 
-	private void testShiftInstances(WorkSchedule ws) throws Exception {
+	private void testShiftInstances(WorkSchedule ws, LocalDate instanceReference) throws Exception {
 		ShiftRotation rotation = ws.getTeams().get(0).getShiftRotation();
 
 		// shift instances
-		LocalDate startDate = referenceDate;
-		LocalDate endDate = referenceDate.plusDays(rotation.getDuration().toDays());
+		LocalDate startDate = instanceReference;
+		LocalDate endDate = instanceReference.plusDays(rotation.getDuration().toDays());
 
-		long days = endDate.toEpochDay() - referenceDate.toEpochDay() + 1;
+		long days = endDate.toEpochDay() - instanceReference.toEpochDay() + 1;
 		LocalDate day = startDate;
 
 		for (long i = 0; i < days; i++) {
@@ -122,11 +145,18 @@ public abstract class BaseTest {
 
 				assertTrue(shift.isInShift(startTime));
 				assertTrue(shift.isInShift(startTime.plusSeconds(1)));
-				assertFalse(shift.isInShift(startTime.minusSeconds(1)));
+
+				// midnight is special case
+				if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+					assertFalse(shift.isInShift(startTime.minusSeconds(1)));
+				}
 
 				assertTrue(shift.isInShift(endTime));
 				assertTrue(shift.isInShift(endTime.minusSeconds(1)));
-				assertFalse(shift.isInShift(endTime.plusSeconds(1)));
+
+				if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+					assertFalse(shift.isInShift(endTime.plusSeconds(1)));
+				}
 
 				LocalDateTime ldt = LocalDateTime.of(day, startTime);
 				assertTrue(ws.getShiftInstancesForTime(ldt).size() > 0);
@@ -137,7 +167,9 @@ public abstract class BaseTest {
 				ldt = LocalDateTime.of(day, startTime.minusSeconds(1));
 
 				for (ShiftInstance si : ws.getShiftInstancesForTime(ldt)) {
-					assertFalse(shift.getName().equals(si.getShift().getName()));
+					if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+						assertFalse(shift.getName().equals(si.getShift().getName()));
+					}
 				}
 
 				ldt = LocalDateTime.of(day, endTime);
@@ -149,7 +181,9 @@ public abstract class BaseTest {
 				ldt = LocalDateTime.of(day, endTime.plusSeconds(1));
 
 				for (ShiftInstance si : ws.getShiftInstancesForTime(ldt)) {
-					assertFalse(shift.getName().equals(si.getShift().getName()));
+					if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+						assertFalse(shift.getName().equals(si.getShift().getName()));
+					}
 				}
 			}
 
@@ -158,7 +192,13 @@ public abstract class BaseTest {
 
 	}
 
-	protected void runBaseTest(WorkSchedule ws, Duration avgHours, Duration rotationDays) throws Exception {
+	protected void runBaseTest(WorkSchedule ws, Duration hoursPerRotation, Duration rotationDays, LocalDate instanceReference) throws Exception {
+
+		// toString
+		if (testToString) {
+			System.out.println(ws.toString());
+			ws.printShiftInstances(instanceReference, instanceReference.plusDays(rotationDays.toDays()));
+		}
 
 		assertTrue(ws.getName().length() > 0);
 		assertTrue(ws.getDescription().length() > 0);
@@ -168,16 +208,10 @@ public abstract class BaseTest {
 		testShifts(ws);
 
 		// teams
-		testTeams(ws, avgHours, rotationDays);
+		testTeams(ws, hoursPerRotation, rotationDays);
 
 		// shift instances
-		testShiftInstances(ws);
-
-		// toString
-		if (testToString) {
-			System.out.println(ws.toString());
-			ws.printShiftInstances(referenceDate, referenceDate.plusDays(rotationDays.toDays()));
-		}
+		testShiftInstances(ws, instanceReference);
 
 		// team deletions
 		Team[] teams = new Team[ws.getTeams().size()];

@@ -296,6 +296,7 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
+
 	/**
 	 * Get the list of shifts in this schedule
 	 * 

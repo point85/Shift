@@ -28,7 +28,6 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 
 /**
  * Class Team is a group of individuals who rotate through a shift schedule
@@ -101,11 +100,11 @@ public class Team extends Named {
 	 * @return
 	 */
 	/*
-	public float getHoursWorkedPerWeek() {
-		float days = (float) getShiftRotation().getDuration().toDays();
-		return ((float) getShiftRotation().getWorkingTime().getSeconds() / 3600.0f) * (7.0f / days);
-	}
-	*/
+	 * public float getHoursWorkedPerWeek() { float days = (float)
+	 * getShiftRotation().getDuration().toDays(); return ((float)
+	 * getShiftRotation().getWorkingTime().getSeconds() / 3600.0f) * (7.0f /
+	 * days); }
+	 */
 
 	public Duration getHoursWorkedPerWeek() {
 		float days = (float) getShiftRotation().getDuration().toDays();
@@ -124,8 +123,8 @@ public class Team extends Named {
 	public int getDayInRotation(LocalDate date) throws Exception {
 
 		// calculate total number of days from start of rotation
-		long dayFrom = rotationStart.getLong(ChronoField.EPOCH_DAY);
-		long dayTo = date.getLong(ChronoField.EPOCH_DAY);
+		long dayFrom = rotationStart.toEpochDay();
+		long dayTo = date.toEpochDay();
 		long deltaDays = dayTo - dayFrom;
 
 		if (deltaDays < 0) {
