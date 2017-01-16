@@ -12,19 +12,28 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.junit.BeforeClass;
+import org.point85.workschedule.NonWorkingPeriod;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
 import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
-abstract class BaseTest {
+public abstract class BaseTest {
 	public static final MathContext MATH_CONTEXT = MathContext.DECIMAL64;
 
 	protected static final BigDecimal DELTA3 = new BigDecimal("0.001", MATH_CONTEXT);
 
 	// reference date for start of shift rotations
 	protected LocalDate referenceDate = LocalDate.of(2016, 10, 31);
+
+	private static boolean testToString = false;
+
+	@BeforeClass
+	public static void setFlags() {
+		testToString = false;
+	}
 
 	private void testShifts(WorkSchedule ws) throws Exception {
 		assertTrue(ws.getShifts().size() > 0);
@@ -163,6 +172,39 @@ abstract class BaseTest {
 
 		// shift instances
 		testShiftInstances(ws);
+
+		// toString
+		if (testToString) {
+			System.out.println(ws.toString());
+			ws.printShiftInstances(referenceDate, referenceDate.plusDays(rotationDays.toDays()));
+		}
+
+		// team deletions
+		Team[] teams = new Team[ws.getTeams().size()];
+		ws.getTeams().toArray(teams);
+
+		for (Team team : teams) {
+			ws.deleteTeam(team);
+		}
+		assertTrue(ws.getTeams().size() == 0);
+
+		// shift deletions
+		Shift[] shifts = new Shift[ws.getShifts().size()];
+		ws.getShifts().toArray(shifts);
+
+		for (Shift shift : shifts) {
+			ws.deleteShift(shift);
+		}
+		assertTrue(ws.getShifts().size() == 0);
+
+		// non-working period deletions
+		NonWorkingPeriod[] periods = new NonWorkingPeriod[ws.getNonWorkingPeriods().size()];
+		ws.getNonWorkingPeriods().toArray(periods);
+
+		for (NonWorkingPeriod period : periods) {
+			ws.deleteNonWorkingPeriod(period);
+		}
+		assertTrue(ws.getNonWorkingPeriods().size() == 0);
 
 	}
 

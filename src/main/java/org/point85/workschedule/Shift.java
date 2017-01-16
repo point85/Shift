@@ -26,7 +26,6 @@ package org.point85.workschedule;
 
 import java.text.MessageFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +37,6 @@ import java.util.List;
  *
  */
 public class Shift extends TimePeriod {
-
-	private static final int SEC_PER_DAY = 24 * 3600;
 
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
@@ -195,21 +192,6 @@ public class Shift extends TimePeriod {
 		}
 		return answer;
 	}
-
-	/**
-	 * Calculate the working time from the specified time to the end of the
-	 * shift
-	 * 
-	 * @param time
-	 *            Beginning time
-	 * @return Duration
-	 * @throws Exception
-	 */
-	/*
-	 * public Duration getWorkingTimeFromToEnd(LocalTime time) throws Exception
-	 * { Duration to = getWorkingTimeBetween(time); return
-	 * getDuration().minus(to); }
-	 */
 
 	Break getOffShift() {
 		if (offShift == null) {

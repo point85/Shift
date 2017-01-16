@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.junit.Test;
@@ -395,14 +394,10 @@ public class TestSnapSchedule extends BaseTest {
 		// 1 night on (and repeat)
 		team2Rotation.on(1, night);
 
-		Team team1 = schedule.createTeam("Team 1", "First team", team1Rotation, referenceDate);
-		Team team2 = schedule.createTeam("Team 2", "Second team", team2Rotation, referenceDate);
+		schedule.createTeam("Team 1", "First team", team1Rotation, referenceDate);
+		schedule.createTeam("Team 2", "Second team", team2Rotation, referenceDate);
 		
-		assertTrue(team1.getRotationDuration().toDays() == 1);
-		assertTrue(team2.getRotationDuration().toDays() == 1);
-
-		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(7));
+		runBaseTest(schedule, Duration.ofHours(84), Duration.ofDays(1));
 	}
 
 	@Test
@@ -436,9 +431,6 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
 		
 		runBaseTest(schedule, Duration.ofHours(42), Duration.ofDays(56));
-
-		System.out.println(schedule.toString());
-		schedule.printShiftInstances(referenceDate, referenceDate.plusDays(rotation.getDuration().toDays()));
 	}
 
 	public static void main(String[] args) {
@@ -447,8 +439,9 @@ public class TestSnapSchedule extends BaseTest {
 		try {
 			
 			test.testPanama();
-			/*
+			
 			test.testTwoTeam();
+			/*
 			test.testDNO();
 			test.testDupont();
 			test.testNurseICU();

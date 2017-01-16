@@ -100,7 +100,6 @@ abstract class TimePeriod extends Named {
 		this.startTime = startTime;
 	}
 
-	// flag for a working period
 	abstract boolean isWorkingPeriod();
 
 	/**

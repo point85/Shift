@@ -29,7 +29,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,19 +75,13 @@ public class WorkSchedule extends Named {
 		return messages.getString(key);
 	}
 
-	private void addTeam(Team team) {
-		if (!this.teams.contains(team)) {
-			this.teams.add(team);
-		}
-	}
-
 	/**
 	 * Remove this team from the schedule
 	 * 
 	 * @param team
 	 *            {@link Team}
 	 */
-	public void removeTeam(Team team) {
+	public void deleteTeam(Team team) {
 		if (this.teams.contains(team)) {
 			this.teams.remove(team);
 		}
@@ -103,19 +96,13 @@ public class WorkSchedule extends Named {
 		return this.teams;
 	}
 
-	private void addNonWorkingPeriod(NonWorkingPeriod period) {
-		if (!this.nonWorkingPeriods.contains(period)) {
-			this.nonWorkingPeriods.add(period);
-		}
-	}
-
 	/**
 	 * Remove a non-working period from the schedule
 	 * 
 	 * @param period
 	 *            {@link NonWorkingPeriod}
 	 */
-	public void removeNonWorkingPeriod(NonWorkingPeriod period) {
+	public void deleteNonWorkingPeriod(NonWorkingPeriod period) {
 		if (this.nonWorkingPeriods.contains(period)) {
 			this.nonWorkingPeriods.remove(period);
 		}
@@ -160,13 +147,13 @@ public class WorkSchedule extends Named {
 
 		return workingShifts;
 	}
-	
+
 	public List<ShiftInstance> getShiftInstancesForTime(LocalDateTime dateTime) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
-		
+
 		// day
 		List<ShiftInstance> candidateShifts = getShiftInstancesForDay(dateTime.toLocalDate());
-		
+
 		// check time now
 		for (ShiftInstance instance : candidateShifts) {
 			if (instance.getShift().isInShift(dateTime.toLocalTime())) {
@@ -189,10 +176,18 @@ public class WorkSchedule extends Named {
 	 * @param rotationStart
 	 *            Start of rotation
 	 * @return {@link Team}
+	 * @throws Exception
 	 */
-	public Team createTeam(String name, String description, ShiftRotation rotation, LocalDate rotationStart) {
+	public Team createTeam(String name, String description, ShiftRotation rotation, LocalDate rotationStart)
+			throws Exception {
 		Team team = new Team(name, description, rotation, rotationStart);
-		this.addTeam(team);
+
+		if (teams.contains(team)) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("team.already.exists"), name);
+			throw new Exception(msg);
+		}
+
+		teams.add(team);
 		return team;
 	}
 
@@ -208,11 +203,46 @@ public class WorkSchedule extends Named {
 	 * @param duration
 	 *            Shift duration
 	 * @return {@link Shift}
+	 * @throws Exception
 	 */
-	public Shift createShift(String name, String description, LocalTime start, Duration duration) {
+	public Shift createShift(String name, String description, LocalTime start, Duration duration) throws Exception {
 		Shift shift = new Shift(name, description, start, duration);
+
+		if (shifts.contains(shift)) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("shift.already.exists"), name);
+			throw new Exception(msg);
+		}
 		shifts.add(shift);
 		return shift;
+	}
+
+	/**
+	 * Delete this shift
+	 * 
+	 * @param shift
+	 *            {@link Shift} to delete
+	 * @throws Exception
+	 */
+	public void deleteShift(Shift shift) throws Exception {
+		if (!shifts.contains(shift)) {
+			return;
+		}
+
+		// can't be in use
+		for (Shift inUseShift : shifts) {
+			for (Team team : teams) {
+				ShiftRotation rotation = team.getShiftRotation();
+
+				for (TimePeriod period : rotation.getPeriods()) {
+					if (period.equals(inUseShift)) {
+						String msg = MessageFormat.format(WorkSchedule.getMessage("shift.in.use"), shift.getName());
+						throw new Exception(msg);
+					}
+				}
+			}
+		}
+
+		shifts.remove(shift);
 	}
 
 	/**
@@ -227,11 +257,18 @@ public class WorkSchedule extends Named {
 	 * @param duration
 	 *            Duration of period
 	 * @return {@link NonWorkingPeriod}
+	 * @throws Exception
 	 */
 	public NonWorkingPeriod createNonWorkingPeriod(String name, String description, LocalDateTime startDateTime,
-			Duration duration) {
+			Duration duration) throws Exception {
 		NonWorkingPeriod period = new NonWorkingPeriod(name, description, startDateTime, duration);
-		this.addNonWorkingPeriod(period);
+
+		if (nonWorkingPeriods.contains(period)) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("nonworking.period.already.exists"), name);
+			throw new Exception(msg);
+		}
+		nonWorkingPeriods.add(period);
+
 		return period;
 	}
 

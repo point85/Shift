@@ -81,6 +81,29 @@ abstract class Named {
 	}
 
 	/**
+	 * Compare this named object to another
+	 * 
+	 * @return true if equal
+	 */
+	public boolean equals(Object other) {
+
+		if (other == null || !(other instanceof Named)) {
+			return false;
+		}
+
+		return getName().equals(((Named) other).getName());
+	}
+
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	public int hashCode() {
+		return getName().hashCode();
+	}
+
+	/**
 	 * Get a string representation of a named object
 	 */
 	@Override
