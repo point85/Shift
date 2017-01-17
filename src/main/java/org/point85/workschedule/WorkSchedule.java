@@ -273,29 +273,62 @@ public class WorkSchedule extends Named {
 	}
 
 	private Duration getRotationDuration() throws Exception {
-		Duration sum = null;
+		Duration sum = Duration.ZERO;
+
 		for (Team team : teams) {
-			if (sum == null) {
-				sum = team.getRotationDuration();
-			} else {
-				sum = sum.plus(team.getRotationDuration());
-			}
+			sum = sum.plus(team.getRotationDuration());
 		}
 		return sum;
 	}
 
 	private Duration getScheduledTime() {
-		Duration sum = null;
+		Duration sum = Duration.ZERO;
+
 		for (Team team : teams) {
-			if (sum == null) {
-				sum = team.getShiftRotation().getWorkingTime();
-			} else {
-				sum = sum.plus(team.getShiftRotation().getWorkingTime());
-			}
+			sum = sum.plus(team.getShiftRotation().getWorkingTime());
 		}
 		return sum;
 	}
 
+	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
+		Duration sum = Duration.ZERO;
+
+		if (to.isAfter(from)) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from);
+			throw new Exception(msg);
+		}
+
+		// find number of complete rotations
+		LocalDate fromDate = from.toLocalDate();
+		LocalDate toDate = to.toLocalDate();
+		
+		long deltaDays = toDate.toEpochDay() - fromDate.toEpochDay();
+
+		// add up by team
+		for (Team team : getTeams()) {
+			ShiftRotation rotation = team.getShiftRotation();
+			long rotationDays = rotation.getDayCount();
+
+			long rotationCount = deltaDays / rotationDays;
+			Duration rotationTime = rotation.getWorkingTime();
+
+			for (int i = 0; i < rotationCount; i++) {
+				sum = sum.plus(rotationTime);
+			}
+			
+			if (deltaDays % rotationDays != 0) {
+				// add partial rotations
+				Duration begin = team.calculateWorkingTimeFromToEnd(fromDate);
+				sum = sum.plus(begin);
+				
+				Duration end = team.calculateWorkingTimeFromStartTo(toDate);
+				sum = sum.plus(end);
+				
+			}
+		}
+
+		return sum;
+	}
 
 	/**
 	 * Get the list of shifts in this schedule

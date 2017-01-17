@@ -87,7 +87,7 @@ public class Shift extends TimePeriod {
 	 */
 	public Duration calculateWorkingTime() {
 		// add up breaks
-		Duration breaksDuration = Duration.ofSeconds(0);
+		Duration breaksDuration = Duration.ZERO;
 
 		for (Break breakDefinition : this.breaks) {
 			breaksDuration = breaksDuration.plus(breakDefinition.getDuration());
@@ -130,7 +130,7 @@ public class Shift extends TimePeriod {
 	 * @throws Exception
 	 */
 	public Duration getWorkingTimeBetween(LocalTime from, LocalTime to) throws Exception {
-		Duration duration = null;
+		Duration duration = Duration.ZERO;
 
 		LocalTime start = getStart();
 		LocalTime end = getEnd();
@@ -210,21 +210,18 @@ public class Shift extends TimePeriod {
 		return offShift;
 	}
 
-	/** 
+	/**
 	 * Calculate the total break time for the shift
+	 * 
 	 * @return Duration of all breaks
 	 */
 	public Duration calculateBreakTime() {
-		Duration sum = null;
+		Duration sum = Duration.ZERO;
 
 		List<Break> breaks = this.getBreaks();
 
 		for (Break b : breaks) {
-			if (sum == null) {
-				sum = b.getDuration();
-			} else {
-				sum = sum.plus(b.getDuration());
-			}
+			sum = sum.plus(b.getDuration());
 		}
 
 		return sum;

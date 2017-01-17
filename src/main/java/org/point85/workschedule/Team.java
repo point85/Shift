@@ -145,8 +145,8 @@ public class Team extends Named {
 	 * @return Duration
 	 * @throws Exception
 	 */
-	public Duration calculateWorkingTimeTo(LocalDate date) throws Exception {
-		Duration sum = null;
+	public Duration calculateWorkingTimeFromStartTo(LocalDate date) throws Exception {
+		Duration sum = Duration.ZERO;
 
 		int dayInRotation = getDayInRotation(date);
 
@@ -154,11 +154,7 @@ public class Team extends Named {
 			TimePeriod period = getShiftRotation().getPeriods().get(i);
 
 			if (period.isWorkingPeriod()) {
-				if (sum == null) {
-					sum = period.getDuration();
-				} else {
-					sum = sum.plus(period.getDuration());
-				}
+				sum = sum.plus(period.getDuration());
 			}
 		}
 
@@ -174,8 +170,8 @@ public class Team extends Named {
 	 * @return Duration
 	 * @throws Exception
 	 */
-	public Duration calculateWorkingTimeFrom(LocalDate date) throws Exception {
-		Duration sum = null;
+	public Duration calculateWorkingTimeFromToEnd(LocalDate date) throws Exception {
+		Duration sum = Duration.ZERO;
 
 		int dayInRotation = getDayInRotation(date);
 
@@ -183,11 +179,7 @@ public class Team extends Named {
 			TimePeriod period = getShiftRotation().getPeriods().get(i);
 
 			if (period.isWorkingPeriod()) {
-				if (sum == null) {
-					sum = period.getDuration();
-				} else {
-					sum = sum.plus(period.getDuration());
-				}
+				sum = sum.plus(period.getDuration());
 			}
 		}
 

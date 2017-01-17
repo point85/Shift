@@ -51,7 +51,7 @@ public class ShiftRotation {
 	public List<TimePeriod> getPeriods() {
 		return periods;
 	}
-	
+
 	public int getDayCount() {
 		return getPeriods().size();
 	}
@@ -90,6 +90,7 @@ public class ShiftRotation {
 
 	/**
 	 * Get the duration of this rotation
+	 * 
 	 * @return Duration
 	 */
 	public Duration getDuration() {
@@ -98,17 +99,15 @@ public class ShiftRotation {
 
 	/**
 	 * Get the shift rotation's total working time
+	 * 
 	 * @return Duration of working time
 	 */
 	public Duration getWorkingTime() {
-		Duration sum = null;
+		Duration sum = Duration.ZERO;
+
 		for (TimePeriod period : periods) {
 			if (period.isWorkingPeriod()) {
-				if (sum == null) {
-					sum = period.getDuration();
-				} else {
-					sum = sum.plus(period.getDuration());
-				}
+				sum = sum.plus(period.getDuration());
 			}
 		}
 		return sum;
