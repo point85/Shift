@@ -210,6 +210,26 @@ public class Shift extends TimePeriod {
 		return offShift;
 	}
 
+	/** 
+	 * Calculate the total break time for the shift
+	 * @return Duration of all breaks
+	 */
+	public Duration calculateBreakTime() {
+		Duration sum = null;
+
+		List<Break> breaks = this.getBreaks();
+
+		for (Break b : breaks) {
+			if (sum == null) {
+				sum = b.getDuration();
+			} else {
+				sum = sum.plus(b.getDuration());
+			}
+		}
+
+		return sum;
+	}
+
 	/**
 	 * Build a string representation of this shift
 	 * 

@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.Test;
+import org.point85.workschedule.Break;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
 import org.point85.workschedule.ShiftRotation;
@@ -223,9 +224,12 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation rotation2 = new ShiftRotation();
 		rotation2.on(5, shift2).off(2, shift2);
 
-		Team team1 = schedule.createTeam("Team1", "Team #1", rotation1, LocalDate.of(2016, 1, 1));
-		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, LocalDate.of(2016, 1, 1));
-		
+		schedule.createTeam("Team1", "Team #1", rotation1, LocalDate.of(2016, 1, 1));
+		schedule.createTeam("Team2", "Team #2", rotation2, LocalDate.of(2016, 1, 1));
+	
+		Duration allBreaks = Duration.ofMinutes(90);
+		assertTrue(shift1.calculateBreakTime().equals(allBreaks));
+
 		runBaseTest(schedule, Duration.ofHours(45), Duration.ofDays(7), LocalDate.of(2016, 1, 1));
 
 	}
