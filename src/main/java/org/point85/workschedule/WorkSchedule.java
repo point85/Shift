@@ -82,8 +82,8 @@ public class WorkSchedule extends Named {
 	 *            {@link Team}
 	 */
 	public void deleteTeam(Team team) {
-		if (this.teams.contains(team)) {
-			this.teams.remove(team);
+		if (teams.contains(team)) {
+			teams.remove(team);
 		}
 	}
 

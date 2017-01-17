@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2016 Kent Randall
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 package org.point85.workschedule.test;
 
 import static org.junit.Assert.assertFalse;
@@ -64,25 +88,25 @@ public abstract class BaseTest {
 			worked = shift.getWorkingTimeBetween(start, start);
 
 			// 24 hour shift on midnight is a special case
-			if (start.equals(LocalTime.MIDNIGHT) && end.equals(LocalTime.MIDNIGHT)) {
+			if (total.equals(Duration.ofHours(24))) {
 				assertTrue(worked.toHours() == 24);
 			} else {
-				assertTrue(worked.toMinutes() == 0);
+				assertTrue(worked.toHours() == 0);
 			}
 
 			worked = shift.getWorkingTimeBetween(end, end);
 
-			if (start.equals(LocalTime.MIDNIGHT) && end.equals(LocalTime.MIDNIGHT)) {
+			if (total.equals(Duration.ofHours(24))) {
 				assertTrue(worked.toHours() == 24);
 			} else {
-				assertTrue(worked.toMinutes() == 0);
+				assertTrue(worked.toHours() == 0);
 			}
 
 			try {
 				LocalTime t = start.minusMinutes(1);
 				worked = shift.getWorkingTimeBetween(t, end);
 
-				if (!start.equals(LocalTime.MIDNIGHT) && !end.equals(LocalTime.MIDNIGHT)) {
+				if (!total.equals(Duration.ofHours(24))) {
 					fail("Bad working time");
 				}
 			} catch (Exception e) {
@@ -91,7 +115,7 @@ public abstract class BaseTest {
 			try {
 				LocalTime t = end.plusMinutes(1);
 				worked = shift.getWorkingTimeBetween(start, t);
-				if (!start.equals(LocalTime.MIDNIGHT) && !end.equals(LocalTime.MIDNIGHT)) {
+				if (!total.equals(Duration.ofHours(24))) {
 					fail("Bad working time");
 				}
 			} catch (Exception e) {
@@ -145,16 +169,18 @@ public abstract class BaseTest {
 
 				assertTrue(shift.isInShift(startTime));
 				assertTrue(shift.isInShift(startTime.plusSeconds(1)));
+				
+				Duration shiftDuration = instance.getShift().getDuration();
 
 				// midnight is special case
-				if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+				if (!shiftDuration.equals(Duration.ofHours(24))) {
 					assertFalse(shift.isInShift(startTime.minusSeconds(1)));
 				}
 
 				assertTrue(shift.isInShift(endTime));
 				assertTrue(shift.isInShift(endTime.minusSeconds(1)));
 
-				if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+				if (!shiftDuration.equals(Duration.ofHours(24))) {
 					assertFalse(shift.isInShift(endTime.plusSeconds(1)));
 				}
 
@@ -167,7 +193,7 @@ public abstract class BaseTest {
 				ldt = LocalDateTime.of(day, startTime.minusSeconds(1));
 
 				for (ShiftInstance si : ws.getShiftInstancesForTime(ldt)) {
-					if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+					if (!shiftDuration.equals(Duration.ofHours(24))) {
 						assertFalse(shift.getName().equals(si.getShift().getName()));
 					}
 				}
@@ -181,7 +207,7 @@ public abstract class BaseTest {
 				ldt = LocalDateTime.of(day, endTime.plusSeconds(1));
 
 				for (ShiftInstance si : ws.getShiftInstancesForTime(ldt)) {
-					if (!startTime.equals(LocalTime.MIDNIGHT) && !endTime.equals(LocalTime.MIDNIGHT)) {
+					if (!shiftDuration.equals(Duration.ofHours(24))) {
 						assertFalse(shift.getName().equals(si.getShift().getName()));
 					}
 				}
@@ -192,7 +218,8 @@ public abstract class BaseTest {
 
 	}
 
-	protected void runBaseTest(WorkSchedule ws, Duration hoursPerRotation, Duration rotationDays, LocalDate instanceReference) throws Exception {
+	protected void runBaseTest(WorkSchedule ws, Duration hoursPerRotation, Duration rotationDays,
+			LocalDate instanceReference) throws Exception {
 
 		// toString
 		if (testToString) {

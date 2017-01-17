@@ -134,28 +134,33 @@ public class Shift extends TimePeriod {
 
 		LocalTime start = getStart();
 		LocalTime end = getEnd();
-		
+
 		int toSecond = to.toSecondOfDay();
 		int fromSecond = from.toSecondOfDay();
-		
-		// midnight is a special case due to the discontinuity
-		if (toSecond == 0 && fromSecond == 0) {
-			return Duration.ofHours(24);
-		}
 
-		if (start.isBefore(end)) {
-			// shift did not cross midnight
-			duration = Duration.ofSeconds(toSecond - fromSecond);
+		// look for 24 hr shift
+		if (toSecond == fromSecond) {
+			if (this.getDuration().toHours() == 24) {
+				duration = Duration.ofHours(24);
+			} else {
+				duration = Duration.ZERO;
+			}
 		} else {
-			// shift crossed midnight
-			if (toSecond >= fromSecond) {
-				// after midnight
+
+			if (start.isBefore(end)) {
+				// shift did not cross midnight
 				duration = Duration.ofSeconds(toSecond - fromSecond);
 			} else {
-				// before midnight
-				Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(fromSecond));
-				Duration fromMidnight = Duration.ofSeconds(toSecond);
-				duration = toMidnight.plus(fromMidnight);
+				// shift crossed midnight
+				if (toSecond >= fromSecond) {
+					// after midnight
+					duration = Duration.ofSeconds(toSecond - fromSecond);
+				} else {
+					// before midnight
+					Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(fromSecond));
+					Duration fromMidnight = Duration.ofSeconds(toSecond);
+					duration = toMidnight.plus(fromMidnight);
+				}
 			}
 		}
 
@@ -175,7 +180,7 @@ public class Shift extends TimePeriod {
 
 		int onStart = time.compareTo(start);
 		int onEnd = time.compareTo(end);
-		
+
 		int timeSecond = time.toSecondOfDay();
 
 		if (start.isBefore(end)) {
