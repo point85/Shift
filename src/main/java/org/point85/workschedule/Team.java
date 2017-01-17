@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Class Team is a group of individuals who rotate through a shift schedule
@@ -183,6 +184,54 @@ public class Team extends Named {
 			}
 		}
 
+		return sum;
+	}
+	
+	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
+		Duration sum = Duration.ZERO;
+
+		if (from.isAfter(to)) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from);
+			throw new Exception(msg);
+		}
+
+		// find number of complete rotations
+		LocalDate fromDate = from.toLocalDate();
+		LocalDate toDate = to.toLocalDate();
+		
+		long deltaDays = toDate.toEpochDay() - fromDate.toEpochDay();
+		
+		int dayInFrom = getDayInRotation(fromDate);
+		int dayInTo = getDayInRotation(toDate);
+		
+		ShiftRotation rotation = getShiftRotation();
+		long rotationDays = rotation.getDayCount();
+
+		long rotationCount = deltaDays / rotationDays;
+		Duration rotationTime = rotation.getWorkingTime();
+
+		for (int i = 0; i < rotationCount; i++) {
+			sum = sum.plus(rotationTime);
+		}
+		
+		if (deltaDays % rotationDays != 0) {
+			// add partial rotations
+			
+			if (dayInTo > dayInFrom) {
+				// same rotation
+				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
+				Duration end = calculateWorkingTimeFromToEnd(toDate);
+				sum = sum.plus(begin.minus(end));
+				
+			} else
+			{
+				// crossed a rotation
+				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
+				Duration end = calculateWorkingTimeFromStartTo(toDate);
+				sum = sum.plus(begin.plus(end));
+			}				
+		}
+		
 		return sum;
 	}
 

@@ -41,7 +41,7 @@ import org.point85.workschedule.WorkSchedule;
 
 public class TestWorkSchedule extends BaseTest {
 
-	//@Test
+	// @Test
 	public void testNursingICUShifts() throws Exception {
 		// ER nursing schedule
 		WorkSchedule schedule = new WorkSchedule("Nursing ICU",
@@ -79,7 +79,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(84), Duration.ofDays(14), rotationStart);
 	}
 
-	//@Test
+	// @Test
 	public void testPostalServiceShifts() throws Exception {
 		// United States Postal Service
 		WorkSchedule schedule = new WorkSchedule("USPS", "Six 9 hr shifts, rotating every 42 days");
@@ -104,7 +104,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(63), Duration.ofDays(42), rotationStart);
 	}
 
-	//@Test
+	// @Test
 	public void testFirefighterShifts2() throws Exception {
 		// Seattle, WA fire shifts
 		WorkSchedule schedule = new WorkSchedule("Seattle", "Four 24 hour alternating shifts");
@@ -124,7 +124,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(48), Duration.ofDays(8), LocalDate.of(2014, 2, 4));
 	}
 
-	//@Test
+	// @Test
 	public void testFirefighterShifts1() throws Exception {
 		// Kern Co, CA
 		WorkSchedule schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
@@ -156,7 +156,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	}
 
-	//@Test
+	// @Test
 	public void testManufacturingShifts() throws Exception {
 		// manufacturing company
 		WorkSchedule schedule = new WorkSchedule("Manufacturing Company - four twelves",
@@ -188,7 +188,7 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testGenericShift() throws Exception {
 		// regular work week with holidays and breaks
-		WorkSchedule schedule = new WorkSchedule("Regular 40 hour work week", "8 to 5");
+		WorkSchedule schedule = new WorkSchedule("Regular 40 hour work week", "9 to 5");
 
 		// holidays
 		schedule.createNonWorkingPeriod("NEW YEARS", "New Years day", LocalDateTime.of(2016, 1, 1, 0, 0, 0),
@@ -204,16 +204,21 @@ public class TestWorkSchedule extends BaseTest {
 		schedule.createNonWorkingPeriod("CHRISTMAS SHUTDOWN", "Christmas week scheduled maintenance",
 				LocalDateTime.of(2016, 12, 25, 0, 30, 0), Duration.ofHours(168));
 
+		// each shift duration
+		Duration shiftDuration = Duration.ofHours(8);
+		LocalTime shift1Start = LocalTime.of(9, 0, 0);
+		LocalTime shift2Start = LocalTime.of(17, 0, 0);
+
 		// shift 1
-		Shift shift1 = schedule.createShift("Shift1", "Shift #1", LocalTime.of(8, 0, 0), Duration.ofHours(9));
+		Shift shift1 = schedule.createShift("Shift1", "Shift #1", shift1Start, shiftDuration);
 
 		// breaks
 		shift1.createBreak("10AM", "10 am break", LocalTime.of(10, 0, 0), Duration.ofMinutes(15));
 		shift1.createBreak("LUNCH", "lunch", LocalTime.of(12, 0, 0), Duration.ofHours(1));
 		shift1.createBreak("2PM", "2 pm break", LocalTime.of(14, 0, 0), Duration.ofMinutes(15));
 
-		// shift 2, overlap 30 min
-		Shift shift2 = schedule.createShift("Shift2", "Shift #2", LocalTime.of(16, 30, 0), Duration.ofHours(9));
+		// shift 2
+		Shift shift2 = schedule.createShift("Shift2", "Shift #2", shift2Start, shiftDuration);
 
 		// shift 1, 5 days ON, 2 OFF
 		ShiftRotation rotation1 = new ShiftRotation();
@@ -223,18 +228,38 @@ public class TestWorkSchedule extends BaseTest {
 		ShiftRotation rotation2 = new ShiftRotation();
 		rotation2.on(5, shift2).off(2, shift2);
 
-		schedule.createTeam("Team1", "Team #1", rotation1, LocalDate.of(2016, 1, 1));
-		//schedule.createTeam("Team2", "Team #2", rotation2, LocalDate.of(2016, 1, 1));
-		
-		LocalDateTime from = LocalDateTime.of(2016, 1, 1, 8, 0, 0);
-		LocalDateTime to = LocalDateTime.of(2016, 1, 2, 8, 0, 0);
-		
+		LocalDate startRotation = LocalDate.of(2016, 1, 1);
+		Team team1 = schedule.createTeam("Team1", "Team #1", rotation1, startRotation);
+		// schedule.createTeam("Team2", "Team #2", rotation2, startRotation);
+
+
+		// same day
+		LocalDateTime from = LocalDateTime.of(startRotation, shift1Start);
+		LocalDateTime to = from;
+
 		Duration totalWorking = schedule.calculateWorkingTime(from, to);
-	
+		assertTrue(totalWorking.equals(Duration.ZERO));
+
+		// 21 days
+		Duration d = Duration.ZERO;
+		
+		for (int i = 0; i < 21; i++) {
+			to = from.plusDays(i);
+			totalWorking = schedule.calculateWorkingTime(from, to);
+			int dir = team1.getDayInRotation(to.toLocalDate());
+
+			assertTrue(totalWorking.equals(d));
+			
+			if (rotation1.getPeriods().get(dir) instanceof Shift) {
+				d = d.plus(shiftDuration);
+			}
+		}
+		
+		// breaks
 		Duration allBreaks = Duration.ofMinutes(90);
 		assertTrue(shift1.calculateBreakTime().equals(allBreaks));
 
-		runBaseTest(schedule, Duration.ofHours(45), Duration.ofDays(7), LocalDate.of(2016, 1, 1));
+		runBaseTest(schedule, Duration.ofHours(40), Duration.ofDays(7), LocalDate.of(2016, 1, 1));
 
 	}
 
