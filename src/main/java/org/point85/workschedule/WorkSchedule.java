@@ -284,7 +284,7 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
-	private Duration getWorkingTime() {
+	private Duration getScheduledTime() {
 		Duration sum = null;
 		for (Team team : teams) {
 			if (sum == null) {
@@ -367,7 +367,7 @@ public class WorkSchedule extends Named {
 		String text = sch + ": " + super.toString();
 
 		try {
-			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getWorkingTime();
+			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getScheduledTime();
 
 			// shifts
 			text += "\n" + sf + ": ";
