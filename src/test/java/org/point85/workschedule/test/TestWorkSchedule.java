@@ -33,7 +33,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.Test;
-import org.point85.workschedule.Break;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
 import org.point85.workschedule.ShiftRotation;

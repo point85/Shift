@@ -98,7 +98,7 @@ public class ShiftRotation {
 
 	/**
 	 * Get the shift rotation's total working time
-	 * @return Duration
+	 * @return Duration of working time
 	 */
 	public Duration getWorkingTime() {
 		Duration sum = null;
