@@ -230,31 +230,50 @@ public class TestWorkSchedule extends BaseTest {
 
 		LocalDate startRotation = LocalDate.of(2016, 1, 1);
 		Team team1 = schedule.createTeam("Team1", "Team #1", rotation1, startRotation);
-		// schedule.createTeam("Team2", "Team #2", rotation2, startRotation);
-
+		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, startRotation);
 
 		// same day
 		LocalDateTime from = LocalDateTime.of(startRotation, shift1Start);
-		LocalDateTime to = from;
+		LocalDateTime to = null;
 
-		Duration totalWorking = schedule.calculateWorkingTime(from, to);
-		assertTrue(totalWorking.equals(Duration.ZERO));
+		Duration totalWorking = null;
 
-		// 21 days
+		// 21 days, team1
 		Duration d = Duration.ZERO;
-		
+
 		for (int i = 0; i < 21; i++) {
 			to = from.plusDays(i);
-			totalWorking = schedule.calculateWorkingTime(from, to);
+			totalWorking = team1.calculateWorkingTime(from, to);
 			int dir = team1.getDayInRotation(to.toLocalDate());
 
 			assertTrue(totalWorking.equals(d));
-			
+
 			if (rotation1.getPeriods().get(dir) instanceof Shift) {
 				d = d.plus(shiftDuration);
 			}
 		}
-		
+		Duration totalSchedule = totalWorking;
+
+		// 21 days, team2
+		from = LocalDateTime.of(startRotation, shift2Start);
+		d = Duration.ZERO;
+
+		for (int i = 0; i < 21; i++) {
+			to = from.plusDays(i);
+			totalWorking = team2.calculateWorkingTime(from, to);
+			int dir = team2.getDayInRotation(to.toLocalDate());
+
+			assertTrue(totalWorking.equals(d));
+
+			if (rotation1.getPeriods().get(dir) instanceof Shift) {
+				d = d.plus(shiftDuration);
+			}
+		}
+		totalSchedule = totalSchedule.plus(totalWorking);
+
+		Duration scheduleDuration = schedule.calculateWorkingTime(from, from.plusDays(20));
+		assertTrue(scheduleDuration.equals(totalSchedule));
+
 		// breaks
 		Duration allBreaks = Duration.ofMinutes(90);
 		assertTrue(shift1.calculateBreakTime().equals(allBreaks));
