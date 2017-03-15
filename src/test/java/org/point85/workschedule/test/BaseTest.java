@@ -40,7 +40,7 @@ import org.junit.BeforeClass;
 import org.point85.workschedule.NonWorkingPeriod;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
-import org.point85.workschedule.ShiftRotation;
+import org.point85.workschedule.Rotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
@@ -78,7 +78,7 @@ public abstract class BaseTest {
 			assertTrue(shift.getDescription().length() > 0);
 
 			assertTrue(total.toMinutes() > 0);
-			assertTrue(shift.getBreaks().size() >= 0);
+			assertTrue(shift.getBreaks() != null);
 			assertTrue(start != null);
 			assertTrue(end != null);
 
@@ -130,23 +130,23 @@ public abstract class BaseTest {
 			assertTrue(team.getName().length() > 0);
 			assertTrue(team.getDescription().length() > 0);
 			assertTrue(team.getDayInRotation(team.getRotationStart()) == 0);
-			Duration hours = team.getShiftRotation().getWorkingTime();
+			Duration hours = team.getRotation().getWorkingTime();
 			assertTrue(hours.equals(hoursPerRotation));
 			assertTrue(team.getPercentageWorked() > 0.0f);
 			assertTrue(team.getRotationDuration().equals(rotationDays));
 			assertTrue(team.getRotationStart() != null);
 
-			ShiftRotation rotation = team.getShiftRotation();
+			Rotation rotation = team.getRotation();
 			assertTrue(rotation.getDuration().equals(rotationDays));
 			assertTrue(rotation.getPeriods().size() > 0);
 			assertTrue(rotation.getWorkingTime().getSeconds() <= rotation.getDuration().getSeconds());
 		}
 
-		assertTrue(ws.getNonWorkingPeriods().size() >= 0);
+		assertTrue(ws.getNonWorkingPeriods() != null);
 	}
 
 	private void testShiftInstances(WorkSchedule ws, LocalDate instanceReference) throws Exception {
-		ShiftRotation rotation = ws.getTeams().get(0).getShiftRotation();
+		Rotation rotation = ws.getTeams().get(0).getRotation();
 
 		// shift instances
 		LocalDate startDate = instanceReference;
@@ -229,7 +229,7 @@ public abstract class BaseTest {
 
 		assertTrue(ws.getName().length() > 0);
 		assertTrue(ws.getDescription().length() > 0);
-		assertTrue(ws.getNonWorkingPeriods().size() >= 0);
+		assertTrue(ws.getNonWorkingPeriods() != null);
 
 		// shifts
 		testShifts(ws);

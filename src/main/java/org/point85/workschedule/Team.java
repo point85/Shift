@@ -31,7 +31,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Class Team is a group of individuals who rotate through a shift schedule
+ * Class Team is a named group of individuals who rotate through a shift
+ * schedule
  * 
  * @author Kent Randall
  *
@@ -42,9 +43,9 @@ public class Team extends Named {
 	private LocalDate rotationStart;
 
 	// shift rotation days
-	private ShiftRotation rotation;
+	private Rotation rotation;
 
-	Team(String name, String description, ShiftRotation rotation, LocalDate rotationStart) {
+	Team(String name, String description, Rotation rotation, LocalDate rotationStart) throws Exception {
 		super(name, description);
 		this.rotation = rotation;
 		this.rotationStart = rotationStart;
@@ -60,11 +61,21 @@ public class Team extends Named {
 	}
 
 	/**
+	 * Get rotation start
+	 * 
+	 * @param rotationStart
+	 *            Starting date of rotation
+	 */
+	public void setRotationStart(LocalDate rotationStart) {
+		this.rotationStart = rotationStart;
+	}
+
+	/**
 	 * Get the shift rotation for this team
 	 * 
-	 * @return {@link ShiftRotation}
+	 * @return {@link Rotation}
 	 */
-	public ShiftRotation getShiftRotation() {
+	public Rotation getRotation() {
 		return rotation;
 	}
 
@@ -75,12 +86,7 @@ public class Team extends Named {
 	 * @throws Exception
 	 */
 	public Duration getRotationDuration() throws Exception {
-		if (rotation == null) {
-			String msg = MessageFormat.format(WorkSchedule.getMessage("rotation.not.defined"), getName());
-			throw new Exception(msg);
-		}
-
-		return getShiftRotation().getDuration();
+		return getRotation().getDuration();
 	}
 
 	/**
@@ -91,25 +97,18 @@ public class Team extends Named {
 	 * @throws Exception
 	 */
 	public float getPercentageWorked() throws Exception {
-		return ((float) getShiftRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
+		return ((float) getRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
 				* 100.0f;
 	}
 
 	/**
 	 * Get the average number of hours worked each week by this team
 	 * 
-	 * @return
+	 * @return Duration of hours worked per week
 	 */
-	/*
-	 * public float getHoursWorkedPerWeek() { float days = (float)
-	 * getShiftRotation().getDuration().toDays(); return ((float)
-	 * getShiftRotation().getWorkingTime().getSeconds() / 3600.0f) * (7.0f /
-	 * days); }
-	 */
-
 	public Duration getHoursWorkedPerWeek() {
-		float days = (float) getShiftRotation().getDuration().toDays();
-		float secPerWeek = (float) getShiftRotation().getWorkingTime().getSeconds() * (7.0f / days);
+		float days = (float) getRotation().getDuration().toDays();
+		float secPerWeek = (float) getRotation().getWorkingTime().getSeconds() * (7.0f / days);
 		return Duration.ofSeconds((long) secPerWeek);
 	}
 
@@ -133,26 +132,37 @@ public class Team extends Named {
 			throw new Exception(msg);
 		}
 
-		int dayInRotation = (int) (deltaDays % getShiftRotation().getDuration().toDays());
+		int dayInRotation = (int) (deltaDays % getRotation().getDuration().toDays());
 		return dayInRotation;
 	}
 
-	/**
-	 * Calculate the working time from the beginning of the rotation to the
-	 * specified day in the rotation
-	 * 
-	 * @param date
-	 *            Date in the rotation
-	 * @return Duration
-	 * @throws Exception
-	 */
-	public Duration calculateWorkingTimeFromStartTo(LocalDate date) throws Exception {
+	// Calculate the working time from the beginning of the rotation to the
+	// specified day in the rotation
+	private Duration calculateWorkingTimeFromStartTo(LocalDate date) throws Exception {
 		Duration sum = Duration.ZERO;
 
 		int dayInRotation = getDayInRotation(date);
 
 		for (int i = 0; i < dayInRotation; i++) {
-			TimePeriod period = getShiftRotation().getPeriods().get(i);
+			TimePeriod period = getRotation().getPeriods().get(i);
+
+			if (period.isWorkingPeriod()) {
+				sum = sum.plus(period.getDuration());
+			}
+		}
+
+		return sum;
+	}
+
+	// Calculate the working time from the specified day in the rotation to the
+	// end of the rotation
+	private Duration calculateWorkingTimeFromToEnd(LocalDate date) throws Exception {
+		Duration sum = Duration.ZERO;
+
+		int dayInRotation = getDayInRotation(date);
+
+		for (int i = dayInRotation; i < getRotation().getDuration().toDays(); i++) {
+			TimePeriod period = getRotation().getPeriods().get(i);
 
 			if (period.isWorkingPeriod()) {
 				sum = sum.plus(period.getDuration());
@@ -163,30 +173,15 @@ public class Team extends Named {
 	}
 
 	/**
-	 * Calculate the working time from the specified day in the rotation to the
-	 * end of the rotation
+	 * Calculate the schedule working time between the specified dates and times
 	 * 
-	 * @param date
-	 *            Date in the rotation
-	 * @return Duration
+	 * @param from
+	 *            Starting date and time of day
+	 * @param to
+	 *            Ending date and time of day
+	 * @return Duration of working time
 	 * @throws Exception
 	 */
-	public Duration calculateWorkingTimeFromToEnd(LocalDate date) throws Exception {
-		Duration sum = Duration.ZERO;
-
-		int dayInRotation = getDayInRotation(date);
-
-		for (int i = dayInRotation; i < getShiftRotation().getDuration().toDays(); i++) {
-			TimePeriod period = getShiftRotation().getPeriods().get(i);
-
-			if (period.isWorkingPeriod()) {
-				sum = sum.plus(period.getDuration());
-			}
-		}
-
-		return sum;
-	}
-	
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
 
@@ -198,13 +193,13 @@ public class Team extends Named {
 		// find number of complete rotations
 		LocalDate fromDate = from.toLocalDate();
 		LocalDate toDate = to.toLocalDate();
-		
+
 		long deltaDays = toDate.toEpochDay() - fromDate.toEpochDay();
-		
+
 		int dayInFrom = getDayInRotation(fromDate);
 		int dayInTo = getDayInRotation(toDate);
-		
-		ShiftRotation rotation = getShiftRotation();
+
+		Rotation rotation = getRotation();
 		long rotationDays = rotation.getDayCount();
 
 		long rotationCount = deltaDays / rotationDays;
@@ -213,25 +208,24 @@ public class Team extends Named {
 		for (int i = 0; i < rotationCount; i++) {
 			sum = sum.plus(rotationTime);
 		}
-		
+
 		if (deltaDays % rotationDays != 0) {
 			// add partial rotations
-			
+
 			if (dayInTo > dayInFrom) {
 				// same rotation
 				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
 				Duration end = calculateWorkingTimeFromToEnd(toDate);
 				sum = sum.plus(begin.minus(end));
-				
-			} else
-			{
+
+			} else {
 				// crossed a rotation
 				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
 				Duration end = calculateWorkingTimeFromStartTo(toDate);
 				sum = sum.plus(begin.plus(end));
-			}				
+			}
 		}
-		
+
 		return sum;
 	}
 
@@ -249,15 +243,15 @@ public class Team extends Named {
 		String rp = WorkSchedule.getMessage("rotation.percentage");
 		String avg = WorkSchedule.getMessage("team.hours");
 
-		String text;
+		String text = "";
 		try {
 			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + rd + ": " + getRotationDuration()
-					+ ", " + rda + ": " + getShiftRotation().getDuration().toDays() + ", " + rw + ": "
-					+ getShiftRotation().getWorkingTime() + ", " + rp + ": " + df.format(getPercentageWorked()) + "%"
-					+ ", " + avg + ": " + getHoursWorkedPerWeek();
+					+ ", " + rda + ": " + getRotation().getDuration().toDays() + ", " + rw + ": "
+					+ getRotation().getWorkingTime() + ", " + rp + ": " + df.format(getPercentageWorked()) + "%" + ", "
+					+ avg + ": " + getHoursWorkedPerWeek();
 
 		} catch (Exception e) {
-			text = e.getMessage();
+			// ignore
 		}
 
 		return text;

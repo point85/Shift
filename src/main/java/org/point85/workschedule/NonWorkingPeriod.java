@@ -28,8 +28,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
- * Class NonWorkingPeriod represents non-working, non-recurring periods, e.g.
- * holidays and scheduled outages
+ * Class NonWorkingPeriod represents named non-working, non-recurring periods,
+ * e.g. holidays and scheduled outages such as for preventive maintenance
  * 
  * @author Kent Randall
  *
@@ -41,7 +41,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	// duration of period
 	private Duration duration;
 
-	NonWorkingPeriod(String name, String description, LocalDateTime startDateTime, Duration duration) {
+	NonWorkingPeriod(String name, String description, LocalDateTime startDateTime, Duration duration) throws Exception {
 		super(name, description);
 		this.startDateTime = startDateTime;
 		this.duration = duration;
@@ -121,7 +121,9 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	}
 
 	/**
-	 * Compare this non-working period to another such period
+	 * Compare this non-working period to another such period by start date and
+	 * time of day
+	 * 
 	 * @return -1 if less than, 0 if equal and 1 if greater than
 	 */
 	@Override

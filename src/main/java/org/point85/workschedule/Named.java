@@ -37,7 +37,11 @@ abstract class Named {
 	// description
 	private String description;
 
-	protected Named(String name, String description) {
+	protected Named(String name, String description) throws Exception {
+		if (name == null) {
+			throw new Exception(WorkSchedule.getMessage("name.not.defined"));
+		}
+		
 		this.name = name;
 		this.description = description;
 	}
@@ -85,6 +89,7 @@ abstract class Named {
 	 * 
 	 * @return true if equal
 	 */
+	@Override
 	public boolean equals(Object other) {
 
 		if (other == null || !(other instanceof Named)) {
@@ -99,6 +104,7 @@ abstract class Named {
 	 * 
 	 * @return hash code
 	 */
+	@Override
 	public int hashCode() {
 		return getName().hashCode();
 	}

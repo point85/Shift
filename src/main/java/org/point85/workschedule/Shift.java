@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class Shift is a scheduled working time period
+ * Class Shift is a scheduled working time period, including breaks.
  * 
  * @author Kent Randall
  *
@@ -41,10 +41,10 @@ public class Shift extends TimePeriod {
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
 
-	// corresponding off-shift break period
-	private Break offShift;
+	// corresponding off-shift period
+	private OffShift offShift;
 
-	Shift(String name, String description, LocalTime start, Duration duration) {
+	Shift(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
 	}
 
@@ -72,29 +72,13 @@ public class Shift extends TimePeriod {
 	/**
 	 * Remove a break from this shift
 	 * 
-	 * @param breakDefinition
+	 * @param breakPeriod
+	 *            {@link Break}
 	 */
 	public void removeBreak(Break breakPeriod) {
 		if (this.breaks.contains(breakPeriod)) {
 			this.breaks.remove(breakPeriod);
 		}
-	}
-
-	/**
-	 * Calculate the working time as the scheduled time less breaks
-	 * 
-	 * @return Duration
-	 */
-	public Duration calculateWorkingTime() {
-		// add up breaks
-		Duration breaksDuration = Duration.ZERO;
-
-		for (Break breakDefinition : this.breaks) {
-			breaksDuration = breaksDuration.plus(breakDefinition.getDuration());
-		}
-
-		// subtract from shift duration
-		return getDuration().minus(breaksDuration);
 	}
 
 	/**
@@ -109,8 +93,9 @@ public class Shift extends TimePeriod {
 	 * @param duration
 	 *            Duration of break
 	 * @return {@link Break}
+	 * @throws Exception 
 	 */
-	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) {
+	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		Break period = new Break(name, description, startTime, duration);
 		addBreak(period);
 		return period;
@@ -203,9 +188,9 @@ public class Shift extends TimePeriod {
 		return answer;
 	}
 
-	Break getOffShift() {
+	OffShift getOffShift() throws Exception {
 		if (offShift == null) {
-			offShift = new Break(getName(), getDescription(), getStart(), getDuration());
+			offShift = new OffShift(getName(), getDescription(), getStart(), getDuration());
 		}
 		return offShift;
 	}

@@ -28,7 +28,9 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 /**
- * Class TimePeriod is a period of time with a specified duration and starting time of day.
+ * Class TimePeriod is a named period of time with a specified duration and
+ * starting time of day.
+ * 
  * @author Kent Randall
  *
  */
@@ -39,8 +41,17 @@ abstract class TimePeriod extends Named {
 	// length of time period
 	private Duration duration;
 
-	protected TimePeriod(String name, String description, LocalTime startTime, Duration duration) {
+	protected TimePeriod(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		super(name, description);
+
+		if (startTime == null) {
+			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
+		}
+
+		if (duration == null) {
+			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
+		}
+
 		this.startTime = startTime;
 		this.duration = duration;
 	}
@@ -53,7 +64,7 @@ abstract class TimePeriod extends Named {
 	public Duration getDuration() {
 		return duration;
 	}
-
+	
 	/**
 	 * Set duration
 	 * 
@@ -72,24 +83,7 @@ abstract class TimePeriod extends Named {
 	public LocalTime getStart() {
 		return startTime;
 	}
-
-	/**
-	 * Get period end
-	 * 
-	 * @return End time
-	 * @throws Exception
-	 */
-	public LocalTime getEnd() throws Exception {
-		if (startTime == null) {
-			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
-		}
-
-		if (duration == null) {
-			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
-		}
-		return startTime.plus(duration);
-	}
-
+	
 	/**
 	 * Set period start time
 	 * 
@@ -100,6 +94,17 @@ abstract class TimePeriod extends Named {
 		this.startTime = startTime;
 	}
 
+	/**
+	 * Get period end
+	 * 
+	 * @return End time
+	 * @throws Exception
+	 */
+	public LocalTime getEnd() throws Exception {
+		return startTime.plus(duration);
+	}
+
+	// the working period flag must be set
 	abstract boolean isWorkingPeriod();
 
 	/**
@@ -107,15 +112,14 @@ abstract class TimePeriod extends Named {
 	 */
 	@Override
 	public String toString() {
-		String text = null;
+		String text = "";
 		String start = WorkSchedule.getMessage("period.start");
 		String end = WorkSchedule.getMessage("period.end");
 
 		try {
-			text = super.toString() + ", " + start + ": " + getStart() + " (" + getDuration() + ")" + ", " + end
-					+ ": " + getEnd();
+			text = super.toString() + ", " + start + ": " + getStart() + " (" + getDuration() + ")" + ", " + end + ": "
+					+ getEnd();
 		} catch (Exception e) {
-			text = e.getMessage();
 		}
 
 		return text;

@@ -36,8 +36,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Class WorkSchedule represents a groyup of teams who collectively work one or
- * more shifts.
+ * Class WorkSchedule represents a named group of teams who collectively work
+ * one or more shifts with off-shift periods.
  * 
  * @author Kent Randall
  *
@@ -65,8 +65,9 @@ public class WorkSchedule extends Named {
 	 *            Schedule name
 	 * @param description
 	 *            Schedule description
+	 * @throws Exception 
 	 */
-	public WorkSchedule(String name, String description) {
+	public WorkSchedule(String name, String description) throws Exception {
 		super(name, description);
 	}
 
@@ -130,7 +131,7 @@ public class WorkSchedule extends Named {
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
-			ShiftRotation shiftRotation = team.getShiftRotation();
+			Rotation shiftRotation = team.getRotation();
 			int dayInRotation = team.getDayInRotation(day);
 
 			// shift or off shift
@@ -148,6 +149,14 @@ public class WorkSchedule extends Named {
 		return workingShifts;
 	}
 
+	/**
+	 * Get the list of shift instances for the specified date and time of day
+	 * 
+	 * @param dateTime
+	 *            Date and time of day
+	 * @return List of {@link ShiftInstance}
+	 * @throws Exception
+	 */
 	public List<ShiftInstance> getShiftInstancesForTime(LocalDateTime dateTime) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
@@ -178,7 +187,7 @@ public class WorkSchedule extends Named {
 	 * @return {@link Team}
 	 * @throws Exception
 	 */
-	public Team createTeam(String name, String description, ShiftRotation rotation, LocalDate rotationStart)
+	public Team createTeam(String name, String description, Rotation rotation, LocalDate rotationStart)
 			throws Exception {
 		Team team = new Team(name, description, rotation, rotationStart);
 
@@ -231,7 +240,7 @@ public class WorkSchedule extends Named {
 		// can't be in use
 		for (Shift inUseShift : shifts) {
 			for (Team team : teams) {
-				ShiftRotation rotation = team.getShiftRotation();
+				Rotation rotation = team.getRotation();
 
 				for (TimePeriod period : rotation.getPeriods()) {
 					if (period.equals(inUseShift)) {
@@ -281,15 +290,25 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
-	private Duration getScheduledTime() {
+	private Duration getRotationWorkingTime() {
 		Duration sum = Duration.ZERO;
 
 		for (Team team : teams) {
-			sum = sum.plus(team.getShiftRotation().getWorkingTime());
+			sum = sum.plus(team.getRotation().getWorkingTime());
 		}
 		return sum;
 	}
 
+	/**
+	 * Calculate the schedule working time between the specified dates and times
+	 * 
+	 * @param from
+	 *            Starting date and time
+	 * @param to
+	 *            Ending date and time
+	 * @return Working time duration
+	 * @throws Exception
+	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
 
@@ -311,7 +330,7 @@ public class WorkSchedule extends Named {
 	}
 
 	/**
-	 * Send shift instance output to a print stream
+	 * Print shift instances
 	 * 
 	 * @param start
 	 *            Starting date
@@ -369,9 +388,8 @@ public class WorkSchedule extends Named {
 		String stn = getMessage("schedule.total");
 
 		String text = sch + ": " + super.toString();
-
 		try {
-			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getScheduledTime();
+			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getRotationWorkingTime();
 
 			// shifts
 			text += "\n" + sf + ": ";
@@ -406,10 +424,10 @@ public class WorkSchedule extends Named {
 				}
 				text += "\n" + stn + ": " + totalMinutes;
 			}
-
 		} catch (Exception e) {
-			text = e.getMessage();
+			// ignore
 		}
+
 		return text;
 	}
 }

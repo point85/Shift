@@ -27,8 +27,8 @@ package org.point85.workschedule;
 import java.time.LocalDateTime;
 
 /**
- * Class ShiftInstance is an instance of a shift. A shift instance is worked by
- * a {@link Team} during a {@link ShiftRotation}
+ * Class ShiftInstance is an instance of a {@link Shift}. A shift instance is
+ * worked by a {@link Team}.
  * 
  * @author Kent Randall
  *
@@ -85,6 +85,12 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 		return team;
 	}
 
+	/**
+	 * Compare this non-working period to another such period by start time of
+	 * day
+	 * 
+	 * @return -1 if less than, 0 if equal and 1 if greater than
+	 */
 	@Override
 	public int compareTo(ShiftInstance other) {
 		return getStartTime().compareTo(other.getStartTime());

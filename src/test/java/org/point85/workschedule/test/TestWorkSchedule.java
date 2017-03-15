@@ -24,18 +24,24 @@ SOFTWARE.
 
 package org.point85.workschedule.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
+import org.point85.workschedule.Break;
+import org.point85.workschedule.NonWorkingPeriod;
+import org.point85.workschedule.Rotation;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
-import org.point85.workschedule.ShiftRotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
@@ -54,19 +60,19 @@ public class TestWorkSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(18, 0, 0), Duration.ofHours(12));
 
 		// day rotation
-		ShiftRotation dayRotation = new ShiftRotation();
+		Rotation dayRotation = new Rotation();
 		dayRotation.on(3, day).off(4, day).on(4, day).off(3, day);
 
 		// inverse day rotation
-		ShiftRotation inverseDayRotation = new ShiftRotation();
+		Rotation inverseDayRotation = new Rotation();
 		inverseDayRotation.off(3, day).on(4, day).off(4, day).on(3, day);
 
 		// night rotation
-		ShiftRotation nightRotation = new ShiftRotation();
+		Rotation nightRotation = new Rotation();
 		nightRotation.on(4, night).off(3, night).on(3, night).off(4, night);
 
 		// inverse night rotation
-		ShiftRotation inverseNightRotation = new ShiftRotation();
+		Rotation inverseNightRotation = new Rotation();
 		inverseNightRotation.off(4, night).on(3, night).off(3, night).on(4, night);
 
 		LocalDate rotationStart = LocalDate.of(2014, 1, 6);
@@ -87,7 +93,7 @@ public class TestWorkSchedule extends BaseTest {
 		// shift, start at 08:00 for 9 hours
 		Shift day = schedule.createShift("Day", "day shift", LocalTime.of(8, 0, 0), Duration.ofHours(9));
 
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(3, day).off(7, day).on(1, day).off(7, day).on(1, day).off(7, day).on(1, day).off(7, day).on(1, day)
 				.off(7, day);
 
@@ -113,7 +119,7 @@ public class TestWorkSchedule extends BaseTest {
 		Shift shift = schedule.createShift("24 Hours", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(1, shift).off(4, shift).on(1, shift).off(2, shift);
 
 		schedule.createTeam("A", "Platoon1", rotation, LocalDate.of(2014, 2, 2));
@@ -133,7 +139,7 @@ public class TestWorkSchedule extends BaseTest {
 		Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
 
 		// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(2, shift).off(2, shift).on(2, shift).off(2, shift).on(2, shift).off(8, shift);
 
 		Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
@@ -169,11 +175,11 @@ public class TestWorkSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// 7 days ON, 7 OFF
-		ShiftRotation dayRotation = new ShiftRotation();
+		Rotation dayRotation = new Rotation();
 		dayRotation.on(7, day).off(7, day);
 
 		// 7 nights ON, 7 OFF
-		ShiftRotation nightRotation = new ShiftRotation();
+		Rotation nightRotation = new Rotation();
 		nightRotation.on(7, night).off(7, night);
 
 		schedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
@@ -221,11 +227,11 @@ public class TestWorkSchedule extends BaseTest {
 		Shift shift2 = schedule.createShift("Shift2", "Shift #2", shift2Start, shiftDuration);
 
 		// shift 1, 5 days ON, 2 OFF
-		ShiftRotation rotation1 = new ShiftRotation();
+		Rotation rotation1 = new Rotation();
 		rotation1.on(5, shift1).off(2, shift1);
 
 		// shift 2, 5 days ON, 2 OFF
-		ShiftRotation rotation2 = new ShiftRotation();
+		Rotation rotation2 = new Rotation();
 		rotation2.on(5, shift2).off(2, shift2);
 
 		LocalDate startRotation = LocalDate.of(2016, 1, 1);
@@ -282,14 +288,122 @@ public class TestWorkSchedule extends BaseTest {
 
 	}
 
-	public static void main(String[] args) throws Exception {
-		// TestWorkSchedule test = new TestWorkSchedule();
-		// test.testFirefighterShifts1();
-		// test.testFirefighterShifts2();
-		// test.testManufacturingShifts();
-		// test.testNursingICUShifts();
-		// test.testPostalServiceShifts();
-		// test.testGenericShift();
+	@Test
+	public void testExceptions() throws Exception {
+		WorkSchedule schedule = new WorkSchedule("Exceptions", "Test exceptions");
+		Duration shiftDuration = Duration.ofHours(8);
+		LocalTime shiftStart = LocalTime.of(7, 0, 0);
+
+		NonWorkingPeriod period = schedule.createNonWorkingPeriod("Non-working", "Non-working period",
+				LocalDateTime.of(2017, 1, 1, 0, 0, 0), Duration.ofHours(24));
+
+		try {
+			// same period
+			schedule.createNonWorkingPeriod("Non-working", "Non-working period", LocalDateTime.of(2017, 1, 1, 0, 0, 0),
+					Duration.ofHours(24));
+			fail();
+		} catch (Exception e) {
+		}
+
+		// shift
+		Shift shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
+
+		try {
+			// same shift
+			shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
+			fail();
+		} catch (Exception e) {
+		}
+
+		Rotation rotation = new Rotation();
+		rotation.on(5, shift).off(2, shift);
+
+		LocalDate startRotation = LocalDate.of(2016, 12, 31);
+		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
+		team.setRotationStart(startRotation.plusDays(1));
+
+		// ok
+		schedule.calculateWorkingTime(LocalDateTime.of(2017, 1, 1, 7, 0, 0), LocalDateTime.of(2017, 2, 1, 0, 0, 0));
+
+		try {
+			// end before start
+			schedule.calculateWorkingTime(LocalDateTime.of(2017, 1, 2, 0, 0, 0), LocalDateTime.of(2017, 1, 1, 0, 0, 0));
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			// same team
+			team = schedule.createTeam("Team", "Team", rotation, startRotation);
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			// date before start
+			team.getDayInRotation(LocalDate.of(2016, 1, 1));
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			// end before start
+			schedule.printShiftInstances(LocalDate.of(2017, 1, 2), LocalDate.of(2017, 1, 1));
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			// delete in-use shift
+			schedule.deleteShift(shift);
+			fail();
+		} catch (Exception e) {
+		}
+
+		// breaks
+		Break lunch = shift.createBreak("Lunch", "Lunch", LocalTime.of(12, 0, 0), Duration.ofMinutes(60));
+		lunch.setDuration(Duration.ofMinutes(30));
+		lunch.setStart(LocalTime.of(11, 30, 0));
+		shift.removeBreak(lunch);
+		shift.removeBreak(lunch);
+
+		Shift shift2 = schedule.createShift("Test2", "Test shift2", shiftStart, shiftDuration);
+		Break lunch2 = shift2.createBreak("Lunch2", "Lunch", LocalTime.of(12, 0, 0), Duration.ofMinutes(60));
+		shift.removeBreak(lunch2);
+
+		// ok to delete
+		WorkSchedule schedule2 = new WorkSchedule("Exceptions2", "Test exceptions2");
+		schedule2.setName("Schedule 2");
+		schedule2.setDescription("a description");
+
+		schedule2.deleteShift(shift);
+		schedule2.deleteTeam(team);
+		schedule2.deleteNonWorkingPeriod(period);
+
+		// nulls
+		try {
+			schedule.createShift("1", "1", null, Duration.ofMinutes(60));
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			schedule.createShift("1", "1", shiftStart, null);
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
+			schedule.createShift(null, "1", shiftStart, Duration.ofMinutes(60));
+			fail();
+		} catch (Exception e) {
+		}
+
+		assertFalse(shift.equals(rotation));
+		
+		// hashcode()
+		Map<String, Team> namedObjects = new HashMap<>();
+		namedObjects.put(team.getName(), team);
 
 	}
 }

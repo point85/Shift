@@ -29,7 +29,7 @@ import java.time.LocalTime;
 
 import org.junit.Test;
 import org.point85.workschedule.Shift;
-import org.point85.workschedule.ShiftRotation;
+import org.point85.workschedule.Rotation;
 import org.point85.workschedule.WorkSchedule;
 
 public class TestSnapSchedule extends BaseTest {
@@ -46,7 +46,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(23, 0, 0), Duration.ofHours(8));
 
 		// Team rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(3, day).on(4, swing).off(3, day).on(4, day).on(3, swing).off(4, day).on(3, day).on(4, night)
 				.off(3, day).on(4, day).on(3, night).off(4, day);
 
@@ -71,7 +71,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(0, 0, 0), Duration.ofHours(24));
 
 		// Team rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(1, shift).off(1, shift).on(1, shift).off(1, shift).on(1, shift).off(4, shift);
 
 		// 3 teams
@@ -95,7 +95,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift day2 = schedule.createShift("Day2", "Day shift #2", LocalTime.of(7, 0, 0), Duration.ofHours(8));
 
 		// Team rotation (28 days)
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(4, day1).on(1, day2).off(3, day1).on(4, day1).off(3, day1).on(4, day1).off(2, day2).on(4, day1)
 				.on(1, day2).off(2, day1);
 
@@ -116,7 +116,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(9, 0, 0), Duration.ofHours(8));
 
 		// Team1 rotation (5 days)
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(5, day).off(2, day);
 
 		// 1 team, 1 shift
@@ -149,7 +149,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night2 = schedule.createShift("Night2", "Night shift #2", LocalTime.of(23, 0, 0), Duration.ofHours(8));
 
 		// shift rotation (28 days)
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(5, day2).on(2, day1).off(3, day1).on(2, night2).on(2, night1).on(3, night2).off(4, day1)
 				.on(5, swing).off(2, day1);
 
@@ -181,7 +181,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(22, 0, 0), Duration.ofHours(14));
 
 		// Team1 rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(1, day).on(1, crossover).on(1, night).off(1, day);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
@@ -209,7 +209,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// Team1 rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(4, night).off(3, night).on(3, day).off(1, day).on(3, night).off(3, night).on(4, day).off(7, day);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
@@ -235,7 +235,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		rotation.on(1, day).on(1, night).off(1, night);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
@@ -265,17 +265,17 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(23, 0, 0), Duration.ofHours(8));
 
 		// day rotation
-		ShiftRotation dayRotation = new ShiftRotation();
+		Rotation dayRotation = new Rotation();
 		dayRotation.on(6, day).off(3, day).on(5, day).off(3, day).on(6, day).off(2, day).on(6, day).off(2, day)
 				.on(6, day).off(2, day).on(6, day).off(2, day);
 
 		// swing rotation
-		ShiftRotation swingRotation = new ShiftRotation();
+		Rotation swingRotation = new Rotation();
 		swingRotation.on(6, swing).off(3, swing).on(5, swing).off(3, swing).on(6, swing).off(2, swing).on(6, swing)
 				.off(2, swing).on(6, swing).off(2, swing).on(6, swing).off(2, swing);
 
 		// night rotation
-		ShiftRotation nightRotation = new ShiftRotation();
+		Rotation nightRotation = new Rotation();
 		nightRotation.on(6, night).off(3, night).on(5, night).off(3, night).on(6, night).off(2, night).on(6, night)
 				.off(2, night).on(6, night).off(2, night).on(6, night).off(2, night);
 
@@ -324,12 +324,12 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// Team1 rotation
-		ShiftRotation team1Rotation = new ShiftRotation();
+		Rotation team1Rotation = new Rotation();
 		// 1 day on (and repeat)
 		team1Rotation.on(1, day);
 
 		// Team1 rotation
-		ShiftRotation team2Rotation = new ShiftRotation();
+		Rotation team2Rotation = new Rotation();
 		// 1 night on (and repeat)
 		team2Rotation.on(1, night);
 
@@ -355,7 +355,7 @@ public class TestSnapSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// rotation
-		ShiftRotation rotation = new ShiftRotation();
+		Rotation rotation = new Rotation();
 		// 2 days on, 2 off, 3 on, 2 off, 2 on, 3 off (and repeat)
 		rotation.on(2, day).off(2, day).on(3, day).off(2, day).on(2, day).off(3, day).on(2, day).off(2, day).on(3, day)
 				.off(2, day).on(2, day).off(3, day);
@@ -370,30 +370,5 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
 
 		runBaseTest(schedule, Duration.ofHours(336), Duration.ofDays(56), referenceDate);
-	}
-
-	public static void main(String[] args) {
-		TestSnapSchedule test = new TestSnapSchedule();
-
-		try {
-
-			// test.testPanama();
-
-			// test.testTwoTeam();
-
-			// test.testDNO();
-			// test.testDupont();
-			// test.testICUInterns();
-			test.test8Plus12();
-			test.test9to5();
-			test.test21TeamFixed();
-			test.test549();
-			test.test3TeamFixed24();
-			test.testLowNight();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 }

@@ -33,14 +33,14 @@ import java.util.List;
  * @author Kent Randall
  *
  */
-public class ShiftRotation {
-	// list of shifts and off-shift periods
+public class Rotation {
+	// list of shift and off-shift periods
 	private List<TimePeriod> periods = new ArrayList<>();
 
 	/**
 	 * Construct a shift rotation
 	 */
-	public ShiftRotation() {
+	public Rotation() {
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class ShiftRotation {
 	 *            {@link Shift}
 	 * @return This shift rotation
 	 */
-	public ShiftRotation on(int count, Shift shift) {
+	public Rotation on(int count, Shift shift) {
 		for (int i = 0; i < count; i++) {
 			periods.add(shift);
 		}
@@ -80,8 +80,9 @@ public class ShiftRotation {
 	 * @param shift
 	 *            The {@link Shift} with the corresponding off period
 	 * @return This shift rotation
+	 * @throws Exception 
 	 */
-	public ShiftRotation off(int count, Shift shift) {
+	public Rotation off(int count, Shift shift) throws Exception {
 		for (int i = 0; i < count; i++) {
 			periods.add(shift.getOffShift());
 		}
