@@ -225,5 +225,4 @@ public class Shift extends TimePeriod {
 		}
 		return text;
 	}
-
 }

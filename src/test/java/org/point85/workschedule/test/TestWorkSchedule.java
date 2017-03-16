@@ -47,7 +47,7 @@ import org.point85.workschedule.WorkSchedule;
 
 public class TestWorkSchedule extends BaseTest {
 
-	// @Test
+	@Test
 	public void testNursingICUShifts() throws Exception {
 		// ER nursing schedule
 		WorkSchedule schedule = new WorkSchedule("Nursing ICU",
@@ -85,7 +85,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(84), Duration.ofDays(14), rotationStart);
 	}
 
-	// @Test
+	@Test
 	public void testPostalServiceShifts() throws Exception {
 		// United States Postal Service
 		WorkSchedule schedule = new WorkSchedule("USPS", "Six 9 hr shifts, rotating every 42 days");
@@ -110,7 +110,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(63), Duration.ofDays(42), rotationStart);
 	}
 
-	// @Test
+	@Test
 	public void testFirefighterShifts2() throws Exception {
 		// Seattle, WA fire shifts
 		WorkSchedule schedule = new WorkSchedule("Seattle", "Four 24 hour alternating shifts");
@@ -130,7 +130,7 @@ public class TestWorkSchedule extends BaseTest {
 		runBaseTest(schedule, Duration.ofHours(48), Duration.ofDays(8), LocalDate.of(2014, 2, 4));
 	}
 
-	// @Test
+	@Test
 	public void testFirefighterShifts1() throws Exception {
 		// Kern Co, CA
 		WorkSchedule schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
@@ -162,7 +162,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	}
 
-	// @Test
+	@Test
 	public void testManufacturingShifts() throws Exception {
 		// manufacturing company
 		WorkSchedule schedule = new WorkSchedule("Manufacturing Company - four twelves",
@@ -195,6 +195,12 @@ public class TestWorkSchedule extends BaseTest {
 	public void testGenericShift() throws Exception {
 		// regular work week with holidays and breaks
 		WorkSchedule schedule = new WorkSchedule("Regular 40 hour work week", "9 to 5");
+		
+		try {
+			schedule.setName(null);
+			fail();
+		} catch (Exception e) {
+		}
 
 		// holidays
 		schedule.createNonWorkingPeriod("NEW YEARS", "New Years day", LocalDateTime.of(2016, 1, 1, 0, 0, 0),
@@ -291,7 +297,7 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testExceptions() throws Exception {
 		WorkSchedule schedule = new WorkSchedule("Exceptions", "Test exceptions");
-		Duration shiftDuration = Duration.ofHours(8);
+		Duration shiftDuration = Duration.ofHours(24);
 		LocalTime shiftStart = LocalTime.of(7, 0, 0);
 
 		NonWorkingPeriod period = schedule.createNonWorkingPeriod("Non-working", "Non-working period",
@@ -325,6 +331,7 @@ public class TestWorkSchedule extends BaseTest {
 
 		// shift
 		Shift shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
+		shift.getWorkingTimeBetween(shiftStart.minusHours(1), shift.getEnd().plusHours(1));
 		
 		try {
 			shift.setDuration(null);
@@ -434,8 +441,11 @@ public class TestWorkSchedule extends BaseTest {
 		assertFalse(shift.equals(rotation));
 
 		// hashcode()
-		Map<String, Team> namedObjects = new HashMap<>();
-		namedObjects.put(team.getName(), team);
+		team.hashCode();
+		String name = team.getName();
+		Map<String, Team> teams = new HashMap<>();
+		teams.put(name, team);
+		teams.get(name);
 
 	}
 }
