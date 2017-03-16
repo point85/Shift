@@ -65,7 +65,7 @@ public class WorkSchedule extends Named {
 	 *            Schedule name
 	 * @param description
 	 *            Schedule description
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public WorkSchedule(String name, String description) throws Exception {
 		super(name, description);
@@ -411,13 +411,17 @@ public class WorkSchedule extends Named {
 			text += "\n" + sc + ": " + df.format(teamPercent) + "%";
 
 			// non-working periods
-			if (getNonWorkingPeriods().size() > 0) {
+			List<NonWorkingPeriod> periods = getNonWorkingPeriods();
+
+			if (periods.size() > 0) {
 				text += "\n" + sn + ":";
 
 				Duration totalMinutes = Duration.ofMinutes(0);
 
+				Collections.sort(periods);
+
 				count = 1;
-				for (NonWorkingPeriod period : getNonWorkingPeriods()) {
+				for (NonWorkingPeriod period : periods) {
 					totalMinutes = totalMinutes.plusMinutes(period.getDuration().toMinutes());
 					text += "\n   (" + count + ") " + period;
 					count++;

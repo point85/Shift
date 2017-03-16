@@ -101,11 +101,6 @@ public class Shift extends TimePeriod {
 		return period;
 	}
 
-	@Override
-	boolean isWorkingPeriod() {
-		return true;
-	}
-
 	/**
 	 * Calculate working time from the start of the shift to the specified time
 	 * 

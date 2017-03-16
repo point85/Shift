@@ -80,7 +80,7 @@ public class Rotation {
 	 * @param shift
 	 *            The {@link Shift} with the corresponding off period
 	 * @return This shift rotation
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Rotation off(int count, Shift shift) throws Exception {
 		for (int i = 0; i < count; i++) {
@@ -119,6 +119,14 @@ public class Rotation {
 	 */
 	@Override
 	public String toString() {
-		return WorkSchedule.getMessage("rotation.periods") + ": " + periods;
+		String rd = WorkSchedule.getMessage("rotation.duration");
+		String rda = WorkSchedule.getMessage("rotation.days");
+		String rw = WorkSchedule.getMessage("rotation.working");
+		String rper = WorkSchedule.getMessage("rotation.periods");
+
+		String text = rper + ": " + periods + ", " + rd + ": " + getDuration() + ", " + rda + ": "
+				+ getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
+
+		return text;
 	}
 }

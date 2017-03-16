@@ -43,8 +43,8 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 
 	NonWorkingPeriod(String name, String description, LocalDateTime startDateTime, Duration duration) throws Exception {
 		super(name, description);
-		this.startDateTime = startDateTime;
-		this.duration = duration;
+		setStartDateTime(startDateTime);
+		setDuration(duration);
 	}
 
 	/**
@@ -61,8 +61,13 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * 
 	 * @param startDateTime
 	 *            Period start
+	 * @throws Exception
 	 */
-	public void setStartDateTime(LocalDateTime startDateTime) {
+	public void setStartDateTime(LocalDateTime startDateTime) throws Exception {
+		if (startDateTime == null) {
+			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
+		}
+
 		this.startDateTime = startDateTime;
 	}
 
@@ -73,13 +78,6 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * @throws Exception
 	 */
 	public LocalDateTime getEndDateTime() throws Exception {
-		if (startDateTime == null) {
-			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
-		}
-
-		if (duration == null) {
-			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
-		}
 		return startDateTime.plus(duration);
 	}
 
@@ -97,8 +95,13 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * 
 	 * @param duration
 	 *            Duration
+	 * @throws Exception
 	 */
-	public void setDuration(Duration duration) {
+	public void setDuration(Duration duration) throws Exception {
+		if (duration == null || duration.getSeconds() == 0) {
+			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
+		}
+
 		this.duration = duration;
 	}
 
@@ -115,7 +118,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 			text = super.toString() + ", " + start + ": " + getStartDateTime() + " (" + getDuration() + ")" + ", " + end
 					+ ": " + getEndDateTime();
 		} catch (Exception e) {
-			text = e.getMessage();
+			// ignore
 		}
 		return text;
 	}

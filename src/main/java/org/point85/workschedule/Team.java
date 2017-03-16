@@ -236,19 +236,14 @@ public class Team extends Named {
 	public String toString() {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);
+
 		String rs = WorkSchedule.getMessage("rotation.start");
-		String rd = WorkSchedule.getMessage("rotation.duration");
-		String rda = WorkSchedule.getMessage("rotation.days");
-		String rw = WorkSchedule.getMessage("rotation.working");
-		String rp = WorkSchedule.getMessage("rotation.percentage");
 		String avg = WorkSchedule.getMessage("team.hours");
 
 		String text = "";
 		try {
-			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + rd + ": " + getRotationDuration()
-					+ ", " + rda + ": " + getRotation().getDuration().toDays() + ", " + rw + ": "
-					+ getRotation().getWorkingTime() + ", " + rp + ": " + df.format(getPercentageWorked()) + "%" + ", "
-					+ avg + ": " + getHoursWorkedPerWeek();
+			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + rotation.toString()
+					+ df.format(getPercentageWorked()) + "%" + ", " + avg + ": " + getHoursWorkedPerWeek();
 
 		} catch (Exception e) {
 			// ignore

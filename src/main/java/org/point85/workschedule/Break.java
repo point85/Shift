@@ -26,10 +26,4 @@ public class Break extends TimePeriod {
 	public Break(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
 	}
-
-	// breaks are considered to be in the shift's working period
-	@Override
-	boolean isWorkingPeriod() {
-		return true;
-	}
 }

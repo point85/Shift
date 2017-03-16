@@ -43,17 +43,8 @@ abstract class TimePeriod extends Named {
 
 	protected TimePeriod(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		super(name, description);
-
-		if (startTime == null) {
-			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
-		}
-
-		if (duration == null) {
-			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
-		}
-
-		this.startTime = startTime;
-		this.duration = duration;
+		setStart(startTime);
+		setDuration(duration);
 	}
 
 	/**
@@ -70,8 +61,12 @@ abstract class TimePeriod extends Named {
 	 * 
 	 * @param duration
 	 *            Period duration
+	 * @throws Exception 
 	 */
-	public void setDuration(Duration duration) {
+	public void setDuration(Duration duration) throws Exception {
+		if (duration == null || duration.getSeconds() == 0) {
+			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
+		}
 		this.duration = duration;
 	}
 
@@ -89,8 +84,12 @@ abstract class TimePeriod extends Named {
 	 * 
 	 * @param startTime
 	 *            Start time
+	 * @throws Exception 
 	 */
-	public void setStart(LocalTime startTime) {
+	public void setStart(LocalTime startTime) throws Exception {
+		if (startTime == null) {
+			throw new Exception(WorkSchedule.getMessage("start.not.defined"));
+		}
 		this.startTime = startTime;
 	}
 
@@ -104,8 +103,10 @@ abstract class TimePeriod extends Named {
 		return startTime.plus(duration);
 	}
 
-	// the working period flag must be set
-	abstract boolean isWorkingPeriod();
+	// breaks are considered to be in the shift's working period
+	boolean isWorkingPeriod() {
+		return true;
+	}
 
 	/**
 	 * Build a string value for this period
@@ -120,6 +121,7 @@ abstract class TimePeriod extends Named {
 			text = super.toString() + ", " + start + ": " + getStart() + " (" + getDuration() + ")" + ", " + end + ": "
 					+ getEnd();
 		} catch (Exception e) {
+			// ignore
 		}
 
 		return text;

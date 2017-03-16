@@ -298,6 +298,24 @@ public class TestWorkSchedule extends BaseTest {
 				LocalDateTime.of(2017, 1, 1, 0, 0, 0), Duration.ofHours(24));
 
 		try {
+			period.setDuration(null);
+			fail();
+		} catch (Exception e) {
+		}
+		
+		try {
+			period.setDuration(Duration.ofSeconds(0));
+			fail();
+		} catch (Exception e) {
+		}
+		
+		try {
+			period.setStartDateTime(null);
+			fail();
+		} catch (Exception e) {
+		}
+
+		try {
 			// same period
 			schedule.createNonWorkingPeriod("Non-working", "Non-working period", LocalDateTime.of(2017, 1, 1, 0, 0, 0),
 					Duration.ofHours(24));
@@ -307,6 +325,18 @@ public class TestWorkSchedule extends BaseTest {
 
 		// shift
 		Shift shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
+		
+		try {
+			shift.setDuration(null);
+			fail();
+		} catch (Exception e) {
+		}
+		
+		try {
+			shift.setDuration(Duration.ofSeconds(0));
+			fail();
+		} catch (Exception e) {
+		}
 
 		try {
 			// same shift
@@ -355,7 +385,7 @@ public class TestWorkSchedule extends BaseTest {
 
 		try {
 			// delete in-use shift
-			schedule.deleteShift(shift);
+			schedule.deleteShift(shift); 
 			fail();
 		} catch (Exception e) {
 		}
@@ -368,6 +398,8 @@ public class TestWorkSchedule extends BaseTest {
 		shift.removeBreak(lunch);
 
 		Shift shift2 = schedule.createShift("Test2", "Test shift2", shiftStart, shiftDuration);
+		assertFalse(shift.equals(shift2));
+		
 		Break lunch2 = shift2.createBreak("Lunch2", "Lunch", LocalTime.of(12, 0, 0), Duration.ofMinutes(60));
 		shift.removeBreak(lunch2);
 
@@ -400,7 +432,7 @@ public class TestWorkSchedule extends BaseTest {
 		}
 
 		assertFalse(shift.equals(rotation));
-		
+
 		// hashcode()
 		Map<String, Team> namedObjects = new HashMap<>();
 		namedObjects.put(team.getName(), team);

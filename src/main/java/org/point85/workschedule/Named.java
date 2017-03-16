@@ -38,12 +38,8 @@ abstract class Named {
 	private String description;
 
 	protected Named(String name, String description) throws Exception {
-		if (name == null) {
-			throw new Exception(WorkSchedule.getMessage("name.not.defined"));
-		}
-		
-		this.name = name;
-		this.description = description;
+		setName(name);
+		setDescription(description);
 	}
 
 	/**
@@ -60,8 +56,12 @@ abstract class Named {
 	 * 
 	 * @param name
 	 *            Name
+	 * @throws Exception
 	 */
-	public void setName(String name) {
+	public void setName(String name) throws Exception {
+		if (name == null) {
+			throw new Exception(WorkSchedule.getMessage("name.not.defined"));
+		}
 		this.name = name;
 	}
 
