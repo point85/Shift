@@ -210,21 +210,24 @@ public class Team extends Named {
 		}
 
 		if (deltaDays % rotationDays != 0) {
+			/*
 			// add partial rotations
 
 			if (dayInTo > dayInFrom) {
 				// same rotation
+				*/
 				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
 				Duration end = calculateWorkingTimeFromToEnd(toDate);
 				sum = sum.plus(begin.minus(end));
-
+/*
 			} else {
 				// crossed a rotation
 				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
 				Duration end = calculateWorkingTimeFromStartTo(toDate);
 				sum = sum.plus(begin.plus(end));
 			}
-		}
+			*/
+		} 
 
 		return sum;
 	}
