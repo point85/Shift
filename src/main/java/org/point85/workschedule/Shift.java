@@ -111,7 +111,7 @@ public class Shift extends TimePeriod {
 	 * @return Duration of working time
 	 * @throws Exception exception
 	 */
-	public Duration getWorkingTimeBetween(LocalTime from, LocalTime to) throws Exception {
+	public Duration calculateWorkingTime(LocalTime from, LocalTime to) throws Exception {
 		Duration duration = Duration.ZERO;
 
 		int startSecond = getStart().toSecondOfDay();

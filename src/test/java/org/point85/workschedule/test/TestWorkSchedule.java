@@ -331,7 +331,7 @@ public class TestWorkSchedule extends BaseTest {
 
 		// shift
 		Shift shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
-		shift.getWorkingTimeBetween(shiftStart.minusHours(1), shift.getEnd().plusHours(1));
+		shift.calculateWorkingTime(shiftStart.minusHours(1), shift.getEnd().plusHours(1));
 		
 		try {
 			shift.setDuration(null);
@@ -461,47 +461,47 @@ public class TestWorkSchedule extends BaseTest {
 		LocalTime shiftEnd = shift.getEnd();
 		
 		// case #1
-		Duration time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(2));
+		Duration time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2));
 		assertTrue(time.getSeconds() == 0);
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(3));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #2
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #3
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #4
-		time = shift.getWorkingTimeBetween(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #5
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
 		assertTrue(time.getSeconds() == 0);
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #6
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 						
 		// case #7
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #8
-		time = shift.getWorkingTimeBetween(shiftStart, shiftEnd);
+		time = shift.calculateWorkingTime(shiftStart, shiftEnd);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 		
 		// case #9
-		time = shift.getWorkingTimeBetween(shiftStart, shiftStart);
+		time = shift.calculateWorkingTime(shiftStart, shiftStart);
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #10
-		time = shift.getWorkingTimeBetween(shiftEnd, shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == 0);
 		
 		// 8 hr shift crossing midnight
@@ -511,47 +511,47 @@ public class TestWorkSchedule extends BaseTest {
 		shiftEnd = shift.getEnd();
 
 		// case #1
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2));
 		assertTrue(time.getSeconds() == 0);
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(3));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #2
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #3
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #4
-		time = shift.getWorkingTimeBetween(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #5
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
 		assertTrue(time.getSeconds() == 0);
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #6
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 						
 		// case #7
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #8
-		time = shift.getWorkingTimeBetween(shiftStart, shiftEnd);
+		time = shift.calculateWorkingTime(shiftStart, shiftEnd);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 		
 		// case #9
-		time = shift.getWorkingTimeBetween(shiftStart, shiftStart);
+		time = shift.calculateWorkingTime(shiftStart, shiftStart);
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #10
-		time = shift.getWorkingTimeBetween(shiftEnd, shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == 0);
 		
 		// 24 hr shift crossing midnight
@@ -562,47 +562,47 @@ public class TestWorkSchedule extends BaseTest {
 		shiftEnd = shift.getEnd();
 
 		// case #1
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2));
 		assertTrue(time.getSeconds() == 3600);
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(3), shiftStart.minusHours(3));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #2
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #3
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #4
-		time = shift.getWorkingTimeBetween(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 		
 		// case #5
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
 		assertTrue(time.getSeconds() == 3600);
-		time = shift.getWorkingTimeBetween(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #6
-		time = shift.getWorkingTimeBetween(shiftStart.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1));
 		assertTrue(time.getSeconds() == 3600);
 						
 		// case #7
-		time = shift.getWorkingTimeBetween(shiftStart.plusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1));
 		assertTrue(time.getSeconds() == 0);
 		
 		// case #8
-		time = shift.getWorkingTimeBetween(shiftStart, shiftEnd);
+		time = shift.calculateWorkingTime(shiftStart, shiftEnd);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 		
 		// case #9
-		time = shift.getWorkingTimeBetween(shiftStart, shiftStart);
+		time = shift.calculateWorkingTime(shiftStart, shiftStart);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 		
 		// case #10
-		time = shift.getWorkingTimeBetween(shiftEnd, shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 	}
 }

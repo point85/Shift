@@ -82,10 +82,10 @@ public abstract class BaseTest {
 			assertTrue(start != null);
 			assertTrue(end != null);
 
-			Duration worked = shift.getWorkingTimeBetween(start, end);
+			Duration worked = shift.calculateWorkingTime(start, end);
 			assertTrue(worked.equals(total));
 
-			worked = shift.getWorkingTimeBetween(start, start);
+			worked = shift.calculateWorkingTime(start, start);
 
 			// 24 hour shift on midnight is a special case
 			if (total.equals(Duration.ofHours(24))) {
@@ -94,7 +94,7 @@ public abstract class BaseTest {
 				assertTrue(worked.toHours() == 0);
 			}
 
-			worked = shift.getWorkingTimeBetween(end, end);
+			worked = shift.calculateWorkingTime(end, end);
 
 			if (total.equals(Duration.ofHours(24))) {
 				assertTrue(worked.toHours() == 24);
@@ -104,7 +104,7 @@ public abstract class BaseTest {
 
 			try {
 				LocalTime t = start.minusMinutes(1);
-				worked = shift.getWorkingTimeBetween(t, end); 
+				worked = shift.calculateWorkingTime(t, end); 
 
 				if (!total.equals(shift.getDuration())) {
 					fail("Bad working time");
@@ -114,7 +114,7 @@ public abstract class BaseTest {
 
 			try {
 				LocalTime t = end.plusMinutes(1);
-				worked = shift.getWorkingTimeBetween(start, t);
+				worked = shift.calculateWorkingTime(start, t);
 				if (!total.equals(shift.getDuration())) {
 					fail("Bad working time");
 				}
