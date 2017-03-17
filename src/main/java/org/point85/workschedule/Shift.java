@@ -93,7 +93,7 @@ public class Shift extends TimePeriod {
 	 * @param duration
 	 *            Duration of break
 	 * @return {@link Break}
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		Break period = new Break(name, description, startTime, duration);
@@ -112,28 +112,63 @@ public class Shift extends TimePeriod {
 	public Duration getWorkingTimeBetween(LocalTime from, LocalTime to) throws Exception {
 		Duration duration = Duration.ZERO;
 
-		LocalTime start = getStart();
-		LocalTime end = getEnd();
-
-		int toSecond = to.toSecondOfDay();
+		int startSecond = getStart().toSecondOfDay();
+		int endSecond = getEnd().toSecondOfDay();
 		int fromSecond = from.toSecondOfDay();
+		int toSecond = to.toSecondOfDay();
+		int delta = toSecond - fromSecond;
+		
+		if (delta < 0) {
+			delta = 86400 - fromSecond + toSecond;
+		}
+
+		if (endSecond < startSecond) {
+			// adjust for shift crossing midnight
+			if (fromSecond < startSecond && fromSecond < endSecond) {
+				fromSecond = fromSecond + 86400;
+			}
+			toSecond = fromSecond + delta;
+
+			/*
+			if (toSecond < startSecond && toSecond < endSecond) {
+				toSecond = toSecond + 86400;
+			}
+			*/
+			
+			endSecond = endSecond + 86400;
+		}
+
+
+
+		// clip seconds
+		if (fromSecond < startSecond) {
+			fromSecond = startSecond;
+		}
+
+		if (toSecond < startSecond) {
+			toSecond = startSecond;
+		}
+
+		if (fromSecond > endSecond) {
+			fromSecond = endSecond;
+		}
+
+		if (toSecond > endSecond) {
+			toSecond = endSecond;
+		}
 
 		// look for 24 hr shift
-		if (toSecond == fromSecond) {
-			if (this.getDuration().toHours() == 24) {
+		if (fromSecond == toSecond) {
+			if (getDuration().toHours() == 24) {
 				duration = Duration.ofHours(24);
-			} else {
-				duration = Duration.ZERO;
 			}
 		} else {
-
-			if (start.isBefore(end)) {
+			if (startSecond <= endSecond) {
 				// shift did not cross midnight
 				duration = Duration.ofSeconds(toSecond - fromSecond);
 			} else {
 				// shift crossed midnight
 				if (toSecond >= fromSecond) {
-					// after midnight
 					duration = Duration.ofSeconds(toSecond - fromSecond);
 				} else {
 					// before midnight
@@ -144,8 +179,9 @@ public class Shift extends TimePeriod {
 			}
 		}
 
-		if (duration.isNegative() || duration.getSeconds() > getDuration().getSeconds()) {
-			String msg = MessageFormat.format(WorkSchedule.getMessage("period.not.in.shift"), from, to, start, end);
+		if (duration.isNegative()) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("period.not.in.shift"), from, to, getStart(),
+					getEnd());
 			throw new Exception(msg);
 		}
 
