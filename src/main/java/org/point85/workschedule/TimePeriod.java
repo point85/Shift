@@ -61,7 +61,7 @@ abstract class TimePeriod extends Named {
 	 * 
 	 * @param duration
 	 *            Period duration
-	 * @throws Exception 
+	 * @throws Exception exception
 	 */
 	public void setDuration(Duration duration) throws Exception {
 		if (duration == null || duration.getSeconds() == 0) {
@@ -84,7 +84,7 @@ abstract class TimePeriod extends Named {
 	 * 
 	 * @param startTime
 	 *            Start time
-	 * @throws Exception 
+	 * @throws Exception exception
 	 */
 	public void setStart(LocalTime startTime) throws Exception {
 		if (startTime == null) {
@@ -97,7 +97,7 @@ abstract class TimePeriod extends Named {
 	 * Get period end
 	 * 
 	 * @return End time
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public LocalTime getEnd() throws Exception {
 		return startTime.plus(duration);

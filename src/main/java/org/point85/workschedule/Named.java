@@ -56,7 +56,7 @@ abstract class Named {
 	 * 
 	 * @param name
 	 *            Name
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void setName(String name) throws Exception {
 		if (name == null) {
@@ -85,7 +85,7 @@ abstract class Named {
 	}
 
 	/**
-	 * Compare this named object to another
+	 * Compare this named object to another named object
 	 * 
 	 * @return true if equal
 	 */

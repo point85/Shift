@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class ShiftRotation maintains a list of shift and off-shift time periods
+ * Class Rotation maintains a sequenced list of shift and off-shift time periods.
  * 
  * @author Kent Randall
  *
@@ -44,9 +44,9 @@ public class Rotation {
 	}
 
 	/**
-	 * Get the time periods in the rotation
+	 * Get the shifts and off-shifts in the rotation
 	 * 
-	 * @return
+	 * @return List of periods
 	 */
 	public List<TimePeriod> getPeriods() {
 		return periods;
@@ -80,7 +80,7 @@ public class Rotation {
 	 * @param shift
 	 *            The {@link Shift} with the corresponding off period
 	 * @return This shift rotation
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public Rotation off(int count, Shift shift) throws Exception {
 		for (int i = 0; i < count; i++) {

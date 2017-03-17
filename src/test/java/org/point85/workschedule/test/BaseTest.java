@@ -104,9 +104,9 @@ public abstract class BaseTest {
 
 			try {
 				LocalTime t = start.minusMinutes(1);
-				worked = shift.getWorkingTimeBetween(t, end);
+				worked = shift.getWorkingTimeBetween(t, end); 
 
-				if (!total.equals(Duration.ofHours(24))) {
+				if (!total.equals(shift.getDuration())) {
 					fail("Bad working time");
 				}
 			} catch (Exception e) {
@@ -115,7 +115,7 @@ public abstract class BaseTest {
 			try {
 				LocalTime t = end.plusMinutes(1);
 				worked = shift.getWorkingTimeBetween(start, t);
-				if (!total.equals(Duration.ofHours(24))) {
+				if (!total.equals(shift.getDuration())) {
 					fail("Bad working time");
 				}
 			} catch (Exception e) {

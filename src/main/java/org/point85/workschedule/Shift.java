@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class Shift is a scheduled working time period, including breaks.
+ * Class Shift is a scheduled working time period, and can include breaks.
  * 
  * @author Kent Randall
  *
@@ -93,7 +93,7 @@ public class Shift extends TimePeriod {
 	 * @param duration
 	 *            Duration of break
 	 * @return {@link Break}
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		Break period = new Break(name, description, startTime, duration);
@@ -102,12 +102,14 @@ public class Shift extends TimePeriod {
 	}
 
 	/**
-	 * Calculate working time from the start of the shift to the specified time
+	 * Calculate the working time between the specified times of day
 	 * 
+	 * @param from
+	 *            starting time
 	 * @param to
 	 *            Ending time
-	 * @return Duration
-	 * @throws Exception
+	 * @return Duration of working time
+	 * @throws Exception exception
 	 */
 	public Duration getWorkingTimeBetween(LocalTime from, LocalTime to) throws Exception {
 		Duration duration = Duration.ZERO;
@@ -118,29 +120,25 @@ public class Shift extends TimePeriod {
 		int toSecond = to.toSecondOfDay();
 		int delta = toSecond - fromSecond;
 		
+		// check for 24 hour shift
+		if (delta == 0 && fromSecond == startSecond && getDuration().toHours() == 24) {
+			delta = 86400;
+		}
+		
 		if (delta < 0) {
-			delta = 86400 - fromSecond + toSecond;
+			delta = 86400  + toSecond - fromSecond;
 		}
 
-		if (endSecond < startSecond) {
+		if (endSecond <= startSecond) {
 			// adjust for shift crossing midnight
 			if (fromSecond < startSecond && fromSecond < endSecond) {
 				fromSecond = fromSecond + 86400;
 			}
 			toSecond = fromSecond + delta;
-
-			/*
-			if (toSecond < startSecond && toSecond < endSecond) {
-				toSecond = toSecond + 86400;
-			}
-			*/
-			
 			endSecond = endSecond + 86400;
 		}
 
-
-
-		// clip seconds
+		// clip seconds on edge conditions
 		if (fromSecond < startSecond) {
 			fromSecond = startSecond;
 		}
@@ -156,28 +154,8 @@ public class Shift extends TimePeriod {
 		if (toSecond > endSecond) {
 			toSecond = endSecond;
 		}
-
-		// look for 24 hr shift
-		if (fromSecond == toSecond) {
-			if (getDuration().toHours() == 24) {
-				duration = Duration.ofHours(24);
-			}
-		} else {
-			if (startSecond <= endSecond) {
-				// shift did not cross midnight
-				duration = Duration.ofSeconds(toSecond - fromSecond);
-			} else {
-				// shift crossed midnight
-				if (toSecond >= fromSecond) {
-					duration = Duration.ofSeconds(toSecond - fromSecond);
-				} else {
-					// before midnight
-					Duration toMidnight = Duration.ofDays(1).minus(Duration.ofSeconds(fromSecond));
-					Duration fromMidnight = Duration.ofSeconds(toSecond);
-					duration = toMidnight.plus(fromMidnight);
-				}
-			}
-		}
+		
+		duration = Duration.ofSeconds(toSecond - fromSecond);
 
 		if (duration.isNegative()) {
 			String msg = MessageFormat.format(WorkSchedule.getMessage("period.not.in.shift"), from, to, getStart(),

@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 
 /**
  * Class Team is a named group of individuals who rotate through a shift
- * schedule
+ * schedule.
  * 
  * @author Kent Randall
  *
@@ -83,7 +83,7 @@ public class Team extends Named {
 	 * Get the duration of the shift rotation
 	 * 
 	 * @return Duration
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public Duration getRotationDuration() throws Exception {
 		return getRotation().getDuration();
@@ -94,7 +94,7 @@ public class Team extends Named {
 	 * duration
 	 * 
 	 * @return Percentage
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public float getPercentageWorked() throws Exception {
 		return ((float) getRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
@@ -118,7 +118,7 @@ public class Team extends Named {
 	 * @param date
 	 *            LocalDate
 	 * @return day number in the rotation, starting at 0
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public int getDayInRotation(LocalDate date) throws Exception {
 
@@ -180,7 +180,7 @@ public class Team extends Named {
 	 * @param to
 	 *            Ending date and time of day
 	 * @return Duration of working time
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
