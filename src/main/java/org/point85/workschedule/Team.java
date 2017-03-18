@@ -29,6 +29,7 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Class Team is a named group of individuals who rotate through a shift
@@ -83,7 +84,8 @@ public class Team extends Named {
 	 * Get the duration of the shift rotation
 	 * 
 	 * @return Duration
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Duration getRotationDuration() throws Exception {
 		return getRotation().getDuration();
@@ -94,7 +96,8 @@ public class Team extends Named {
 	 * duration
 	 * 
 	 * @return Percentage
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public float getPercentageWorked() throws Exception {
 		return ((float) getRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
@@ -118,7 +121,8 @@ public class Team extends Named {
 	 * @param date
 	 *            LocalDate
 	 * @return day number in the rotation, starting at 0
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public int getDayInRotation(LocalDate date) throws Exception {
 
@@ -138,6 +142,7 @@ public class Team extends Named {
 
 	// Calculate the working time from the beginning of the rotation to the
 	// specified day in the rotation
+	/*
 	private Duration calculateWorkingTimeFromStartTo(LocalDate date) throws Exception {
 		Duration sum = Duration.ZERO;
 
@@ -153,6 +158,7 @@ public class Team extends Named {
 
 		return sum;
 	}
+	*/
 
 	// Calculate the working time from the specified day in the rotation to the
 	// end of the rotation
@@ -172,6 +178,23 @@ public class Team extends Named {
 		return sum;
 	}
 
+	public ShiftInstance getShiftInstanceForDay(LocalDate day) throws Exception {
+		ShiftInstance instance = null;
+
+		Rotation shiftRotation = getRotation();
+		int dayInRotation = getDayInRotation(day);
+
+		// shift or off shift
+		TimePeriod period = shiftRotation.getPeriods().get(dayInRotation);
+
+		if (period.isWorkingPeriod()) {
+			LocalDateTime startDateTime = LocalDateTime.of(day, period.getStart());
+			instance = new ShiftInstance((Shift) period, startDateTime, this);
+		}
+
+		return instance;
+	}
+
 	/**
 	 * Calculate the schedule working time between the specified dates and times
 	 * 
@@ -180,7 +203,8 @@ public class Team extends Named {
 	 * @param to
 	 *            Ending date and time of day
 	 * @return Duration of working time
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
@@ -196,9 +220,6 @@ public class Team extends Named {
 
 		long deltaDays = toDate.toEpochDay() - fromDate.toEpochDay();
 
-		int dayInFrom = getDayInRotation(fromDate);
-		int dayInTo = getDayInRotation(toDate);
-
 		Rotation rotation = getRotation();
 		long rotationDays = rotation.getDayCount();
 
@@ -210,24 +231,32 @@ public class Team extends Named {
 		}
 
 		if (deltaDays % rotationDays != 0) {
-			/*
-			// add partial rotations
+			Duration begin = calculateWorkingTimeFromToEnd(fromDate);
+			Duration end = calculateWorkingTimeFromToEnd(toDate);
+			sum = sum.plus(begin.minus(end));
+		}
 
-			if (dayInTo > dayInFrom) {
-				// same rotation
-				*/
-				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
-				Duration end = calculateWorkingTimeFromToEnd(toDate);
-				sum = sum.plus(begin.minus(end));
-/*
-			} else {
-				// crossed a rotation
-				Duration begin = calculateWorkingTimeFromToEnd(fromDate);
-				Duration end = calculateWorkingTimeFromStartTo(toDate);
-				sum = sum.plus(begin.plus(end));
-			}
-			*/
-		} 
+		// remove day edge effects
+		Shift shift = null;
+		Duration edge = null;
+
+		// from midnight to starting time of day in day 1
+		ShiftInstance instance = getShiftInstanceForDay(fromDate);
+
+		if (instance != null) {
+			shift = instance.getShift();
+			edge = shift.calculateWorkingTime(LocalTime.MIN, from.toLocalTime());
+			sum = sum.minus(edge);
+		}
+
+		// from ending time of day to midnight in day 1
+		instance = getShiftInstanceForDay(toDate);
+
+		if (instance != null) {
+			shift = instance.getShift();
+			edge = shift.calculateWorkingTime(LocalTime.MIN, to.toLocalTime());
+			sum = sum.plus(edge);
+		}
 
 		return sum;
 	}

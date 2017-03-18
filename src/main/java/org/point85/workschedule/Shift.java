@@ -24,7 +24,6 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -93,7 +92,8 @@ public class Shift extends TimePeriod {
 	 * @param duration
 	 *            Duration of break
 	 * @return {@link Break}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		Break period = new Break(name, description, startTime, duration);
@@ -109,7 +109,8 @@ public class Shift extends TimePeriod {
 	 * @param to
 	 *            Ending time
 	 * @return Duration of working time
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Duration calculateWorkingTime(LocalTime from, LocalTime to) throws Exception {
 		Duration duration = Duration.ZERO;
@@ -119,14 +120,14 @@ public class Shift extends TimePeriod {
 		int fromSecond = from.toSecondOfDay();
 		int toSecond = to.toSecondOfDay();
 		int delta = toSecond - fromSecond;
-		
+
 		// check for 24 hour shift
 		if (delta == 0 && fromSecond == startSecond && getDuration().toHours() == 24) {
 			delta = 86400;
 		}
-		
+
 		if (delta < 0) {
-			delta = 86400  + toSecond - fromSecond;
+			delta = 86400 + toSecond - fromSecond;
 		}
 
 		if (endSecond <= startSecond) {
@@ -154,14 +155,8 @@ public class Shift extends TimePeriod {
 		if (toSecond > endSecond) {
 			toSecond = endSecond;
 		}
-		
-		duration = Duration.ofSeconds(toSecond - fromSecond);
 
-		if (duration.isNegative()) {
-			String msg = MessageFormat.format(WorkSchedule.getMessage("period.not.in.shift"), from, to, getStart(),
-					getEnd());
-			throw new Exception(msg);
-		}
+		duration = Duration.ofSeconds(toSecond - fromSecond);
 
 		return duration;
 	}

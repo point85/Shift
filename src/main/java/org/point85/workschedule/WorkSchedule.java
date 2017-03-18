@@ -65,7 +65,8 @@ public class WorkSchedule extends Named {
 	 *            Schedule name
 	 * @param description
 	 *            Schedule description
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public WorkSchedule(String name, String description) throws Exception {
 		super(name, description);
@@ -124,22 +125,17 @@ public class WorkSchedule extends Named {
 	 * @param day
 	 *            LocalDate
 	 * @return List of {@link ShiftInstance}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
-			Rotation shiftRotation = team.getRotation();
-			int dayInRotation = team.getDayInRotation(day);
+			ShiftInstance instance = team.getShiftInstanceForDay(day);
 
-			// shift or off shift
-			TimePeriod period = shiftRotation.getPeriods().get(dayInRotation);
-
-			if (period.isWorkingPeriod()) {
-				LocalDateTime startDateTime = LocalDateTime.of(day, period.getStart());
-				ShiftInstance instance = new ShiftInstance((Shift) period, startDateTime, team);
+			if (instance != null) {
 				workingShifts.add(instance);
 			}
 		}
@@ -155,7 +151,8 @@ public class WorkSchedule extends Named {
 	 * @param dateTime
 	 *            Date and time of day
 	 * @return List of {@link ShiftInstance}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public List<ShiftInstance> getShiftInstancesForTime(LocalDateTime dateTime) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
@@ -185,7 +182,8 @@ public class WorkSchedule extends Named {
 	 * @param rotationStart
 	 *            Start of rotation
 	 * @return {@link Team}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Team createTeam(String name, String description, Rotation rotation, LocalDate rotationStart)
 			throws Exception {
@@ -212,7 +210,8 @@ public class WorkSchedule extends Named {
 	 * @param duration
 	 *            Shift duration
 	 * @return {@link Shift}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Shift createShift(String name, String description, LocalTime start, Duration duration) throws Exception {
 		Shift shift = new Shift(name, description, start, duration);
@@ -230,7 +229,8 @@ public class WorkSchedule extends Named {
 	 * 
 	 * @param shift
 	 *            {@link Shift} to delete
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public void deleteShift(Shift shift) throws Exception {
 		if (!shifts.contains(shift)) {
@@ -266,7 +266,8 @@ public class WorkSchedule extends Named {
 	 * @param duration
 	 *            Duration of period
 	 * @return {@link NonWorkingPeriod}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public NonWorkingPeriod createNonWorkingPeriod(String name, String description, LocalDateTime startDateTime,
 			Duration duration) throws Exception {
@@ -300,14 +301,16 @@ public class WorkSchedule extends Named {
 	}
 
 	/**
-	 * Calculate the schedule working time between the specified dates and time of days
+	 * Calculate the schedule working time between the specified dates and time
+	 * of days
 	 * 
 	 * @param from
 	 *            Starting date and time
 	 * @param to
 	 *            Ending date and time
 	 * @return Working time duration
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
@@ -336,7 +339,8 @@ public class WorkSchedule extends Named {
 	 *            Starting date
 	 * @param end
 	 *            Ending date
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public void printShiftInstances(LocalDate start, LocalDate end) throws Exception {
 		if (start.isAfter(end)) {
