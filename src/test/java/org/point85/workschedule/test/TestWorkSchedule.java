@@ -504,6 +504,14 @@ public class TestWorkSchedule extends BaseTest {
 		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == 0);
 
+		// case #11
+		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1));
+		assertTrue(time.getSeconds() == 1);
+
+		// case #12
+		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd);
+		assertTrue(time.getSeconds() == 1);
+
 		// 8 hr shift crossing midnight
 		shiftStart = LocalTime.of(20, 0, 0);
 
@@ -553,6 +561,14 @@ public class TestWorkSchedule extends BaseTest {
 		// case #10
 		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == 0);
+
+		// case #11
+		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1));
+		assertTrue(time.getSeconds() == 1);
+
+		// case #12
+		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd);
+		assertTrue(time.getSeconds() == 1);
 
 		// 24 hr shift crossing midnight
 		shiftDuration = Duration.ofHours(24);
@@ -604,6 +620,14 @@ public class TestWorkSchedule extends BaseTest {
 		// case #10
 		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
+
+		// case #11
+		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1));
+		assertTrue(time.getSeconds() == 1);
+
+		// case #12
+		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd);
+		assertTrue(time.getSeconds() == 1);
 	}
 
 	@Test
@@ -714,5 +738,76 @@ public class TestWorkSchedule extends BaseTest {
 		to = from.plusDays(4);
 		time = team2.calculateWorkingTime(from, to);
 		assertTrue(time.equals(shiftDuration.plus(shiftDuration)));
+	}
+
+	@Test
+	public void testNonWorkingTime() throws Exception {
+		WorkSchedule schedule = new WorkSchedule("Non Working Time", "Test non working time");
+		LocalDate date = LocalDate.of(2017, 1, 1);
+		LocalTime time = LocalTime.of(7, 0, 0);
+
+		NonWorkingPeriod period1 = schedule.createNonWorkingPeriod("Day1", "First test day",
+				LocalDateTime.of(date, LocalTime.MIDNIGHT), Duration.ofHours(24));
+		NonWorkingPeriod period2 = schedule.createNonWorkingPeriod("Day2", "First test day",
+				LocalDateTime.of(date.plusDays(7), time), Duration.ofHours(24));
+
+		LocalDateTime from = LocalDateTime.of(date, time);
+		LocalDateTime to = LocalDateTime.of(date, time.plusHours(1));
+
+		// case #1
+		Duration duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(1)));
+
+		// case #2
+		from = LocalDateTime.of(date.minusDays(1), time);
+		to = LocalDateTime.of(date.plusDays(1), time);
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(24)));
+
+		// case #3
+		from = LocalDateTime.of(date.minusDays(1), time);
+		to = LocalDateTime.of(date.minusDays(1), time.plusHours(1));
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(0)));
+
+		// case #4
+		from = LocalDateTime.of(date.plusDays(1), time);
+		to = LocalDateTime.of(date.plusDays(1), time.plusHours(1));
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(0)));
+
+		// case #5
+		from = LocalDateTime.of(date.minusDays(1), time);
+		to = LocalDateTime.of(date, time);
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(7)));
+
+		// case #6
+		from = LocalDateTime.of(date, time);
+		to = LocalDateTime.of(date.plusDays(1), time);
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(17)));
+
+		// case #7
+		from = LocalDateTime.of(date, LocalTime.NOON);
+		to = LocalDateTime.of(date.plusDays(7), LocalTime.NOON);
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(17)));
+
+		// case #8
+		from = LocalDateTime.of(date.minusDays(1), LocalTime.NOON);
+		to = LocalDateTime.of(date.plusDays(8), LocalTime.NOON);
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(48)));
+
+		// case #9
+		schedule.deleteNonWorkingPeriod(period1);
+		schedule.deleteNonWorkingPeriod(period2);
+		from = LocalDateTime.of(date, time);
+		to = LocalDateTime.of(date, time.plusHours(1));
+
+		// case #10
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(0)));
 	}
 }

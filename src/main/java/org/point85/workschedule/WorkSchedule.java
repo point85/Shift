@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -278,6 +279,8 @@ public class WorkSchedule extends Named {
 			throw new Exception(msg);
 		}
 		nonWorkingPeriods.add(period);
+		
+		Collections.sort(nonWorkingPeriods);
 
 		return period;
 	}
@@ -320,6 +323,53 @@ public class WorkSchedule extends Named {
 			sum = sum.plus(team.calculateWorkingTime(from, to));
 		}
 
+		return sum;
+	}
+	
+	public Duration calculateNonWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
+		Duration sum = Duration.ZERO;
+		ZoneId zoneId = ZoneId.systemDefault();
+		long fromSeconds = from.atZone(zoneId).toEpochSecond();
+		long toSeconds = to.atZone(zoneId).toEpochSecond();
+
+		for (NonWorkingPeriod  period : getNonWorkingPeriods()) {
+			LocalDateTime start = period.getStartDateTime();
+			long startSeconds = start.atZone(zoneId).toEpochSecond();
+			
+			LocalDateTime end = period.getEndDateTime();
+			long endSeconds = end.atZone(zoneId).toEpochSecond();
+			
+			if (fromSeconds >= endSeconds) {
+				// look at next period
+				continue;
+			}
+			
+			if (toSeconds <= startSeconds) {
+				// done with periods
+				break;
+			}
+			
+			if (fromSeconds <= endSeconds) {
+				// found a period, check edge conditions
+				if (fromSeconds > startSeconds) {
+					startSeconds = fromSeconds;
+				}
+				
+				if (toSeconds < endSeconds) {
+					endSeconds = toSeconds;
+				}
+				
+				sum = sum.plusSeconds(endSeconds - startSeconds);
+				
+			}
+			
+			if (toSeconds <= endSeconds) {
+				break;
+			}
+		}
+		
+		
+		
 		return sum;
 	}
 
@@ -419,8 +469,6 @@ public class WorkSchedule extends Named {
 				text += "\n" + sn + ":";
 
 				Duration totalMinutes = Duration.ofMinutes(0);
-
-				Collections.sort(periods);
 
 				count = 1;
 				for (NonWorkingPeriod period : periods) {
