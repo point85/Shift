@@ -140,26 +140,6 @@ public class Team extends Named {
 		return dayInRotation;
 	}
 
-	// Calculate the working time from the beginning of the rotation to the
-	// specified day in the rotation
-	/*
-	private Duration calculateWorkingTimeFromStartTo(LocalDate date) throws Exception {
-		Duration sum = Duration.ZERO;
-
-		int dayInRotation = getDayInRotation(date);
-
-		for (int i = 0; i < dayInRotation; i++) {
-			TimePeriod period = getRotation().getPeriods().get(i);
-
-			if (period.isWorkingPeriod()) {
-				sum = sum.plus(period.getDuration());
-			}
-		}
-
-		return sum;
-	}
-	*/
-
 	// Calculate the working time from the specified day in the rotation to the
 	// end of the rotation
 	private Duration calculateWorkingTimeFromToEnd(LocalDate date) throws Exception {
@@ -177,6 +157,13 @@ public class Team extends Named {
 
 		return sum;
 	}
+	
+	/**
+	 * Get the {@link ShiftInstance} for the specified day
+	 * @param day Day with a shift instance
+	 * @return {@link ShiftInstance}
+	 * @throws Exception exception
+	 */
 
 	public ShiftInstance getShiftInstanceForDay(LocalDate day) throws Exception {
 		ShiftInstance instance = null;
@@ -210,7 +197,7 @@ public class Team extends Named {
 		Duration sum = Duration.ZERO;
 
 		if (from.isAfter(to)) {
-			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from);
+			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from); 
 			throw new Exception(msg);
 		}
 
@@ -266,6 +253,7 @@ public class Team extends Named {
 	 */
 	@Override
 	public String toString() {
+		String rpct = WorkSchedule.getMessage("rotation.percentage");
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);
 
@@ -274,7 +262,7 @@ public class Team extends Named {
 
 		String text = "";
 		try {
-			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + rotation.toString()
+			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + getRotation() + ", " + rpct + ": "
 					+ df.format(getPercentageWorked()) + "%" + ", " + avg + ": " + getHoursWorkedPerWeek();
 
 		} catch (Exception e) {

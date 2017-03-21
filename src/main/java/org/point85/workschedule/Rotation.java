@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class Rotation maintains a sequenced list of shift and off-shift time periods.
+ * Class Rotation maintains a sequenced list of shift and off-shift time
+ * periods.
  * 
  * @author Kent Randall
  *
@@ -51,6 +52,11 @@ public class Rotation {
 	public List<TimePeriod> getPeriods() {
 		return periods;
 	}
+	
+	/**
+	 * Get the number of days in the rotation
+	 * @return Day count
+	 */
 
 	public int getDayCount() {
 		return getPeriods().size();
@@ -80,7 +86,8 @@ public class Rotation {
 	 * @param shift
 	 *            The {@link Shift} with the corresponding off period
 	 * @return This shift rotation
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public Rotation off(int count, Shift shift) throws Exception {
 		for (int i = 0; i < count; i++) {
@@ -123,8 +130,21 @@ public class Rotation {
 		String rda = WorkSchedule.getMessage("rotation.days");
 		String rw = WorkSchedule.getMessage("rotation.working");
 		String rper = WorkSchedule.getMessage("rotation.periods");
+		String on =  WorkSchedule.getMessage("rotation.on");
+		String off =  WorkSchedule.getMessage("rotation.off");
 
-		String text = rper + ": " + periods + ", " + rd + ": " + getDuration() + ", " + rda + ": "
+		String periodsString = "";
+
+		for (TimePeriod period : periods) {
+			if (periodsString.length() > 0) {
+				periodsString += ", ";
+			}
+			
+			String onOff = period.isWorkingPeriod() ? on : off;
+			periodsString += period.getName() + " (" + onOff + ") ";
+		}
+
+		String text = rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda + ": "
 				+ getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
 
 		return text;

@@ -161,6 +161,13 @@ public class Shift extends TimePeriod {
 		return duration;
 	}
 
+	
+	/**
+	 * Test if the specified time falls within the shift
+	 * @param time {@link LocalTime} 
+	 * @return True if in the shift
+	 * @throws Exception exception
+	 */
 	public boolean isInShift(LocalTime time) throws Exception {
 		boolean answer = false;
 

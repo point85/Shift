@@ -279,7 +279,7 @@ public class WorkSchedule extends Named {
 			throw new Exception(msg);
 		}
 		nonWorkingPeriods.add(period);
-		
+
 		Collections.sort(nonWorkingPeriods);
 
 		return period;
@@ -304,8 +304,8 @@ public class WorkSchedule extends Named {
 	}
 
 	/**
-	 * Calculate the schedule working time between the specified dates and time
-	 * of days
+	 * Calculate the scheduled working time between the specified dates and
+	 * times of day. Non-working periods are removed.
 	 * 
 	 * @param from
 	 *            Starting date and time
@@ -318,58 +318,71 @@ public class WorkSchedule extends Named {
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
 
-		// add up by team
+		// add up scheduled time by team
 		for (Team team : getTeams()) {
 			sum = sum.plus(team.calculateWorkingTime(from, to));
 		}
 
+		// remove the non-working time
+		Duration nonWorking = calculateNonWorkingTime(from, to);
+		sum.minus(nonWorking);
+
 		return sum;
 	}
-	
+
+	/**
+	 * Calculate the non-working time between the specified dates and times of
+	 * day.
+	 * 
+	 * @param from
+	 *            Starting date and time
+	 * @param to
+	 *            Ending date and time
+	 * @return Non-working time duration
+	 * @throws Exception
+	 *             exception
+	 */
 	public Duration calculateNonWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
 		ZoneId zoneId = ZoneId.systemDefault();
 		long fromSeconds = from.atZone(zoneId).toEpochSecond();
 		long toSeconds = to.atZone(zoneId).toEpochSecond();
 
-		for (NonWorkingPeriod  period : getNonWorkingPeriods()) {
+		for (NonWorkingPeriod period : getNonWorkingPeriods()) {
 			LocalDateTime start = period.getStartDateTime();
 			long startSeconds = start.atZone(zoneId).toEpochSecond();
-			
+
 			LocalDateTime end = period.getEndDateTime();
 			long endSeconds = end.atZone(zoneId).toEpochSecond();
-			
+
 			if (fromSeconds >= endSeconds) {
 				// look at next period
 				continue;
 			}
-			
+
 			if (toSeconds <= startSeconds) {
 				// done with periods
 				break;
 			}
-			
+
 			if (fromSeconds <= endSeconds) {
 				// found a period, check edge conditions
 				if (fromSeconds > startSeconds) {
 					startSeconds = fromSeconds;
 				}
-				
+
 				if (toSeconds < endSeconds) {
 					endSeconds = toSeconds;
 				}
-				
+
 				sum = sum.plusSeconds(endSeconds - startSeconds);
-				
 			}
-			
+
 			if (toSeconds <= endSeconds) {
 				break;
 			}
 		}
-		
-		
-		
+
 		return sum;
 	}
 

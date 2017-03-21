@@ -809,5 +809,25 @@ public class TestWorkSchedule extends BaseTest {
 		// case #10
 		duration = schedule.calculateNonWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(0)));
+		
+		Duration shiftDuration = Duration.ofHours(8);
+		LocalTime shiftStart = LocalTime.of(7, 0, 0);
+
+		Shift shift = schedule.createShift("Work Shift1", "Working time shift", shiftStart, shiftDuration);
+		
+		Rotation rotation = new Rotation();
+		rotation.on(1, shift).off(1, shift);
+
+		LocalDate startRotation = LocalDate.of(2017, 1, 1);
+		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
+		team.setRotationStart(startRotation);
+		
+		from = LocalDateTime.of(date, time.minusHours(2));
+		to = LocalDateTime.of(date, time.minusHours(1));
+
+		// case #11
+		duration = schedule.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(0)));
+		
 	}
 }
