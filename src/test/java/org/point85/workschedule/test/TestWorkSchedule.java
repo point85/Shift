@@ -284,7 +284,8 @@ public class TestWorkSchedule extends BaseTest {
 		totalSchedule = totalSchedule.plus(totalWorking);
 
 		Duration scheduleDuration = schedule.calculateWorkingTime(from, from.plusDays(21));
-		assertTrue(scheduleDuration.equals(totalSchedule));
+		Duration nonWorkingDuration = schedule.calculateNonWorkingTime(from, from.plusDays(21));
+		assertTrue(scheduleDuration.plus(nonWorkingDuration).equals(totalSchedule));
 
 		// breaks
 		Duration allBreaks = Duration.ofMinutes(90);
@@ -822,10 +823,23 @@ public class TestWorkSchedule extends BaseTest {
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
 		team.setRotationStart(startRotation);
 		
+		period1 = schedule.createNonWorkingPeriod("Day1", "First test day",
+				LocalDateTime.of(date, LocalTime.MIDNIGHT), Duration.ofHours(24));
+		
 		from = LocalDateTime.of(date, time.minusHours(2));
 		to = LocalDateTime.of(date, time.minusHours(1));
 
 		// case #11
+		duration = schedule.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(0)));
+		
+		// case #12
+		from = LocalDateTime.of(date, shiftStart);
+		to = LocalDateTime.of(date, time.plusHours(8));
+		
+		duration = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(8)));
+		
 		duration = schedule.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(0)));
 		

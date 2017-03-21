@@ -59,6 +59,9 @@ public class WorkSchedule extends Named {
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
 
+	// cache time zone for working time calculations
+	private ZoneId zoneId = ZoneId.systemDefault();
+
 	/**
 	 * Construct a work schedule
 	 * 
@@ -325,7 +328,12 @@ public class WorkSchedule extends Named {
 
 		// remove the non-working time
 		Duration nonWorking = calculateNonWorkingTime(from, to);
-		sum.minus(nonWorking);
+		sum = sum.minus(nonWorking);
+
+		// clip if negative
+		if (sum.isNegative()) {
+			sum = Duration.ofSeconds(0);
+		}
 
 		return sum;
 	}
@@ -344,7 +352,7 @@ public class WorkSchedule extends Named {
 	 */
 	public Duration calculateNonWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
-		ZoneId zoneId = ZoneId.systemDefault();
+
 		long fromSeconds = from.atZone(zoneId).toEpochSecond();
 		long toSeconds = to.atZone(zoneId).toEpochSecond();
 

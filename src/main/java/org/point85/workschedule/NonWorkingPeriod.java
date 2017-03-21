@@ -114,7 +114,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 */
 	@Override
 	public String toString() {
-		String text = null;
+		String text = "";
 		String start = WorkSchedule.getMessage("period.start");
 		String end = WorkSchedule.getMessage("period.end");
 

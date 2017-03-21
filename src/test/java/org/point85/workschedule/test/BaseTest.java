@@ -63,7 +63,7 @@ public abstract class BaseTest {
 
 	@BeforeClass
 	public static void setFlags() {
-		testToString = true;
+		testToString = false;
 	}
 
 	private void testShifts(WorkSchedule ws) throws Exception {
