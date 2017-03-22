@@ -1,19 +1,22 @@
 # Shift
-The Shift library project manages work schedules with teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.
+The Shift library project manages work schedules.  A work schedule consists of one or more teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.
 
 ## Concepts
 
-The diagram below illustrates Business Management Systems' DNO (Day, Night, Off) work schedule with three teams and two 12-hour shifts as explained in http://community.bmscentral.com/learnss/ZC/3T/c3tr12-1.
+The diagram below illustrates Business Management Systems' DNO (Day, Night, Off) work schedule with three teams and two 12-hour shifts with a 3-day rotation.  This schedule is explained in http://community.bmscentral.com/learnss/ZC/3T/c3tr12-1.
 
 ![Work Schedule Diagram](https://github.com/point85/shift/blob/master/doc/DNO.png)
 
 *Shift*
-A shift is defined with a name, description, starting time of day and duration.  An off-shift period is associated with a shift.  A rotation is a sequence of shifts and off-shift days, for example a "9-to-5" shift with a 5-on, 2-off rotation is a regular work week fo 7 days.  An instance of a shift has a starting date and time of day and has an associated shift definition.
+
+A shift is defined with a name, description, starting time of day and duration.  An off-shift period is associated with a shift.  A rotation is a sequence of shifts and off-shift days, for example a "9-to-5" shift with a 5-on, 2-off rotation is a regular work week of 7 days.  An instance of a shift has a starting date and time of day and has an associated shift definition.
 
 *Team*
+
 A team is defined with a name and description.  It has a rotation with a starting date.  The first shift will have an instance with that date and starting time of day defined in the shift.  The same rotation can be shared between more than one team, but with different starting times.
 
 *Work Schedule*
+
 A work schedule is defined with a name and description.  It has one or more teams.  Zero or more non-working periods can be defined.  A non-working period has a defined starting date and time of day and duration.  For example, New Year's Day holiday starting at midnight or three consecutive days for preventive maintenance of equipment starting at the end of the night shift. 
 
 After a work schedule is defined, the working time for all shifts can be computed for a defined time interval.  For example, this duration of time is the maximum available time as an input to the utilization of equipment in a metric known as the Overall Equipment Effectiveness (OEE).
