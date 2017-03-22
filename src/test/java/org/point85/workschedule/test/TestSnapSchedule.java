@@ -23,13 +23,14 @@ SOFTWARE.
 */
 
 package org.point85.workschedule.test;
-
+import static org.junit.Assert.assertTrue;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.junit.Test;
-import org.point85.workschedule.Shift;
 import org.point85.workschedule.Rotation;
+import org.point85.workschedule.Shift;
 import org.point85.workschedule.WorkSchedule;
 
 public class TestSnapSchedule extends BaseTest {
@@ -241,6 +242,11 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
+		
+		// rotation working time
+		LocalDateTime from = LocalDateTime.of(referenceDate, LocalTime.of(7, 0, 0));
+		Duration duration = schedule.calculateWorkingTime(from, from.plusDays(3));
+		assertTrue(duration.equals(Duration.ofHours(72)));
 
 		runBaseTest(schedule, Duration.ofHours(24), Duration.ofDays(3), referenceDate);
 	}
