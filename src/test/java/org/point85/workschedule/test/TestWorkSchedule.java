@@ -146,7 +146,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
 		Team platoon3 = schedule.createTeam("Green", "C Shift", rotation, LocalDate.of(2017, 1, 2));
 
-		List<ShiftInstance> instances = schedule.getShiftInstancesForDay(LocalDate.of(2017, 3, 1));
+		List<ShiftInstance> instances = schedule.getShiftInstancesForDay(LocalDate.of(2017, 3, 1)); 
 		assertTrue(instances.size() == 1);
 		assertTrue(instances.get(0).getTeam().equals(platoon3));
 

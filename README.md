@@ -48,13 +48,55 @@ schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
 schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 
-// get the working time over 3 days starting at 07:00.
+```
+To obtain the working time over three days starting at 07:00, the following methods are called:
+
+```java
 LocalDateTime from = LocalDateTime.of(referenceDate, LocalTime.of(7, 0, 0));
 Duration duration = schedule.calculateWorkingTime(from, from.plusDays(3));
 ```
 
+To obtain the shift instances for a date, the following method is called:
+
+```java
+List<ShiftInstance> instances = schedule.getShiftInstancesForDay(LocalDate.of(2017, 3, 1)); 
+```
+
+To print a work schedule between two dates on System.out, the following method is called:
+
+```java
+schedule.printShiftInstances(LocalDate.of(2017, 3, 1), LocalDate.of(2017, 3, 31)));
+```
+
+With output:
+```java
+Schedule: DNO Plan (This is a fast rotation plan that uses 3 teams and two 12-hr shifts to provide 24/7 coverage. Each team rotates through the following sequence every three days: 1 day shift, 1 night shift, and 1 day off.)
+Rotation duration: PT216H, Scheduled working time: PT72H
+Shifts: 
+   (1) Day (Day shift), Start : 07:00 (PT12H), End : 19:00
+   (2) Night (Night shift), Start : 19:00 (PT12H), End : 07:00
+Teams: 
+   (1) Team 1 (First team), Rotation start: 2016-10-31, Rotation periods: [Day (on) , Night (on) , Night (off) ], Rotation duration: PT72H, Days in rotation: 3, Scheduled working time: PT24H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+   (2) Team 2 (Second team), Rotation start: 2016-10-30, Rotation periods: [Day (on) , Night (on) , Night (off) ], Rotation duration: PT72H, Days in rotation: 3, Scheduled working time: PT24H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+   (3) Team 3 (Third team), Rotation start: 2016-10-29, Rotation periods: [Day (on) , Night (on) , Night (off) ], Rotation duration: PT72H, Days in rotation: 3, Scheduled working time: PT24H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+Total team coverage: 100%
+Working shifts
+[1] Day: 2016-10-31
+   (1) Team: Team 1, Shift: Day, Start : 2016-10-31T07:00, End : 2016-10-31T19:00
+   (2) Team: Team 2, Shift: Night, Start : 2016-10-31T19:00, End : 2016-11-01T07:00
+[2] Day: 2016-11-01
+   (1) Team: Team 3, Shift: Day, Start : 2016-11-01T07:00, End : 2016-11-01T19:00
+   (2) Team: Team 1, Shift: Night, Start : 2016-11-01T19:00, End : 2016-11-02T07:00
+[3] Day: 2016-11-02
+   (1) Team: Team 2, Shift: Day, Start : 2016-11-02T07:00, End : 2016-11-02T19:00
+   (2) Team: Team 3, Shift: Night, Start : 2016-11-02T19:00, End : 2016-11-03T07:00
+[4] Day: 2016-11-03
+   (1) Team: Team 1, Shift: Day, Start : 2016-11-03T07:00, End : 2016-11-03T19:00
+   (2) Team: Team 2, Shift: Night, Start : 2016-11-03T19:00, End : 2016-11-04T07:00
+```
+
 ## Project Structure
-Shift depends upon Java 7+ due to use of the java time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
+Shift depends upon Java 8+ due to use of the java time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
 
 Shift, when built with Gradle, has the following structure:
  * `/build/docs/javadoc` javadoc files
