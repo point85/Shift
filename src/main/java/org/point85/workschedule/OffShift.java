@@ -28,7 +28,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 /**
- * Class OffShift is a scheduled non-working time
+ * Class OffShift is a scheduled non-working time.
  * 
  * @author Kent Randall
  *

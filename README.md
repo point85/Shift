@@ -9,20 +9,20 @@ The diagram below illustrates Business Management Systems' DNO (Day, Night, Off)
 
 *Shift*
 
-A shift is defined with a name, description, starting time of day and duration.  An off-shift period is associated with a shift.  A rotation is a sequence of shifts and off-shift days, for example a "9-to-5" shift with a 5-on, 2-off rotation is a regular work week of 7 days.  An instance of a shift has a starting date and time of day and has an associated shift definition.
+A shift is defined with a name, description, starting time of day and duration.  An off-shift period is associated with a shift.  In the example above for Team1, there are two shifts followed by one off-shift period.  Shifts can be overlapped (typically when a handoff of duties is important such as in the nursing profession).  A rotation is a sequence of shifts and off-shift days.  The DNO rotation is Day on, Night on and Night off.  An instance of a shift has a starting date and time of day and has an associated shift definition.
 
 *Team*
 
-A team is defined with a name and description.  It has a rotation with a starting date.  The first shift will have an instance with that date and starting time of day defined in the shift.  The same rotation can be shared between more than one team, but with different starting times.
+A team is defined with a name and description.  It has a rotation with a starting date.  The starting date shift will have an instance with that date and a starting time of day as defined by the shift.  The same rotation can be shared between more than one team, but with different starting times.
 
 *Work Schedule*
 
-A work schedule is defined with a name and description.  It has one or more teams.  Zero or more non-working periods can be defined.  A non-working period has a defined starting date and time of day and duration.  For example, New Year's Day holiday starting at midnight or three consecutive days for preventive maintenance of equipment starting at the end of the night shift. 
+A work schedule is defined with a name and description.  It has one or more teams.  Zero or more non-working periods can be defined.  A non-working period has a defined starting date and time of day and duration.  For example, the New Year's Day holiday starting at midnight for 24 hours, or three consecutive days for preventive maintenance of manufacturing equipment starting at the end of the night shift. 
 
-After a work schedule is defined, the working time for all shifts can be computed for a defined time interval.  For example, this duration of time is the maximum available time as an input to the utilization of equipment in a metric known as the Overall Equipment Effectiveness (OEE).
+After a work schedule is defined, the working time for all shifts can be computed for a defined time interval.  For example, this duration of time is the maximum available productive time as an input to the calculation of the utilization of equipment in a metric known as the Overall Equipment Effectiveness (OEE).
 
-## Code Examples
-The schedule discussed above is defined as follows.
+## Examples
+The DNO schedule discussed above is defined as follows.
 
 ```java
 String description = "This is a fast rotation plan that uses 3 teams and two 12-hr shifts to provide 24/7 coverage. "
@@ -126,7 +126,7 @@ schedule.createTeam("C", "C day shift", dayRotation, LocalDate.of(2014, 1, 9));
 schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
 ```
 
-When printed out with the shift instances for a rotation, the output is:
+When printed out for a week of shift instances, the output is:
 
 ```java
 Schedule: Manufacturing Company - four twelves (Four 12 hour alternating day/night shifts)
@@ -162,30 +162,51 @@ Working shifts
 [7] Day: 2014-01-15
    (1) Team: C, Shift: Day, Start : 2014-01-15T07:00, End : 2014-01-15T19:00
    (2) Team: D, Shift: Night, Start : 2014-01-15T19:00, End : 2014-01-16T07:00
-[8] Day: 2014-01-16
-   (1) Team: A, Shift: Day, Start : 2014-01-16T07:00, End : 2014-01-16T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-16T19:00, End : 2014-01-17T07:00
-[9] Day: 2014-01-17
-   (1) Team: A, Shift: Day, Start : 2014-01-17T07:00, End : 2014-01-17T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-17T19:00, End : 2014-01-18T07:00
-[10] Day: 2014-01-18
-   (1) Team: A, Shift: Day, Start : 2014-01-18T07:00, End : 2014-01-18T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-18T19:00, End : 2014-01-19T07:00
-[11] Day: 2014-01-19
-   (1) Team: A, Shift: Day, Start : 2014-01-19T07:00, End : 2014-01-19T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-19T19:00, End : 2014-01-20T07:00
-[12] Day: 2014-01-20
-   (1) Team: A, Shift: Day, Start : 2014-01-20T07:00, End : 2014-01-20T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-20T19:00, End : 2014-01-21T07:00
-[13] Day: 2014-01-21
-   (1) Team: A, Shift: Day, Start : 2014-01-21T07:00, End : 2014-01-21T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-21T19:00, End : 2014-01-22T07:00
-[14] Day: 2014-01-22
-   (1) Team: A, Shift: Day, Start : 2014-01-22T07:00, End : 2014-01-22T19:00
-   (2) Team: B, Shift: Night, Start : 2014-01-22T19:00, End : 2014-01-23T07:00
-[15] Day: 2014-01-23
-   (1) Team: C, Shift: Day, Start : 2014-01-23T07:00, End : 2014-01-23T19:00
-   (2) Team: D, Shift: Night, Start : 2014-01-23T19:00, End : 2014-01-24T07:00
+```
+
+For a third example, the work schedule below with one 24 hour shift over an 18 day rotation for three platoons is used by Kern County California firefighters.
+
+```java
+WorkSchedule schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
+
+// shift, start 07:00 for 24 hours
+Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
+
+// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
+Rotation rotation = new Rotation();
+rotation.on(2, shift).off(2, shift).on(2, shift).off(2, shift).on(2, shift).off(8, shift);
+
+Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
+Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
+Team platoon3 = schedule.createTeam("Green", "C Shift", rotation, LocalDate.of(2017, 1, 2));
+```
+
+When printed out for a week of shift instances, the output is:
+```java
+Schedule: Kern Co. (Three 24 hour alternating shifts)
+Rotation duration: PT1296H, Scheduled working time: PT432H
+Shifts: 
+   (1) 24 Hour (24 hour shift), Start : 07:00 (PT24H), End : 07:00
+Teams: 
+   (1) Red (A Shift), Rotation start: 2017-01-08, Rotation periods: [24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) ], Rotation duration: PT432H, Days in rotation: 18, Scheduled working time: PT144H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+   (2) Black (B Shift), Rotation start: 2017-02-01, Rotation periods: [24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) ], Rotation duration: PT432H, Days in rotation: 18, Scheduled working time: PT144H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+   (3) Green (C Shift), Rotation start: 2017-01-02, Rotation periods: [24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (on) , 24 Hour (on) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) , 24 Hour (off) ], Rotation duration: PT432H, Days in rotation: 18, Scheduled working time: PT144H, Percentage worked: 33.33%, Average hours worked per week: PT56H
+Total team coverage: 100%
+Working shifts
+[1] Day: 2017-02-01
+   (1) Team: Black, Shift: 24 Hour, Start : 2017-02-01T07:00, End : 2017-02-02T07:00
+[2] Day: 2017-02-02
+   (1) Team: Black, Shift: 24 Hour, Start : 2017-02-02T07:00, End : 2017-02-03T07:00
+[3] Day: 2017-02-03
+   (1) Team: Red, Shift: 24 Hour, Start : 2017-02-03T07:00, End : 2017-02-04T07:00
+[4] Day: 2017-02-04
+   (1) Team: Red, Shift: 24 Hour, Start : 2017-02-04T07:00, End : 2017-02-05T07:00
+[5] Day: 2017-02-05
+   (1) Team: Black, Shift: 24 Hour, Start : 2017-02-05T07:00, End : 2017-02-06T07:00
+[6] Day: 2017-02-06
+   (1) Team: Black, Shift: 24 Hour, Start : 2017-02-06T07:00, End : 2017-02-07T07:00
+[7] Day: 2017-02-07
+   (1) Team: Green, Shift: 24 Hour, Start : 2017-02-07T07:00, End : 2017-02-08T07:00
 ```
 
 ## Project Structure
