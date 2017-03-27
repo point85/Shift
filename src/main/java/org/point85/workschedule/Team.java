@@ -46,10 +46,13 @@ public class Team extends Named {
 	// shift rotation days
 	private Rotation rotation;
 
+	// cached epoch day
+	private transient long dayFrom;
+
 	Team(String name, String description, Rotation rotation, LocalDate rotationStart) throws Exception {
 		super(name, description);
 		this.rotation = rotation;
-		this.rotationStart = rotationStart;
+		this.setRotationStart(rotationStart);
 	}
 
 	/**
@@ -69,6 +72,9 @@ public class Team extends Named {
 	 */
 	public void setRotationStart(LocalDate rotationStart) {
 		this.rotationStart = rotationStart;
+
+		// cache the epoch day
+		dayFrom = rotationStart.toEpochDay();
 	}
 
 	/**
@@ -120,14 +126,12 @@ public class Team extends Named {
 	 * 
 	 * @param date
 	 *            LocalDate
-	 * @return day number in the rotation, starting at 0
+	 * @return day number in the rotation, starting at 1
 	 * @throws Exception
 	 *             exception
 	 */
 	public int getDayInRotation(LocalDate date) throws Exception {
-
 		// calculate total number of days from start of rotation
-		long dayFrom = rotationStart.toEpochDay();
 		long dayTo = date.toEpochDay();
 		long deltaDays = dayTo - dayFrom;
 
@@ -136,33 +140,18 @@ public class Team extends Named {
 			throw new Exception(msg);
 		}
 
-		int dayInRotation = (int) (deltaDays % getRotation().getDuration().toDays());
+		int dayInRotation = (int) (deltaDays % getRotation().getDuration().toDays()) + 1;
 		return dayInRotation;
 	}
 
-	// Calculate the working time from the specified day in the rotation to the
-	// end of the rotation
-	private Duration calculateWorkingTimeFromToEnd(LocalDate date) throws Exception {
-		Duration sum = Duration.ZERO;
-
-		int dayInRotation = getDayInRotation(date);
-
-		for (int i = dayInRotation; i < getRotation().getDuration().toDays(); i++) {
-			TimePeriod period = getRotation().getPeriods().get(i);
-
-			if (period.isWorkingPeriod()) {
-				sum = sum.plus(period.getDuration());
-			}
-		}
-
-		return sum;
-	}
-	
 	/**
 	 * Get the {@link ShiftInstance} for the specified day
-	 * @param day Day with a shift instance
+	 * 
+	 * @param day
+	 *            Day with a shift instance
 	 * @return {@link ShiftInstance}
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 
 	public ShiftInstance getShiftInstanceForDay(LocalDate day) throws Exception {
@@ -172,7 +161,7 @@ public class Team extends Named {
 		int dayInRotation = getDayInRotation(day);
 
 		// shift or off shift
-		TimePeriod period = shiftRotation.getPeriods().get(dayInRotation);
+		TimePeriod period = shiftRotation.getPeriods().get(dayInRotation - 1);
 
 		if (period.isWorkingPeriod()) {
 			LocalDateTime startDateTime = LocalDateTime.of(day, period.getStart());
@@ -194,55 +183,47 @@ public class Team extends Named {
 	 *             exception
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
-		Duration sum = Duration.ZERO;
-
 		if (from.isAfter(to)) {
-			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from); 
+			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), to, from);
 			throw new Exception(msg);
 		}
 
-		// find number of complete rotations
-		LocalDate fromDate = from.toLocalDate();
+		Duration sum = Duration.ZERO;
+
+		Shift lastShift = null;
+		LocalDate thisDate = from.toLocalDate();
+		LocalTime thisTime = from.toLocalTime();
 		LocalDate toDate = to.toLocalDate();
+		LocalTime toTime = to.toLocalTime();
 
-		long deltaDays = toDate.toEpochDay() - fromDate.toEpochDay();
+		// step through each day until done
+		while (thisDate.compareTo(toDate) < 1) {
+			if (lastShift != null && lastShift.spansMidnight()) {
+				Duration duration = lastShift.calculateWorkingTime(LocalTime.MIDNIGHT, toTime, false);
+				sum = sum.plus(duration);
+			}
 
-		Rotation rotation = getRotation();
-		long rotationDays = rotation.getDayCount();
+			// today's shift
+			ShiftInstance instance = getShiftInstanceForDay(thisDate);
 
-		long rotationCount = deltaDays / rotationDays;
-		Duration rotationTime = rotation.getWorkingTime();
+			Duration duration = null;
+			if (instance != null) {
+				lastShift = instance.getShift();
+				// check for crossing midnight
+				if (thisDate.compareTo(toDate) == 0) {
+					duration = lastShift.calculateWorkingTime(thisTime, toTime, true);
+				} else {
 
-		for (int i = 0; i < rotationCount; i++) {
-			sum = sum.plus(rotationTime);
-		}
+					duration = lastShift.calculateWorkingTime(thisTime, LocalTime.MAX, true);
+				}
+				sum = sum.plus(duration);
+			} else {
+				lastShift = null;
+			}
 
-		if (deltaDays % rotationDays != 0) {
-			Duration begin = calculateWorkingTimeFromToEnd(fromDate);
-			Duration end = calculateWorkingTimeFromToEnd(toDate);
-			sum = sum.plus(begin.minus(end));
-		}
-
-		// remove day edge effects
-		Shift shift = null;
-		Duration edge = null;
-
-		// from midnight to starting time of day in day 1
-		ShiftInstance instance = getShiftInstanceForDay(fromDate);
-
-		if (instance != null) {
-			shift = instance.getShift();
-			edge = shift.calculateWorkingTime(LocalTime.MIN, from.toLocalTime());
-			sum = sum.minus(edge);
-		}
-
-		// from ending time of day to midnight in day 1
-		instance = getShiftInstanceForDay(toDate);
-
-		if (instance != null) {
-			shift = instance.getShift();
-			edge = shift.calculateWorkingTime(LocalTime.MIN, to.toLocalTime());
-			sum = sum.plus(edge);
+			// move ahead a day starting at midnight
+			thisDate = thisDate.plusDays(1);
+			thisTime = LocalTime.MIDNIGHT;
 		}
 
 		return sum;

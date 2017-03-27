@@ -59,8 +59,8 @@ public class WorkSchedule extends Named {
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
 
-	// cache time zone for working time calculations
-	private ZoneId zoneId = ZoneId.systemDefault();
+	// cached time zone for working time calculations
+	private final ZoneId zoneId = ZoneId.systemDefault();
 
 	/**
 	 * Construct a work schedule
@@ -124,7 +124,7 @@ public class WorkSchedule extends Named {
 	}
 
 	/**
-	 * Get the list of shift instances for the specified date
+	 * Get the list of shift instances for the specified date that start in that date
 	 * 
 	 * @param day
 	 *            LocalDate

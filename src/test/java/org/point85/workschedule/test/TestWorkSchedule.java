@@ -146,7 +146,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
 		Team platoon3 = schedule.createTeam("Green", "C Shift", rotation, LocalDate.of(2017, 1, 2));
 
-		List<ShiftInstance> instances = schedule.getShiftInstancesForDay(LocalDate.of(2017, 3, 1)); 
+		List<ShiftInstance> instances = schedule.getShiftInstancesForDay(LocalDate.of(2017, 3, 1));
 		assertTrue(instances.size() == 1);
 		assertTrue(instances.get(0).getTeam().equals(platoon3));
 
@@ -257,10 +257,14 @@ public class TestWorkSchedule extends BaseTest {
 			to = from.plusDays(i);
 			totalWorking = team1.calculateWorkingTime(from, to);
 			int dir = team1.getDayInRotation(to.toLocalDate());
+			
+			if (!totalWorking.equals(d)) {
+				System.out.println(d);
+			}
 
 			assertTrue(totalWorking.equals(d));
 
-			if (rotation1.getPeriods().get(dir) instanceof Shift) {
+			if (rotation1.getPeriods().get(dir - 1) instanceof Shift) {
 				d = d.plus(shiftDuration);
 			}
 		}
@@ -277,7 +281,7 @@ public class TestWorkSchedule extends BaseTest {
 
 			assertTrue(totalWorking.equals(d));
 
-			if (rotation1.getPeriods().get(dir) instanceof Shift) {
+			if (rotation1.getPeriods().get(dir - 1) instanceof Shift) {
 				d = d.plus(shiftDuration);
 			}
 		}
@@ -332,7 +336,13 @@ public class TestWorkSchedule extends BaseTest {
 
 		// shift
 		Shift shift = schedule.createShift("Test", "Test shift", shiftStart, shiftDuration);
-		shift.calculateWorkingTime(shiftStart.minusHours(1), shift.getEnd().plusHours(1));
+
+		try {
+			// crosses midnight
+			shift.calculateWorkingTime(shiftStart.minusHours(1), shift.getEnd().plusHours(1));
+			fail();
+		} catch (Exception e) {
+		}
 
 		try {
 			shift.setDuration(null);
@@ -514,61 +524,61 @@ public class TestWorkSchedule extends BaseTest {
 		assertTrue(time.getSeconds() == 1);
 
 		// 8 hr shift crossing midnight
-		shiftStart = LocalTime.of(20, 0, 0);
+		shiftStart = LocalTime.of(22, 0, 0);
 
 		shift = schedule.createShift("Work Shift2", "Working time shift", shiftStart, shiftDuration);
 		shiftEnd = shift.getEnd();
 
 		// case #1
-		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2), true);
 		assertTrue(time.getSeconds() == 0);
-		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #2
-		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #3
-		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #4
-		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1), false);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #5
-		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2), true);
 		assertTrue(time.getSeconds() == 0);
-		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #6
-		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1), true);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 
 		// case #7
-		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #8
-		time = shift.calculateWorkingTime(shiftStart, shiftEnd);
+		time = shift.calculateWorkingTime(shiftStart, shiftEnd, true);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 
 		// case #9
-		time = shift.calculateWorkingTime(shiftStart, shiftStart);
+		time = shift.calculateWorkingTime(shiftStart, shiftStart, true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #10
-		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd, shiftEnd, true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #11
-		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1));
+		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1), true);
 		assertTrue(time.getSeconds() == 1);
 
 		// case #12
-		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd, false);
 		assertTrue(time.getSeconds() == 1);
 
 		// 24 hr shift crossing midnight
@@ -579,55 +589,55 @@ public class TestWorkSchedule extends BaseTest {
 		shiftEnd = shift.getEnd();
 
 		// case #1
-		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(2), false);
 		assertTrue(time.getSeconds() == 3600);
-		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(3), shiftStart.minusHours(3), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #2
-		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftStart.plusHours(1), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #3
-		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(2), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #4
-		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.minusHours(1), shiftEnd.plusHours(1), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #5
-		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(2), true);
 		assertTrue(time.getSeconds() == 3600);
-		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftEnd.plusHours(1), shiftEnd.plusHours(1), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #6
-		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.minusHours(1), shiftEnd.plusHours(1), true);
 		assertTrue(time.getSeconds() == 3600);
 
 		// case #7
-		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1));
+		time = shift.calculateWorkingTime(shiftStart.plusHours(1), shiftStart.plusHours(1), true);
 		assertTrue(time.getSeconds() == 0);
 
 		// case #8
-		time = shift.calculateWorkingTime(shiftStart, shiftEnd);
+		time = shift.calculateWorkingTime(shiftStart, shiftEnd, true);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 
 		// case #9
-		time = shift.calculateWorkingTime(shiftStart, shiftStart);
+		time = shift.calculateWorkingTime(shiftStart, shiftStart, true);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 
 		// case #10
-		time = shift.calculateWorkingTime(shiftEnd, shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd, shiftEnd, true);
 		assertTrue(time.getSeconds() == shiftDuration.getSeconds());
 
 		// case #11
-		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1));
+		time = shift.calculateWorkingTime(shiftStart, shiftStart.plusSeconds(1), true);
 		assertTrue(time.getSeconds() == 1);
 
 		// case #12
-		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd);
+		time = shift.calculateWorkingTime(shiftEnd.minusSeconds(1), shiftEnd, false);
 		assertTrue(time.getSeconds() == 1);
 	}
 
@@ -702,7 +712,7 @@ public class TestWorkSchedule extends BaseTest {
 		from = LocalDateTime.of(startRotation, shiftStart);
 		to = from.plusDays(1);
 		time = team2.calculateWorkingTime(from, to);
-		assertTrue(time.equals(halfShift));
+		assertTrue(time.equals(shiftDuration));
 
 		// case #2
 		to = from.plusDays(2);
@@ -712,7 +722,7 @@ public class TestWorkSchedule extends BaseTest {
 		// case #3
 		to = from.plusDays(3);
 		time = team2.calculateWorkingTime(from, to);
-		assertTrue(time.equals(shiftDuration.plus(halfShift)));
+		assertTrue(time.equals(shiftDuration.plus(shiftDuration)));
 
 		// case #4
 		to = from.plusDays(4);
@@ -810,38 +820,123 @@ public class TestWorkSchedule extends BaseTest {
 		// case #10
 		duration = schedule.calculateNonWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(0)));
-		
+
 		Duration shiftDuration = Duration.ofHours(8);
 		LocalTime shiftStart = LocalTime.of(7, 0, 0);
 
 		Shift shift = schedule.createShift("Work Shift1", "Working time shift", shiftStart, shiftDuration);
-		
+
 		Rotation rotation = new Rotation();
 		rotation.on(1, shift).off(1, shift);
 
 		LocalDate startRotation = LocalDate.of(2017, 1, 1);
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
 		team.setRotationStart(startRotation);
-		
-		period1 = schedule.createNonWorkingPeriod("Day1", "First test day",
-				LocalDateTime.of(date, LocalTime.MIDNIGHT), Duration.ofHours(24));
-		
+
+		period1 = schedule.createNonWorkingPeriod("Day1", "First test day", LocalDateTime.of(date, LocalTime.MIDNIGHT),
+				Duration.ofHours(24));
+
 		from = LocalDateTime.of(date, time.minusHours(2));
 		to = LocalDateTime.of(date, time.minusHours(1));
 
 		// case #11
 		duration = schedule.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(0)));
-		
+
 		// case #12
 		from = LocalDateTime.of(date, shiftStart);
 		to = LocalDateTime.of(date, time.plusHours(8));
-		
+
 		duration = schedule.calculateNonWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(8)));
-		
+
 		duration = schedule.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(0)));
+
+	}
+
+	@Test
+	public void testTeamWorkingTime2() throws Exception {
+		WorkSchedule schedule = new WorkSchedule("4 Team Plan", "test schedule");
+
+		// Day shift #1, starts at 07:00 for 15.5 hours
+		Shift crossover = schedule.createShift("Crossover", "Day shift #1 cross-over", LocalTime.of(7, 0, 0),
+				Duration.ofHours(15).plusMinutes(30));
+
+		// Day shift #2, starts at 07:00 for 14 hours
+		Shift day = schedule.createShift("Day", "Day shift #2", LocalTime.of(7, 0, 0), Duration.ofHours(14));
+
+		// Night shift, starts at 22:00 for 14 hours
+		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(22, 0, 0), Duration.ofHours(14));
+
+		// Team 4-day rotation
+		Rotation rotation = new Rotation();
+		rotation.on(1, day).on(1, crossover).on(1, night).off(1, day);
+
+		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		
+		// partial in Day 1
+		LocalTime am7 = LocalTime.of(7, 0, 0);
+		LocalDateTime from = LocalDateTime.of(referenceDate, am7);
+		LocalDateTime to = LocalDateTime.of(referenceDate, am7.plusHours(1));
+		
+
+		//------------------------------------------------------------------
+		// from first day in rotation for Team1
+		from = LocalDateTime.of(referenceDate, LocalTime.MIDNIGHT);
+		to = LocalDateTime.of(referenceDate, LocalTime.MAX);
+
+		Duration duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(14)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(1), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(29).plusMinutes(30)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(31).plusMinutes(30)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(3), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(43).plusMinutes(30)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(4), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(57).plusMinutes(30)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(5), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(73)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(6), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(75)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(7), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(87)));
+
+		// from third day in rotation for Team1
+		from = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MIDNIGHT);
+		to = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(2)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(3), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(14)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(4), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(28)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(5), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(43).plusMinutes(30)));
+
+		to = LocalDateTime.of(referenceDate.plusDays(6), LocalTime.MAX);
+		duration = team1.calculateWorkingTime(from, to);
+		assertTrue(duration.equals(Duration.ofHours(45).plusMinutes(30)));
 	}
 }

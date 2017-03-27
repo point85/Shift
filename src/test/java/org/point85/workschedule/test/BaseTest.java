@@ -38,9 +38,9 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.point85.workschedule.NonWorkingPeriod;
+import org.point85.workschedule.Rotation;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
-import org.point85.workschedule.Rotation;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
@@ -63,7 +63,7 @@ public abstract class BaseTest {
 
 	@BeforeClass
 	public static void setFlags() {
-		testToString = true;
+		testToString = false;
 	}
 
 	private void testShifts(WorkSchedule ws) throws Exception {
@@ -82,10 +82,21 @@ public abstract class BaseTest {
 			assertTrue(start != null);
 			assertTrue(end != null);
 
-			Duration worked = shift.calculateWorkingTime(start, end);
+			Duration worked = null;
+			boolean spansMidnight = shift.spansMidnight();
+			if (spansMidnight) {
+				// get the interval before midnight
+				worked = shift.calculateWorkingTime(start, end, true);
+			} else {
+				worked = shift.calculateWorkingTime(start, end);
+			}
 			assertTrue(worked.equals(total));
 
-			worked = shift.calculateWorkingTime(start, start);
+			if (spansMidnight) {
+				worked = shift.calculateWorkingTime(start, start, true);
+			} else {
+				worked = shift.calculateWorkingTime(start, start);
+			}
 
 			// 24 hour shift on midnight is a special case
 			if (total.equals(Duration.ofHours(24))) {
@@ -94,7 +105,11 @@ public abstract class BaseTest {
 				assertTrue(worked.toHours() == 0);
 			}
 
-			worked = shift.calculateWorkingTime(end, end);
+			if (spansMidnight) {
+				worked = shift.calculateWorkingTime(end, end, true);
+			} else {
+				worked = shift.calculateWorkingTime(end, end);
+			}
 
 			if (total.equals(Duration.ofHours(24))) {
 				assertTrue(worked.toHours() == 24);
@@ -104,7 +119,7 @@ public abstract class BaseTest {
 
 			try {
 				LocalTime t = start.minusMinutes(1);
-				worked = shift.calculateWorkingTime(t, end); 
+				worked = shift.calculateWorkingTime(t, end);
 
 				if (!total.equals(shift.getDuration())) {
 					fail("Bad working time");
@@ -129,7 +144,7 @@ public abstract class BaseTest {
 		for (Team team : ws.getTeams()) {
 			assertTrue(team.getName().length() > 0);
 			assertTrue(team.getDescription().length() > 0);
-			assertTrue(team.getDayInRotation(team.getRotationStart()) == 0);
+			assertTrue(team.getDayInRotation(team.getRotationStart()) == 1);
 			Duration hours = team.getRotation().getWorkingTime();
 			assertTrue(hours.equals(hoursPerRotation));
 			assertTrue(team.getPercentageWorked() > 0.0f);
@@ -169,7 +184,7 @@ public abstract class BaseTest {
 
 				assertTrue(shift.isInShift(startTime));
 				assertTrue(shift.isInShift(startTime.plusSeconds(1)));
-				
+
 				Duration shiftDuration = instance.getShift().getDuration();
 
 				// midnight is special case

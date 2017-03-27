@@ -24,6 +24,7 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -101,8 +102,19 @@ public class Shift extends TimePeriod {
 		return period;
 	}
 
+	private int toRoundedSecond(LocalTime time) {
+		int second = time.toSecondOfDay();
+
+		if (time.getNano() > 500E+06) {
+			second++;
+		}
+
+		return second;
+	}
+
 	/**
-	 * Calculate the working time between the specified times of day
+	 * Calculate the working time between the specified times of day. The shift
+	 * must not span midnight.
 	 * 
 	 * @param from
 	 *            starting time
@@ -113,12 +125,50 @@ public class Shift extends TimePeriod {
 	 *             exception
 	 */
 	public Duration calculateWorkingTime(LocalTime from, LocalTime to) throws Exception {
+
+		if (spansMidnight()) {
+			String msg = MessageFormat.format(WorkSchedule.getMessage("shift.spans.midnight"), getName(), from, to);
+			throw new Exception(msg);
+		}
+
+		return this.calculateWorkingTime(from, to, true);
+	}
+
+	/**
+	 * Check to see if this shift crosses midnight
+	 * 
+	 * @return True if the shift extends over midnight, otherwise false
+	 * @throws Exception
+	 *             exception
+	 */
+	public boolean spansMidnight() throws Exception {
+		int startSecond = toRoundedSecond(getStart());
+		int endSecond = toRoundedSecond(getEnd());
+		return endSecond <= startSecond ? true : false;
+	}
+
+	/**
+	 * Calculate the working time between the specified times of day
+	 * 
+	 * @param from
+	 *            starting time
+	 * @param to
+	 *            Ending time
+	 * @param beforeMidnight
+	 *            If true, and a shift spans midnight, calculate the time before
+	 *            midnight. Otherwise calculate the time after midnight.
+	 * @return Duration of working time
+	 * @throws Exception
+	 *             exception
+	 */
+	public Duration calculateWorkingTime(LocalTime from, LocalTime to, boolean beforeMidnight) throws Exception {
 		Duration duration = Duration.ZERO;
 
-		int startSecond = getStart().toSecondOfDay();
-		int endSecond = getEnd().toSecondOfDay();
-		int fromSecond = from.toSecondOfDay();
-		int toSecond = to.toSecondOfDay();
+		int startSecond = toRoundedSecond(getStart());
+		int endSecond = toRoundedSecond(getEnd());
+		int fromSecond = toRoundedSecond(from);
+		int toSecond = toRoundedSecond(to);
+
 		int delta = toSecond - fromSecond;
 
 		// check for 24 hour shift
@@ -130,10 +180,12 @@ public class Shift extends TimePeriod {
 			delta = 86400 + toSecond - fromSecond;
 		}
 
-		if (endSecond <= startSecond) {
+		if (spansMidnight()) {
 			// adjust for shift crossing midnight
 			if (fromSecond < startSecond && fromSecond < endSecond) {
-				fromSecond = fromSecond + 86400;
+				if (!beforeMidnight) {
+					fromSecond = fromSecond + 86400;
+				}
 			}
 			toSecond = fromSecond + delta;
 			endSecond = endSecond + 86400;
@@ -161,12 +213,14 @@ public class Shift extends TimePeriod {
 		return duration;
 	}
 
-	
 	/**
 	 * Test if the specified time falls within the shift
-	 * @param time {@link LocalTime} 
+	 * 
+	 * @param time
+	 *            {@link LocalTime}
 	 * @return True if in the shift
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public boolean isInShift(LocalTime time) throws Exception {
 		boolean answer = false;
