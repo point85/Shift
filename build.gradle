@@ -1,5 +1,6 @@
 /*
- * Shift gradle build file
+ * Point85 Shift project gradle build file.
+ * Kent Randall
  */
 
 // Apply the java plugin to add support for Java
