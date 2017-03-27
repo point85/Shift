@@ -38,7 +38,8 @@ import java.util.ResourceBundle;
 
 /**
  * Class WorkSchedule represents a named group of teams who collectively work
- * one or more shifts with off-shift periods.
+ * one or more shifts with off-shift periods. A work schedule can have periods
+ * of non-working time.
  * 
  * @author Kent Randall
  *
@@ -124,7 +125,8 @@ public class WorkSchedule extends Named {
 	}
 
 	/**
-	 * Get the list of shift instances for the specified date that start in that date
+	 * Get the list of shift instances for the specified date that start in that
+	 * date
 	 * 
 	 * @param day
 	 *            LocalDate

@@ -25,7 +25,7 @@ SOFTWARE.
 package org.point85.workschedule;
 
 /**
- * The Named class represents a named object.
+ * Class Named represents a named object such as a Shift or Team.
  * 
  * @author Kent Randall
  *
@@ -56,7 +56,8 @@ abstract class Named {
 	 * 
 	 * @param name
 	 *            Name
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public void setName(String name) throws Exception {
 		if (name == null) {
