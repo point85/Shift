@@ -195,6 +195,7 @@ public class Team extends Named {
 		LocalTime thisTime = from.toLocalTime();
 		LocalDate toDate = to.toLocalDate();
 		LocalTime toTime = to.toLocalTime();
+		int dayCount = getRotation().getDayCount();
 
 		// step through each day until done
 		while (thisDate.compareTo(toDate) < 1) {
@@ -221,8 +222,20 @@ public class Team extends Named {
 				lastShift = null;
 			}
 
-			// move ahead a day starting at midnight
-			thisDate = thisDate.plusDays(1);
+			int n = 1;
+			if (getDayInRotation(thisDate) == dayCount) {
+				// move ahead by one rotation if possible
+				LocalDate rotationEndDate = thisDate.plusDays(dayCount);
+
+				if (rotationEndDate.compareTo(toDate) == -1) {
+					// move ahead by the rotation count
+					n = dayCount;
+					sum = sum.plus(getRotation().getWorkingTime());
+				}
+			}
+
+			// move ahead N days starting at midnight
+			thisDate = thisDate.plusDays(n);
 			thisTime = LocalTime.MIDNIGHT;
 		}
 
