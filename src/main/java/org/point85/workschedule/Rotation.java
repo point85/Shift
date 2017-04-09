@@ -157,7 +157,7 @@ public class Rotation {
 			}
 
 			String onOff = period.isWorkingPeriod() ? on : off;
-			periodsString += period.getName() + " (" + onOff + ") ";
+			periodsString += period.getName() + " (" + onOff + ")";
 		}
 
 		String text = rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda + ": "
