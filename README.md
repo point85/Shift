@@ -136,9 +136,9 @@ Shifts:
    (2) Night (Night shift), Start : 19:00 (PT12H), End : 07:00
 Teams: 
    (1) A (A day shift), Rotation start: 2014-01-02, Rotation periods: [Day (on), Day (on), Day (on), Day (on), Day (on), Day (on), Day (on), (off), (off), (off), (off), (off), (off), (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
-   (2) B (B night shift), Rotation start: 2014-01-02, Rotation periods: [Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), (off), (off), (off), (off), (off), (off), Night (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
+   (2) B (B night shift), Rotation start: 2014-01-02, Rotation periods: [Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), (off), (off), (off), (off), (off), (off), (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
    (3) C (C day shift), Rotation start: 2014-01-09, Rotation periods: [Day (on), Day (on), Day (on), Day (on), Day (on), Day (on), Day (on), (off), (off), (off), (off), (off), (off), (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
-   (4) D (D night shift), Rotation start: 2014-01-09, Rotation periods: [Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), (off), (off), (off), (off), (off), (off), Night (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
+   (4) D (D night shift), Rotation start: 2014-01-09, Rotation periods: [Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), Night (on), (off), (off), (off), (off), (off), (off), (off) ], Rotation duration: PT336H, Days in rotation: 14, Scheduled working time: PT84H, Percentage worked: 25%, Average hours worked per week: PT42H
 Total team coverage: 100%
 Working shifts
 [1] Day: 2014-01-09
