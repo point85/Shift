@@ -41,9 +41,6 @@ public class Shift extends TimePeriod {
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
 
-	// corresponding off-shift period
-	private OffShift offShift;
-
 	Shift(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
 	}
@@ -251,13 +248,6 @@ public class Shift extends TimePeriod {
 			}
 		}
 		return answer;
-	}
-
-	OffShift getOffShift() throws Exception {
-		if (offShift == null) {
-			offShift = new OffShift(getName(), getDescription(), getStart(), getDuration());
-		}
-		return offShift;
 	}
 
 	/**

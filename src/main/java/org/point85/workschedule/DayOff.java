@@ -27,16 +27,10 @@ package org.point85.workschedule;
 import java.time.Duration;
 import java.time.LocalTime;
 
-/**
- * Class OffShift is a scheduled non-working time.
- * 
- * @author Kent Randall
- *
- */
-public class OffShift extends TimePeriod {
+class DayOff extends TimePeriod {
 
 	// Construct a period of time when not working
-	OffShift(String name, String description, LocalTime start, Duration duration) throws Exception {
+	DayOff(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
 	}
 

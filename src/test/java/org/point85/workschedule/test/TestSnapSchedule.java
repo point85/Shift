@@ -50,8 +50,8 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team rotation
 		Rotation rotation = new Rotation();
-		rotation.on(3, day).on(4, swing).off(3, day).on(4, day).on(3, swing).off(4, day).on(3, day).on(4, night)
-				.off(3, day).on(4, day).on(3, night).off(4, day);
+		rotation.on(3, day).on(4, swing).off(3).on(4, day).on(3, swing).off(4).on(3, day).on(4, night).off(3).on(4, day)
+				.on(3, night).off(4);
 
 		// 6 teams
 		schedule.createTeam("Team1", "First team", rotation, referenceDate);
@@ -75,7 +75,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team rotation
 		Rotation rotation = new Rotation();
-		rotation.on(1, shift).off(1, shift).on(1, shift).off(1, shift).on(1, shift).off(4, shift);
+		rotation.on(1, shift).off(1).on(1, shift).off(1).on(1, shift).off(4);
 
 		// 3 teams
 		schedule.createTeam("Team1", "First team", rotation, referenceDate);
@@ -99,8 +99,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team rotation (28 days)
 		Rotation rotation = new Rotation();
-		rotation.on(4, day1).on(1, day2).off(3, day1).on(4, day1).off(3, day1).on(4, day1).off(2, day2).on(4, day1)
-				.on(1, day2).off(2, day1);
+		rotation.on(4, day1).on(1, day2).off(3).on(4, day1).off(3).on(4, day1).off(2).on(4, day1).on(1, day2).off(2);
 
 		// 2 teams
 		schedule.createTeam("Team1", "First team", rotation, referenceDate);
@@ -120,7 +119,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team1 rotation (5 days)
 		Rotation rotation = new Rotation();
-		rotation.on(5, day).off(2, day);
+		rotation.on(5, day).off(2);
 
 		// 1 team, 1 shift
 		schedule.createTeam("Team", "One team", rotation, referenceDate);
@@ -153,8 +152,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// shift rotation (28 days)
 		Rotation rotation = new Rotation();
-		rotation.on(5, day2).on(2, day1).off(3, day1).on(2, night2).on(2, night1).on(3, night2).off(4, day1)
-				.on(5, swing).off(2, day1);
+		rotation.on(5, day2).on(2, day1).off(3).on(2, night2).on(2, night1).on(3, night2).off(4).on(5, swing).off(2);
 
 		// 4 teams, rotating through 5 shifts
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
@@ -185,7 +183,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team1 rotation
 		Rotation rotation = new Rotation();
-		rotation.on(1, day).on(1, crossover).on(1, night).off(1, day);
+		rotation.on(1, day).on(1, crossover).on(1, night).off(1);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(3));
@@ -213,7 +211,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// Team1 rotation
 		Rotation rotation = new Rotation();
-		rotation.on(4, night).off(3, night).on(3, day).off(1, day).on(3, night).off(3, night).on(4, day).off(7, day);
+		rotation.on(4, night).off(3).on(3, day).off(1).on(3, night).off(3).on(4, day).off(7);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(7));
@@ -239,7 +237,7 @@ public class TestSnapSchedule extends BaseTest {
 
 		// rotation
 		Rotation rotation = new Rotation();
-		rotation.on(1, day).on(1, night).off(1, night);
+		rotation.on(1, day).on(1, night).off(1);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
@@ -274,18 +272,18 @@ public class TestSnapSchedule extends BaseTest {
 
 		// day rotation
 		Rotation dayRotation = new Rotation();
-		dayRotation.on(6, day).off(3, day).on(5, day).off(3, day).on(6, day).off(2, day).on(6, day).off(2, day)
-				.on(6, day).off(2, day).on(6, day).off(2, day);
+		dayRotation.on(6, day).off(3).on(5, day).off(3).on(6, day).off(2).on(6, day).off(2).on(6, day).off(2).on(6, day)
+				.off(2);
 
 		// swing rotation
 		Rotation swingRotation = new Rotation();
-		swingRotation.on(6, swing).off(3, swing).on(5, swing).off(3, swing).on(6, swing).off(2, swing).on(6, swing)
-				.off(2, swing).on(6, swing).off(2, swing).on(6, swing).off(2, swing);
+		swingRotation.on(6, swing).off(3).on(5, swing).off(3).on(6, swing).off(2).on(6, swing).off(2).on(6, swing)
+				.off(2).on(6, swing).off(2);
 
 		// night rotation
 		Rotation nightRotation = new Rotation();
-		nightRotation.on(6, night).off(3, night).on(5, night).off(3, night).on(6, night).off(2, night).on(6, night)
-				.off(2, night).on(6, night).off(2, night).on(6, night).off(2, night);
+		nightRotation.on(6, night).off(3).on(5, night).off(3).on(6, night).off(2).on(6, night).off(2).on(6, night)
+				.off(2).on(6, night).off(2);
 
 		// day teams
 		schedule.createTeam("Team 1", "1st day team", dayRotation, referenceDate);
@@ -365,12 +363,12 @@ public class TestSnapSchedule extends BaseTest {
 		// rotation
 		Rotation rotation = new Rotation();
 		// 2 days on, 2 off, 3 on, 2 off, 2 on, 3 off (and repeat)
-		rotation.on(2, day).off(2, day).on(3, day).off(2, day).on(2, day).off(3, day).on(2, day).off(2, day).on(3, day)
-				.off(2, day).on(2, day).off(3, day);
+		rotation.on(2, day).off(2).on(3, day).off(2).on(2, day).off(3).on(2, day).off(2).on(3, day).off(2).on(2, day)
+				.off(3);
 
 		// 2 nights on, 2 off, 3 on, 2 off, 2 on, 3 off (and repeat)
-		rotation.on(2, night).off(2, night).on(3, night).off(2, night).on(2, night).off(3, night).on(2, night)
-				.off(2, night).on(3, night).off(2, night).on(2, night).off(3, night);
+		rotation.on(2, night).off(2).on(3, night).off(2).on(2, night).off(3).on(2, night).off(2).on(3, night).off(2)
+				.on(2, night).off(3);
 
 		schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(28));

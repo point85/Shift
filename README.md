@@ -38,7 +38,7 @@ Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0
 
 // rotation
 Rotation rotation = new Rotation();
-rotation.on(1, day).on(1, night).off(1, night);
+rotation.on(1, day).on(1, night).off(1);
 
 // create the teams
 // reference date for start of shift rotations
@@ -114,11 +114,11 @@ Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0
 
 // 7 days ON, 7 OFF
 Rotation dayRotation = new Rotation();
-dayRotation.on(7, day).off(7, day);
+dayRotation.on(7, day).off(7);
 
 // 7 nights ON, 7 OFF
 Rotation nightRotation = new Rotation();
-nightRotation.on(7, night).off(7, night);
+nightRotation.on(7, night).off(7);
 
 schedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
 schedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
@@ -174,7 +174,7 @@ Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0
 
 // 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
 Rotation rotation = new Rotation();
-rotation.on(2, shift).off(2, shift).on(2, shift).off(2, shift).on(2, shift).off(8, shift);
+rotation.on(2, shift).off(2).on(2, shift).off(2).on(2, shift).off(8);
 
 Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
 Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));

@@ -24,6 +24,7 @@ SOFTWARE.
 package org.point85.workschedule;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +36,29 @@ import java.util.List;
  *
  */
 public class Rotation {
+
+	// 24-hour day off period
+	private static final DayOff DAY_OFF = initializeDayOff();
+
 	// list of shift and off-shift periods
 	private List<TimePeriod> periods = new ArrayList<>();
 
 	/**
 	 * Construct a shift rotation
+	 * 
 	 */
 	public Rotation() {
+
+	}
+
+	private static DayOff initializeDayOff() {
+		DayOff dayOff = null;
+		try {
+			dayOff = new DayOff("", "", LocalTime.MIDNIGHT, Duration.ofHours(24));
+		} catch (Exception e) {
+			// ignore
+		}
+		return dayOff;
 	}
 
 	/**
@@ -52,9 +69,10 @@ public class Rotation {
 	public List<TimePeriod> getPeriods() {
 		return periods;
 	}
-	
+
 	/**
 	 * Get the number of days in the rotation
+	 * 
 	 * @return Day count
 	 */
 
@@ -79,19 +97,17 @@ public class Rotation {
 	}
 
 	/**
-	 * Define an off-shift period of time
+	 * Define an off-shift day
 	 * 
 	 * @param count
-	 *            Number of consecutive off-shift periods
-	 * @param shift
-	 *            The {@link Shift} with the corresponding off period
+	 *            Number of consecutive off-shift days
 	 * @return This shift rotation
 	 * @throws Exception
 	 *             exception
 	 */
-	public Rotation off(int count, Shift shift) throws Exception {
+	public Rotation off(int count) throws Exception {
 		for (int i = 0; i < count; i++) {
-			periods.add(shift.getOffShift());
+			periods.add(Rotation.DAY_OFF);
 		}
 		return this;
 	}
@@ -130,8 +146,8 @@ public class Rotation {
 		String rda = WorkSchedule.getMessage("rotation.days");
 		String rw = WorkSchedule.getMessage("rotation.working");
 		String rper = WorkSchedule.getMessage("rotation.periods");
-		String on =  WorkSchedule.getMessage("rotation.on");
-		String off =  WorkSchedule.getMessage("rotation.off");
+		String on = WorkSchedule.getMessage("rotation.on");
+		String off = WorkSchedule.getMessage("rotation.off");
 
 		String periodsString = "";
 
@@ -139,7 +155,7 @@ public class Rotation {
 			if (periodsString.length() > 0) {
 				periodsString += ", ";
 			}
-			
+
 			String onOff = period.isWorkingPeriod() ? on : off;
 			periodsString += period.getName() + " (" + onOff + ") ";
 		}
