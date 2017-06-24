@@ -49,7 +49,10 @@ public class WorkSchedule extends Named {
 	private static final String MESSAGES_BUNDLE_NAME = "Message";
 
 	// resource bundle for exception messages
-	private static ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
+	private static final ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
+	
+	// cached time zone for working time calculations
+	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
 	// list of teams
 	private List<Team> teams = new ArrayList<>();
@@ -59,9 +62,16 @@ public class WorkSchedule extends Named {
 
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
-
-	// cached time zone for working time calculations
-	private final ZoneId zoneId = ZoneId.systemDefault();
+	
+	// optimistic locking version
+	private Integer version;
+	
+	/**
+	 * Default constructor
+	 */
+	public WorkSchedule() {
+		super();
+	}
 
 	/**
 	 * Construct a work schedule
@@ -201,6 +211,7 @@ public class WorkSchedule extends Named {
 		}
 
 		teams.add(team);
+		team.setWorkSchedule(this);
 		return team;
 	}
 
@@ -227,6 +238,7 @@ public class WorkSchedule extends Named {
 			throw new Exception(msg);
 		}
 		shifts.add(shift);
+		shift.setWorkSchedule(this);
 		return shift;
 	}
 
@@ -355,15 +367,15 @@ public class WorkSchedule extends Named {
 	public Duration calculateNonWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
 
-		long fromSeconds = from.atZone(zoneId).toEpochSecond();
-		long toSeconds = to.atZone(zoneId).toEpochSecond();
+		long fromSeconds = from.atZone(ZONE_ID).toEpochSecond();
+		long toSeconds = to.atZone(ZONE_ID).toEpochSecond();
 
 		for (NonWorkingPeriod period : getNonWorkingPeriods()) {
 			LocalDateTime start = period.getStartDateTime();
-			long startSeconds = start.atZone(zoneId).toEpochSecond();
+			long startSeconds = start.atZone(ZONE_ID).toEpochSecond();
 
 			LocalDateTime end = period.getEndDateTime();
-			long endSeconds = end.atZone(zoneId).toEpochSecond();
+			long endSeconds = end.atZone(ZONE_ID).toEpochSecond();
 
 			if (fromSeconds >= endSeconds) {
 				// look at next period
@@ -506,5 +518,21 @@ public class WorkSchedule extends Named {
 		}
 
 		return text;
+	}
+	
+	/**
+	 * Get the optimistic locking version
+	 * @return version
+	 */
+	public Integer getVersion() {
+		return version;
+	}
+
+	/**
+	 * Set the optimistic locking version
+	 * @param version Version
+	 */
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }

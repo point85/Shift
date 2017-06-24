@@ -28,8 +28,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,25 +43,27 @@ import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
 /**
- * Base class for testing shift plans from
- * //community.bmscentral.com/learnss/Tutorials/SchedulePlans/
+ * Base class for testing shift plans
  * 
  * @author Kent
  *
  */
 public abstract class BaseTest {
-	public static final MathContext MATH_CONTEXT = MathContext.DECIMAL64;
-
-	protected static final BigDecimal DELTA3 = new BigDecimal("0.001", MATH_CONTEXT);
-
 	// reference date for start of shift rotations
 	protected LocalDate referenceDate = LocalDate.of(2016, 10, 31);
 
-	private static boolean testToString = false;
+	// partial test flags
+	protected static boolean testToString = false;
+
+	protected static boolean testDeletions = true;
+
+	// a work schedule
+	protected WorkSchedule schedule;
 
 	@BeforeClass
 	public static void setFlags() {
 		testToString = true;
+		testDeletions = true;
 	}
 
 	private void testShifts(WorkSchedule ws) throws Exception {
@@ -230,7 +230,6 @@ public abstract class BaseTest {
 
 			day = day.plusDays(1);
 		}
-
 	}
 
 	protected void runBaseTest(WorkSchedule ws, Duration hoursPerRotation, Duration rotationDays,
@@ -255,33 +254,37 @@ public abstract class BaseTest {
 		// shift instances
 		testShiftInstances(ws, instanceReference);
 
-		// team deletions
-		Team[] teams = new Team[ws.getTeams().size()];
-		ws.getTeams().toArray(teams);
-
-		for (Team team : teams) {
-			ws.deleteTeam(team);
+		if (testDeletions) {
+			testDeletions();
 		}
-		assertTrue(ws.getTeams().size() == 0);
-
-		// shift deletions
-		Shift[] shifts = new Shift[ws.getShifts().size()];
-		ws.getShifts().toArray(shifts);
-
-		for (Shift shift : shifts) {
-			ws.deleteShift(shift);
-		}
-		assertTrue(ws.getShifts().size() == 0);
-
-		// non-working period deletions
-		NonWorkingPeriod[] periods = new NonWorkingPeriod[ws.getNonWorkingPeriods().size()];
-		ws.getNonWorkingPeriods().toArray(periods);
-
-		for (NonWorkingPeriod period : periods) {
-			ws.deleteNonWorkingPeriod(period);
-		}
-		assertTrue(ws.getNonWorkingPeriods().size() == 0);
-
 	}
 
+	private void testDeletions() throws Exception {
+		// team deletions
+		Team[] teams = new Team[schedule.getTeams().size()];
+		schedule.getTeams().toArray(teams);
+
+		for (Team team : teams) {
+			schedule.deleteTeam(team);
+		}
+		assertTrue(schedule.getTeams().size() == 0);
+
+		// shift deletions
+		Shift[] shifts = new Shift[schedule.getShifts().size()];
+		schedule.getShifts().toArray(shifts);
+
+		for (Shift shift : shifts) {
+			schedule.deleteShift(shift);
+		}
+		assertTrue(schedule.getShifts().size() == 0);
+
+		// non-working period deletions
+		NonWorkingPeriod[] periods = new NonWorkingPeriod[schedule.getNonWorkingPeriods().size()];
+		schedule.getNonWorkingPeriods().toArray(periods);
+
+		for (NonWorkingPeriod period : periods) {
+			schedule.deleteNonWorkingPeriod(period);
+		}
+		assertTrue(schedule.getNonWorkingPeriods().size() == 0);
+	}
 }

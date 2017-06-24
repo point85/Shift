@@ -50,7 +50,7 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testNursingICUShifts() throws Exception {
 		// ER nursing schedule
-		WorkSchedule schedule = new WorkSchedule("Nursing ICU",
+		schedule = new WorkSchedule("Nursing ICU",
 				"Two 12 hr back-to-back shifts, rotating every 14 days");
 
 		// day shift, starts at 06:00 for 12 hours
@@ -60,20 +60,26 @@ public class TestWorkSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(18, 0, 0), Duration.ofHours(12));
 
 		// day rotation
-		Rotation dayRotation = new Rotation();
-		dayRotation.on(3, day).off(4).on(4, day).off(3);
+		Rotation dayRotation = new Rotation("Day", "Day");
+		dayRotation.addSegment(day, 3, 4);
+		dayRotation.addSegment(day, 4, 3);
 
-		// inverse day rotation
-		Rotation inverseDayRotation = new Rotation();
-		inverseDayRotation.off(3).on(4, day).off(4).on(3, day);
+		// inverse day rotation (day + 3 days)
+		Rotation inverseDayRotation = new Rotation("Inverse Day", "Inverse Day");
+		inverseDayRotation.addSegment(day, 0, 3);
+		inverseDayRotation.addSegment(day, 4, 4);
+		inverseDayRotation.addSegment(day, 3, 0);
 
 		// night rotation
-		Rotation nightRotation = new Rotation();
-		nightRotation.on(4, night).off(3).on(3, night).off(4);
+		Rotation nightRotation = new Rotation("Night", "Night");
+		nightRotation.addSegment(night, 4, 3);
+		nightRotation.addSegment(night, 3, 4);
 
 		// inverse night rotation
 		Rotation inverseNightRotation = new Rotation();
-		inverseNightRotation.off(4).on(3, night).off(3).on(4, night);
+		inverseNightRotation.addSegment(night, 0, 4);
+		inverseNightRotation.addSegment(night, 3, 3);
+		inverseNightRotation.addSegment(night, 4, 0);
 
 		LocalDate rotationStart = LocalDate.of(2014, 1, 6);
 
@@ -88,14 +94,17 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testPostalServiceShifts() throws Exception {
 		// United States Postal Service
-		WorkSchedule schedule = new WorkSchedule("USPS", "Six 9 hr shifts, rotating every 42 days");
+		schedule = new WorkSchedule("USPS", "Six 9 hr shifts, rotating every 42 days");
 
 		// shift, start at 08:00 for 9 hours
 		Shift day = schedule.createShift("Day", "day shift", LocalTime.of(8, 0, 0), Duration.ofHours(9));
 
-		Rotation rotation = new Rotation();
-		rotation.on(3, day).off(7).on(1, day).off(7).on(1, day).off(7).on(1, day).off(7).on(1, day)
-				.off(7);
+		Rotation rotation = new Rotation("Day", "Day");
+		rotation.addSegment(day, 3, 7);
+		rotation.addSegment(day, 1, 7);
+		rotation.addSegment(day, 1, 7);
+		rotation.addSegment(day, 1, 7);
+		rotation.addSegment(day, 1, 7);
 
 		LocalDate rotationStart = LocalDate.of(2017, 1, 27);
 
@@ -113,14 +122,15 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testFirefighterShifts2() throws Exception {
 		// Seattle, WA fire shifts
-		WorkSchedule schedule = new WorkSchedule("Seattle", "Four 24 hour alternating shifts");
+		schedule = new WorkSchedule("Seattle", "Four 24 hour alternating shifts");
 
 		// shift, start at 07:00 for 24 hours
 		Shift shift = schedule.createShift("24 Hours", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
 
 		// 1 day ON, 4 OFF, 1 ON, 2 OFF
-		Rotation rotation = new Rotation();
-		rotation.on(1, shift).off(4).on(1, shift).off(2);
+		Rotation rotation = new Rotation("24 Hours", "24 Hours");
+		rotation.addSegment(shift, 1, 4);
+		rotation.addSegment(shift, 1, 2);
 
 		schedule.createTeam("A", "Platoon1", rotation, LocalDate.of(2014, 2, 2));
 		schedule.createTeam("B", "Platoon2", rotation, LocalDate.of(2014, 2, 4));
@@ -133,14 +143,16 @@ public class TestWorkSchedule extends BaseTest {
 	@Test
 	public void testFirefighterShifts1() throws Exception {
 		// Kern Co, CA
-		WorkSchedule schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
+		schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating shifts");
 
 		// shift, start 07:00 for 24 hours
 		Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
 
 		// 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-		Rotation rotation = new Rotation();
-		rotation.on(2, shift).off(2).on(2, shift).off(2).on(2, shift).off(8);
+		Rotation rotation = new Rotation("24 Hour", "2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF");
+		rotation.addSegment(shift, 2, 2);
+		rotation.addSegment(shift, 2, 2);
+		rotation.addSegment(shift, 2, 8);
 
 		Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
 		Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
@@ -159,13 +171,12 @@ public class TestWorkSchedule extends BaseTest {
 		assertTrue(instances.get(0).getTeam().equals(platoon2));
 
 		runBaseTest(schedule, Duration.ofHours(144), Duration.ofDays(18), LocalDate.of(2017, 2, 1));
-
 	}
 
 	@Test
 	public void testManufacturingShifts() throws Exception {
 		// manufacturing company
-		WorkSchedule schedule = new WorkSchedule("Manufacturing Company - four twelves",
+		schedule = new WorkSchedule("Manufacturing Company - four twelves",
 				"Four 12 hour alternating day/night shifts");
 
 		// day shift, start at 07:00 for 12 hours
@@ -175,12 +186,12 @@ public class TestWorkSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 		// 7 days ON, 7 OFF
-		Rotation dayRotation = new Rotation();
-		dayRotation.on(7, day).off(7);
+		Rotation dayRotation = new Rotation("Day", "Day");
+		dayRotation.addSegment(day, 7, 7);
 
 		// 7 nights ON, 7 OFF
-		Rotation nightRotation = new Rotation();
-		nightRotation.on(7, night).off(7);
+		Rotation nightRotation = new Rotation("Night", "Night");
+		nightRotation.addSegment(night, 7, 7);
 
 		schedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
 		schedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
@@ -188,13 +199,12 @@ public class TestWorkSchedule extends BaseTest {
 		schedule.createTeam("D", "D night shift", nightRotation, LocalDate.of(2014, 1, 9));
 
 		runBaseTest(schedule, Duration.ofHours(84), Duration.ofDays(14), LocalDate.of(2014, 1, 9));
-
 	}
 
 	@Test
 	public void testGenericShift() throws Exception {
 		// regular work week with holidays and breaks
-		WorkSchedule schedule = new WorkSchedule("Regular 40 hour work week", "9 to 5");
+		schedule = new WorkSchedule("Regular 40 hour work week", "9 to 5");
 
 		try {
 			schedule.setName(null);
@@ -233,12 +243,12 @@ public class TestWorkSchedule extends BaseTest {
 		Shift shift2 = schedule.createShift("Shift2", "Shift #2", shift2Start, shiftDuration);
 
 		// shift 1, 5 days ON, 2 OFF
-		Rotation rotation1 = new Rotation();
-		rotation1.on(5, shift1).off(2);
+		Rotation rotation1 = new Rotation("Shift1", "Shift1");
+		rotation1.addSegment(shift1, 5, 2);
 
 		// shift 2, 5 days ON, 2 OFF
-		Rotation rotation2 = new Rotation();
-		rotation2.on(5, shift2).off(2);
+		Rotation rotation2 = new Rotation("Shift2", "Shift2");
+		rotation2.addSegment(shift2, 5, 2);
 
 		LocalDate startRotation = LocalDate.of(2016, 1, 1);
 		Team team1 = schedule.createTeam("Team1", "Team #1", rotation1, startRotation);
@@ -301,7 +311,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	@Test
 	public void testExceptions() throws Exception {
-		WorkSchedule schedule = new WorkSchedule("Exceptions", "Test exceptions");
+		schedule = new WorkSchedule("Exceptions", "Test exceptions");
 		Duration shiftDuration = Duration.ofHours(24);
 		LocalTime shiftStart = LocalTime.of(7, 0, 0);
 
@@ -363,8 +373,8 @@ public class TestWorkSchedule extends BaseTest {
 		} catch (Exception e) {
 		}
 
-		Rotation rotation = new Rotation();
-		rotation.on(5, shift).off(2);
+		Rotation rotation = new Rotation("Rotation", "Rotation");
+		rotation.addSegment(shift, 5, 2);
 
 		LocalDate startRotation = LocalDate.of(2016, 12, 31);
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
@@ -462,7 +472,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	@Test
 	public void testShiftWorkingTime() throws Exception {
-		WorkSchedule schedule = new WorkSchedule("Working Time1", "Test working time");
+		schedule = new WorkSchedule("Working Time1", "Test working time");
 
 		// shift does not cross midnight
 		Duration shiftDuration = Duration.ofHours(8);
@@ -643,15 +653,15 @@ public class TestWorkSchedule extends BaseTest {
 
 	@Test
 	public void testTeamWorkingTime() throws Exception {
-		WorkSchedule schedule = new WorkSchedule("Team Working Time", "Test team working time");
+		schedule = new WorkSchedule("Team Working Time", "Test team working time");
 		Duration shiftDuration = Duration.ofHours(12);
 		Duration halfShift = Duration.ofHours(6);
 		LocalTime shiftStart = LocalTime.of(7, 0, 0);
 
 		Shift shift = schedule.createShift("Team Shift1", "Team shift 1", shiftStart, shiftDuration);
 
-		Rotation rotation = new Rotation();
-		rotation.on(1, shift).off(1);
+		Rotation rotation = new Rotation("Team", "Rotation");
+		rotation.addSegment(shift, 1, 1);
 
 		LocalDate startRotation = LocalDate.of(2017, 1, 1);
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
@@ -703,8 +713,9 @@ public class TestWorkSchedule extends BaseTest {
 		shiftStart = LocalTime.of(18, 0, 0);
 		Shift shift2 = schedule.createShift("Team Shift2", "Team shift 2", shiftStart, shiftDuration);
 
-		Rotation rotation2 = new Rotation();
-		rotation2.on(1, shift2).off(1);
+		Rotation rotation2 = new Rotation("Case 8", "Case 8");
+		rotation2.addSegment(shift2, 1, 1);
+		
 		Team team2 = schedule.createTeam("Team2", "Team 2", rotation2, startRotation);
 		team2.setRotationStart(startRotation);
 
@@ -753,7 +764,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	@Test
 	public void testNonWorkingTime() throws Exception {
-		WorkSchedule schedule = new WorkSchedule("Non Working Time", "Test non working time");
+		schedule = new WorkSchedule("Non Working Time", "Test non working time");
 		LocalDate date = LocalDate.of(2017, 1, 1);
 		LocalTime time = LocalTime.of(7, 0, 0);
 
@@ -826,8 +837,8 @@ public class TestWorkSchedule extends BaseTest {
 
 		Shift shift = schedule.createShift("Work Shift1", "Working time shift", shiftStart, shiftDuration);
 
-		Rotation rotation = new Rotation();
-		rotation.on(1, shift).off(1);
+		Rotation rotation = new Rotation("Case 10", "Case10");
+		rotation.addSegment(shift, 1, 1);
 
 		LocalDate startRotation = LocalDate.of(2017, 1, 1);
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
@@ -857,7 +868,7 @@ public class TestWorkSchedule extends BaseTest {
 
 	@Test
 	public void testTeamWorkingTime2() throws Exception {
-		WorkSchedule schedule = new WorkSchedule("4 Team Plan", "test schedule");
+		schedule = new WorkSchedule("4 Team Plan", "test schedule");
 
 		// Day shift #1, starts at 07:00 for 15.5 hours
 		Shift crossover = schedule.createShift("Crossover", "Day shift #1 cross-over", LocalTime.of(7, 0, 0),
@@ -870,8 +881,10 @@ public class TestWorkSchedule extends BaseTest {
 		Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(22, 0, 0), Duration.ofHours(14));
 
 		// Team 4-day rotation
-		Rotation rotation = new Rotation();
-		rotation.on(1, day).on(1, crossover).on(1, night).off(1);
+		Rotation rotation = new Rotation("4 Team", "4 Team");
+		rotation.addSegment(day, 1, 0);
+		rotation.addSegment(crossover, 1, 0);
+		rotation.addSegment(night, 1, 1);
 
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		

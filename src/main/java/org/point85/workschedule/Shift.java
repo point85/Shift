@@ -36,10 +36,19 @@ import java.util.List;
  * @author Kent Randall
  *
  */
-public class Shift extends TimePeriod {
+public class Shift extends TimePeriod implements Comparable<Shift> {
+	// owning work schedule
+	private WorkSchedule workSchedule;
 
 	// breaks
 	private List<Break> breaks = new ArrayList<>();
+
+	/**
+	 * Default constructor
+	 */
+	public Shift() {
+		super();
+	}
 
 	Shift(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
@@ -265,6 +274,27 @@ public class Shift extends TimePeriod {
 		}
 
 		return sum;
+	}
+
+	/**
+	 * Get the work schedule that owns this shift
+	 * 
+	 * @return {@link WorkSchedule}
+	 */
+	public WorkSchedule getWorkSchedule() {
+		return workSchedule;
+	}
+
+	void setWorkSchedule(WorkSchedule workSchedule) {
+		this.workSchedule = workSchedule;
+	}
+
+	/**
+	 * Compare one shift to another one
+	 */
+	@Override
+	public int compareTo(Shift other) {
+		return this.getName().compareTo(other.getName());
 	}
 
 	/**

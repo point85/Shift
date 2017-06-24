@@ -35,26 +35,41 @@ import java.util.List;
  * @author Kent Randall
  *
  */
-public class Rotation {
+public class Rotation extends Named implements Comparable<Rotation> {
+
+	private List<RotationSegment> rotationSegments = new ArrayList<>();
+
+	// name of the day off time period
+	private static final String DAY_OFF_NAME = "DAY_OFF";
 
 	// 24-hour day off period
 	private static final DayOff DAY_OFF = initializeDayOff();
 
-	// list of shift and off-shift periods
-	private List<TimePeriod> periods = new ArrayList<>();
-
 	/**
-	 * Construct a shift rotation
-	 * 
+	 * Default constructor
 	 */
 	public Rotation() {
-
+		super();
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name
+	 *            Rotation name
+	 * @param description
+	 *            Description
+	 * @throws Exception Exception
+	 */
+	public Rotation(String name, String description) throws Exception {
+		super(name, description);
+	}
+
+	// create the day-off
 	private static DayOff initializeDayOff() {
 		DayOff dayOff = null;
 		try {
-			dayOff = new DayOff("", "", LocalTime.MIDNIGHT, Duration.ofHours(24));
+			dayOff = new DayOff(DAY_OFF_NAME, "24 hour off period", LocalTime.MIDNIGHT, Duration.ofHours(24));
 		} catch (Exception e) {
 			// ignore
 		}
@@ -67,6 +82,22 @@ public class Rotation {
 	 * @return List of periods
 	 */
 	public List<TimePeriod> getPeriods() {
+		List<TimePeriod> periods = new ArrayList<>();
+
+		for (RotationSegment segment : rotationSegments) {
+			// add the on days
+			if (segment.getStartingShift() != null) {
+				for (int i = 0; i < segment.getDaysOn(); i++) {
+					periods.add(segment.getStartingShift());
+				}
+			}
+
+			// add the off days
+			for (int i = 0; i < segment.getDaysOff(); i++) {
+				periods.add(Rotation.DAY_OFF);
+			}
+		}
+
 		return periods;
 	}
 
@@ -81,44 +112,12 @@ public class Rotation {
 	}
 
 	/**
-	 * Define a working shift period of time
-	 * 
-	 * @param count
-	 *            Number of consecutive shifts
-	 * @param shift
-	 *            {@link Shift}
-	 * @return This shift rotation
-	 */
-	public Rotation on(int count, Shift shift) {
-		for (int i = 0; i < count; i++) {
-			periods.add(shift);
-		}
-		return this;
-	}
-
-	/**
-	 * Define an off-shift day
-	 * 
-	 * @param count
-	 *            Number of consecutive off-shift days
-	 * @return This shift rotation
-	 * @throws Exception
-	 *             exception
-	 */
-	public Rotation off(int count) throws Exception {
-		for (int i = 0; i < count; i++) {
-			periods.add(Rotation.DAY_OFF);
-		}
-		return this;
-	}
-
-	/**
 	 * Get the duration of this rotation
 	 * 
 	 * @return Duration
 	 */
 	public Duration getDuration() {
-		return Duration.ofDays(periods.size());
+		return Duration.ofDays(getPeriods().size());
 	}
 
 	/**
@@ -129,7 +128,7 @@ public class Rotation {
 	public Duration getWorkingTime() {
 		Duration sum = Duration.ZERO;
 
-		for (TimePeriod period : periods) {
+		for (TimePeriod period : getPeriods()) {
 			if (period.isWorkingPeriod()) {
 				sum = sum.plus(period.getDuration());
 			}
@@ -138,10 +137,48 @@ public class Rotation {
 	}
 
 	/**
+	 * Get the rotation's working periods
+	 * 
+	 * @return List of {@link RotationSegment}
+	 */
+	public List<RotationSegment> getRotationSegments() {
+		return rotationSegments;
+	}
+
+	/**
+	 * Add a working period to this rotation. A working period starts with a
+	 * shift and specifies the number of days on and days off
+	 * 
+	 * @param startingShift
+	 *            {@link Shift} that starts the period
+	 * @param daysOn
+	 *            Number of days on shift
+	 * @param daysOff
+	 *            Number of days off shift
+	 * @return {@link RotationSegment}
+	 * @throws Exception Exception
+	 */
+	public RotationSegment addSegment(Shift startingShift, int daysOn, int daysOff) throws Exception {
+		if (startingShift == null) {
+			throw new Exception("The starting shift must be specified.");
+		}
+		RotationSegment segment = new RotationSegment(startingShift, daysOn, daysOff, this);
+		rotationSegments.add(segment);
+		segment.setSequence(rotationSegments.size());
+		return segment;
+	}
+
+	@Override
+	public int compareTo(Rotation other) {
+		return getName().compareTo(other.getName());
+	}
+
+	/**
 	 * Build a string representation of this rotation
 	 */
 	@Override
 	public String toString() {
+		String named = super.toString();
 		String rd = WorkSchedule.getMessage("rotation.duration");
 		String rda = WorkSchedule.getMessage("rotation.days");
 		String rw = WorkSchedule.getMessage("rotation.working");
@@ -151,7 +188,7 @@ public class Rotation {
 
 		String periodsString = "";
 
-		for (TimePeriod period : periods) {
+		for (TimePeriod period : getPeriods()) {
 			if (periodsString.length() > 0) {
 				periodsString += ", ";
 			}
@@ -160,8 +197,8 @@ public class Rotation {
 			periodsString += period.getName() + " (" + onOff + ")";
 		}
 
-		String text = rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda + ": "
-				+ getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
+		String text = named + "\n" + rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda
+				+ ": " + getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
 
 		return text;
 	}

@@ -38,7 +38,9 @@ import java.time.LocalTime;
  * @author Kent Randall
  *
  */
-public class Team extends Named {
+public class Team extends Named implements Comparable<Team> {
+	// owning work schedule
+	private WorkSchedule workSchedule;
 
 	// reference date for starting the rotations
 	private LocalDate rotationStart;
@@ -48,6 +50,13 @@ public class Team extends Named {
 
 	// cached epoch day
 	private transient long dayFrom;
+
+	/**
+	 * Default constructor
+	 */
+	public Team() {
+		super();
+	}
 
 	Team(String name, String description, Rotation rotation, LocalDate rotationStart) throws Exception {
 		super(name, description);
@@ -74,7 +83,9 @@ public class Team extends Named {
 		this.rotationStart = rotationStart;
 
 		// cache the epoch day
-		dayFrom = rotationStart.toEpochDay();
+		if (rotationStart != null) {
+			dayFrom = rotationStart.toEpochDay();
+		}
 	}
 
 	/**
@@ -84,6 +95,16 @@ public class Team extends Named {
 	 */
 	public Rotation getRotation() {
 		return rotation;
+	}
+
+	/**
+	 * Set the shift rotation for this team
+	 * 
+	 * @param rotation
+	 *            {@link Rotation}
+	 */
+	public void setRotation(Rotation rotation) {
+		this.rotation = rotation;
 	}
 
 	/**
@@ -153,7 +174,6 @@ public class Team extends Named {
 	 * @throws Exception
 	 *             exception
 	 */
-
 	public ShiftInstance getShiftInstanceForDay(LocalDate day) throws Exception {
 		ShiftInstance instance = null;
 
@@ -240,6 +260,27 @@ public class Team extends Named {
 		}
 
 		return sum;
+	}
+
+	/**
+	 * Get the work schedule that owns this team
+	 * 
+	 * @return {@link WorkSchedule}
+	 */
+	public WorkSchedule getWorkSchedule() {
+		return workSchedule;
+	}
+
+	void setWorkSchedule(WorkSchedule workSchedule) {
+		this.workSchedule = workSchedule;
+	}
+
+	/**
+	 * Compare one team to another
+	 */
+	@Override
+	public int compareTo(Team other) {
+		return this.getName().compareTo(other.getName());
 	}
 
 	/**
