@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+    version="1.0">
+
+    <persistence-unit name="WORK_SCHEDULE" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+  
+  		<!-- entities --> 
+  		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+  		
+   		<class>org.point85.workschedule.WorkSchedule</class>
+   		<class>org.point85.workschedule.Shift</class>
+   		<class>org.point85.workschedule.Team</class>
+   		<class>org.point85.workschedule.Rotation</class>
+   		<class>org.point85.workschedule.RotationSegment</class>
+   		<class>org.point85.workschedule.NonWorkingPeriod</class>
+   		
+   		<!-- converters -->
+   		<class>org.point85.workschedule.persistence.LocalDateTimeConverter</class>
+   		<class>org.point85.workschedule.persistence.LocalDateConverter</class>
+   		<class>org.point85.workschedule.persistence.LocalTimeConverter</class>
+   		<class>org.point85.workschedule.persistence.DurationConverter</class>
+
+        <properties>
+         <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://<url>:1433;databaseName=<db>"></property>
+         <property name="javax.persistence.jdbc.user" value="<name>"/>
+         <property name="javax.persistence.jdbc.password" value="<password>"/>
+         <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+         <property name="eclipselink.logging.level" value="WARNING"/>
+         <property name="eclipselink.ddl-generation" value="none"/>
+        </properties>
+    </persistence-unit>
+</persistence>
