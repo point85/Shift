@@ -50,7 +50,7 @@ public class WorkSchedule extends Named {
 
 	// resource bundle for exception messages
 	private static final ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
-	
+
 	// cached time zone for working time calculations
 	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
@@ -62,10 +62,10 @@ public class WorkSchedule extends Named {
 
 	// holidays and planned downtime
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
-	
+
 	// optimistic locking version
 	private Integer version;
-	
+
 	/**
 	 * Default constructor
 	 */
@@ -295,6 +295,7 @@ public class WorkSchedule extends Named {
 			String msg = MessageFormat.format(WorkSchedule.getMessage("nonworking.period.already.exists"), name);
 			throw new Exception(msg);
 		}
+		period.setWorkSchedule(this);
 		nonWorkingPeriods.add(period);
 
 		Collections.sort(nonWorkingPeriods);
@@ -302,7 +303,13 @@ public class WorkSchedule extends Named {
 		return period;
 	}
 
-	private Duration getRotationDuration() throws Exception {
+	/**
+	 * Get total duration of rotation across all teams.
+	 * 
+	 * @return Duration of rotation
+	 * @throws Exception Exception
+	 */
+	public Duration getRotationDuration() throws Exception {
 		Duration sum = Duration.ZERO;
 
 		for (Team team : teams) {
@@ -311,7 +318,12 @@ public class WorkSchedule extends Named {
 		return sum;
 	}
 
-	private Duration getRotationWorkingTime() {
+	/**
+	 * Get the total working time for all team rotations
+	 * 
+	 * @return Team rotation working time
+	 */
+	public Duration getRotationWorkingTime() {
 		Duration sum = Duration.ZERO;
 
 		for (Team team : teams) {
@@ -519,9 +531,10 @@ public class WorkSchedule extends Named {
 
 		return text;
 	}
-	
+
 	/**
 	 * Get the optimistic locking version
+	 * 
 	 * @return version
 	 */
 	public Integer getVersion() {
@@ -530,7 +543,9 @@ public class WorkSchedule extends Named {
 
 	/**
 	 * Set the optimistic locking version
-	 * @param version Version
+	 * 
+	 * @param version
+	 *            Version
 	 */
 	public void setVersion(Integer version) {
 		this.version = version;

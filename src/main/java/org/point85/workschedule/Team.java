@@ -49,7 +49,7 @@ public class Team extends Named implements Comparable<Team> {
 	private Rotation rotation;
 
 	// cached epoch day
-	private transient long dayFrom;
+	private transient long dayFrom = 0L;
 
 	/**
 	 * Default constructor
@@ -81,11 +81,16 @@ public class Team extends Named implements Comparable<Team> {
 	 */
 	public void setRotationStart(LocalDate rotationStart) {
 		this.rotationStart = rotationStart;
+	}
 
-		// cache the epoch day
-		if (rotationStart != null) {
-			dayFrom = rotationStart.toEpochDay();
+	private long getDayFrom() {
+		if (dayFrom == 0L) {
+			// cache the epoch day
+			if (rotationStart != null) {
+				dayFrom = rotationStart.toEpochDay();
+			}
 		}
+		return dayFrom;
 	}
 
 	/**
@@ -154,7 +159,7 @@ public class Team extends Named implements Comparable<Team> {
 	public int getDayInRotation(LocalDate date) throws Exception {
 		// calculate total number of days from start of rotation
 		long dayTo = date.toEpochDay();
-		long deltaDays = dayTo - dayFrom;
+		long deltaDays = dayTo - getDayFrom();
 
 		if (deltaDays < 0) {
 			String msg = MessageFormat.format(WorkSchedule.getMessage("end.earlier.than.start"), rotationStart, date);

@@ -37,7 +37,11 @@ import java.util.List;
  */
 public class Rotation extends Named implements Comparable<Rotation> {
 
+	// working periods in the rotation
 	private List<RotationSegment> rotationSegments = new ArrayList<>();
+
+	// list of working and non-working days
+	private List<TimePeriod> periods;
 
 	// name of the day off time period
 	private static final String DAY_OFF_NAME = "DAY_OFF";
@@ -59,7 +63,8 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	 *            Rotation name
 	 * @param description
 	 *            Description
-	 * @throws Exception Exception
+	 * @throws Exception
+	 *             Exception
 	 */
 	public Rotation(String name, String description) throws Exception {
 		super(name, description);
@@ -82,19 +87,21 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	 * @return List of periods
 	 */
 	public List<TimePeriod> getPeriods() {
-		List<TimePeriod> periods = new ArrayList<>();
+		if (periods == null) {
+			periods = new ArrayList<>();
 
-		for (RotationSegment segment : rotationSegments) {
-			// add the on days
-			if (segment.getStartingShift() != null) {
-				for (int i = 0; i < segment.getDaysOn(); i++) {
-					periods.add(segment.getStartingShift());
+			for (RotationSegment segment : rotationSegments) {
+				// add the on days
+				if (segment.getStartingShift() != null) {
+					for (int i = 0; i < segment.getDaysOn(); i++) {
+						periods.add(segment.getStartingShift());
+					}
 				}
-			}
 
-			// add the off days
-			for (int i = 0; i < segment.getDaysOff(); i++) {
-				periods.add(Rotation.DAY_OFF);
+				// add the off days
+				for (int i = 0; i < segment.getDaysOff(); i++) {
+					periods.add(Rotation.DAY_OFF);
+				}
 			}
 		}
 
@@ -156,7 +163,8 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	 * @param daysOff
 	 *            Number of days off shift
 	 * @return {@link RotationSegment}
-	 * @throws Exception Exception
+	 * @throws Exception
+	 *             Exception
 	 */
 	public RotationSegment addSegment(Shift startingShift, int daysOn, int daysOff) throws Exception {
 		if (startingShift == null) {

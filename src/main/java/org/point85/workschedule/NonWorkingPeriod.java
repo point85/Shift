@@ -36,11 +36,21 @@ import java.time.LocalDateTime;
  *
  */
 public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeriod> {
+	// owning work schedule
+	private WorkSchedule workSchedule;
+
 	// starting date and time of day
 	private LocalDateTime startDateTime;
 
 	// duration of period
 	private Duration duration;
+	
+	/**
+	 * Default constructor
+	 */
+	public NonWorkingPeriod() {
+		super();
+	}
 
 	NonWorkingPeriod(String name, String description, LocalDateTime startDateTime, Duration duration) throws Exception {
 		super(name, description);
@@ -136,5 +146,18 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	@Override
 	public int compareTo(NonWorkingPeriod other) {
 		return getStartDateTime().compareTo(other.getStartDateTime());
+	}
+
+	/**
+	 * Get the work schedule that owns this team
+	 * 
+	 * @return {@link WorkSchedule}
+	 */
+	public WorkSchedule getWorkSchedule() {
+		return workSchedule;
+	}
+
+	void setWorkSchedule(WorkSchedule workSchedule) {
+		this.workSchedule = workSchedule;
 	}
 }

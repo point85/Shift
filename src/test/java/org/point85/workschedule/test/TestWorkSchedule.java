@@ -76,7 +76,7 @@ public class TestWorkSchedule extends BaseTest {
 		nightRotation.addSegment(night, 3, 4);
 
 		// inverse night rotation
-		Rotation inverseNightRotation = new Rotation();
+		Rotation inverseNightRotation = new Rotation("Inverse Night", "Inverse Night");
 		inverseNightRotation.addSegment(night, 0, 4);
 		inverseNightRotation.addSegment(night, 3, 3);
 		inverseNightRotation.addSegment(night, 4, 0);
