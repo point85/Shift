@@ -21,12 +21,21 @@ A work schedule is defined with a name and description.  It has one or more team
 
 After a work schedule is defined, the working time for all shifts can be computed for a defined time interval.  For example, this duration of time is the maximum available productive time as an input to the calculation of the utilization of equipment in a metric known as the Overall Equipment Effectiveness (OEE).
 
+*Rotation*
+A rotation is a sequence of working periods (segments).  Each segment starts with a shift and specifies the number of days on-shift and off-shift.
+
+*Non-Working Period*
+A non-working period is a duration of time where no teams are working.  For example, a holiday or a period of time when a plant is shutdown for preventative maintenance.  A non-working period starts at a defined day and time of day and continues for the specified duration of time.
+
+*Shift Instance*
+A shift instance is the duration of time from a specified date and time of day and continues for the duration of the associated shift.  A team works this shift instance.
+
 ## Examples
 The DNO schedule discussed above is defined as follows.
 
 ```java
 String description = "This is a fast rotation plan that uses 3 teams and two 12-hr shifts to provide 24/7 coverage. "
-	+ "Each team rotates through the following sequence every three days: 1 day shift, 1 night shift, and 1 day off.";
+		+ "Each team rotates through the following sequence every three days: 1 day shift, 1 night shift, and 1 day off.";
 
 WorkSchedule schedule = new WorkSchedule("DNO Plan", description);
 
@@ -37,17 +46,13 @@ Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0), Dura
 Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 // rotation
-Rotation rotation = new Rotation();
-rotation.on(1, day).on(1, night).off(1);
+Rotation rotation = new Rotation("DNO", "DNO");
+rotation.addSegment(day, 1, 0);
+rotation.addSegment(night, 1, 1);
 
-// create the teams
-// reference date for start of shift rotations
-LocalDate referenceDate = LocalDate.of(2016, 10, 31);
-	
 schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
 schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
-
 ```
 To obtain the working time over three days starting at 07:00, the following methods are called:
 
@@ -113,12 +118,12 @@ Shift day = schedule.createShift("Day", "Day shift", LocalTime.of(7, 0, 0), Dura
 Shift night = schedule.createShift("Night", "Night shift", LocalTime.of(19, 0, 0), Duration.ofHours(12));
 
 // 7 days ON, 7 OFF
-Rotation dayRotation = new Rotation();
-dayRotation.on(7, day).off(7);
+Rotation dayRotation = new Rotation("Day", "Day");
+dayRotation.addSegment(day, 7, 7);
 
 // 7 nights ON, 7 OFF
-Rotation nightRotation = new Rotation();
-nightRotation.on(7, night).off(7);
+Rotation nightRotation = new Rotation("Night", "Night");
+nightRotation.addSegment(night, 7, 7);
 
 schedule.createTeam("A", "A day shift", dayRotation, LocalDate.of(2014, 1, 2));
 schedule.createTeam("B", "B night shift", nightRotation, LocalDate.of(2014, 1, 2));
@@ -173,8 +178,10 @@ WorkSchedule schedule = new WorkSchedule("Kern Co.", "Three 24 hour alternating 
 Shift shift = schedule.createShift("24 Hour", "24 hour shift", LocalTime.of(7, 0, 0), Duration.ofHours(24));
 
 // 2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF
-Rotation rotation = new Rotation();
-rotation.on(2, shift).off(2).on(2, shift).off(2).on(2, shift).off(8);
+Rotation rotation = new Rotation("24 Hour", "2 days ON, 2 OFF, 2 ON, 2 OFF, 2 ON, 8 OFF");
+rotation.addSegment(shift, 2, 2);
+rotation.addSegment(shift, 2, 2);
+rotation.addSegment(shift, 2, 8);
 
 Team platoon1 = schedule.createTeam("Red", "A Shift", rotation, LocalDate.of(2017, 1, 8));
 Team platoon2 = schedule.createTeam("Black", "B Shift", rotation, LocalDate.of(2017, 2, 1));
@@ -209,8 +216,46 @@ Working shifts
    (1) Team: Green, Shift: 24 Hour, Start : 2017-02-07T07:00, End : 2017-02-08T07:00
 ```
 
+## Work Schedule Application
+An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA (Java Persistence API) with FXML descriptors.  EclipseLink is the JPA implementation for a Microsoft SQL Server database.
+
+The editor allows new schedules to be created and saved to the database as well as updated and deleted.
+
+The screen capture below shows shift instances in the month of June, 2017 with the DNO schedule selected:
+![DNO Instances Diagram](https://github.com/point85/shift/blob/master/doc/ShiftInstances.png)
+
+The "Editor ..." button launches the editor (see below).  To display shift instances, follow these steps:
+*  Select the schedule in the drop-down, e.g. DNO.  
+*  Choose the beginning date from the picker and enter the beginning time of day (hour:minute)
+*  Choose the ending date from the picker and enter the ending time of day (hour:minute)
+*  Click the "Show Shifts" button.  The shift instances will be displayed in the table along with the total working and non-working time.
+
+The screen capture below shows the work schedule editor with the Shift tab selected:
+![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/ShiftEditor.png)
+
+The screen capture below shows the work schedule editor with the Rotations tab selected:
+![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/RotationEditor.png)
+
+The screen capture below shows the work schedule editor with the Teams tab selected:
+![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/TeamEditor.png)
+
+The screen capture below shows the work schedule editor with the Non-working Periods tab selected:
+![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/NonWorkingEditor.png)
+
+To create a work schedule, click the "New" button and follow these steps:
+*  Enter a name and description.
+*  Select the Shifts tab.  Click New and enter the shift information.  Click Add to create a shift.  To update a shift, select it in the table, edit the information and click Update.  Click Remove to delete it.
+*  Follow these steps for the Rotations, Teams and Non-working Periods tabs.
+*  Click the "Save" button.  The new work schedule will appear in the list view on the left
+
+To edit a work schedule, select it in the list view.  It's properties will be displayed on the right.  Change properties as required, then click the "Save" button.
+
+To refresh the state of the work schedule that is selected in the list view from the database, click the "Refresh" button.
+
+To delete a work schedule, select it in the list view then click the "Delete" button.
+
 ## Project Structure
-Shift depends upon Java 8+ due to use of the java time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
+Shift depends upon Java 8+ due to use of the java date and time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
 
 Shift, when built with Gradle, has the following structure:
  * `/build/docs/javadoc` javadoc files
@@ -219,5 +264,8 @@ Shift, when built with Gradle, has the following structure:
  * `/src/main/java` - java source files
  * `/src/main/resources` - localizable Message.properties file to define error messages.
  * `/src/test/java` - JUnit test java source files 
+ * `/src/ui/java` - java source files for JPA persistency and JavaFX 8 user interface for the application
+ * `/src/ui/resources` - images and XML files for for JPA persistency
+ * `/database/mssql` - Microsoft SQL Server SQL script files for table and index generation
  
 When Shift is built with Maven, the javadoc and jar files are in the 'target' folder.
