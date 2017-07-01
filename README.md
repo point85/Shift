@@ -22,12 +22,15 @@ A work schedule is defined with a name and description.  It has one or more team
 After a work schedule is defined, the working time for all shifts can be computed for a defined time interval.  For example, this duration of time is the maximum available productive time as an input to the calculation of the utilization of equipment in a metric known as the Overall Equipment Effectiveness (OEE).
 
 *Rotation*
-A rotation is a sequence of working periods (segments).  Each segment starts with a shift and specifies the number of days on-shift and off-shift.
+
+A rotation is a sequence of working periods (segments).  Each segment starts with a shift and specifies the number of days on-shift and off-shift.  A work schedule can have more than one rotation.
 
 *Non-Working Period*
+
 A non-working period is a duration of time where no teams are working.  For example, a holiday or a period of time when a plant is shutdown for preventative maintenance.  A non-working period starts at a defined day and time of day and continues for the specified duration of time.
 
 *Shift Instance*
+
 A shift instance is the duration of time from a specified date and time of day and continues for the duration of the associated shift.  A team works this shift instance.
 
 ## Examples
@@ -217,29 +220,29 @@ Working shifts
 ```
 
 ## Work Schedule Application
-An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA (Java Persistence API) with FXML descriptors.  EclipseLink is the JPA implementation for a Microsoft SQL Server database.
+An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA (Java Persistence API) with FXML descriptors in orm.xml file.  EclipseLink is the JPA implementation for a Microsoft SQL Server database.
 
 The editor allows new schedules to be created and saved to the database as well as updated and deleted.
 
-The screen capture below shows shift instances in the month of June, 2017 with the DNO schedule selected:
+The screen capture below shows shift instances for the month of June, 2017 with the DNO schedule selected.
 ![DNO Instances Diagram](https://github.com/point85/shift/blob/master/doc/ShiftInstances.png)
 
 The "Editor ..." button launches the editor (see below).  To display shift instances, follow these steps:
-*  Select the schedule in the drop-down, e.g. DNO.  
+*  Select the schedule in the drop-down, e.g. DNO Plan.  
 *  Choose the beginning date from the picker and enter the beginning time of day (hour:minute)
 *  Choose the ending date from the picker and enter the ending time of day (hour:minute)
 *  Click the "Show Shifts" button.  The shift instances will be displayed in the table along with the total working and non-working time.
 
-The screen capture below shows the work schedule editor with the Shift tab selected:
+The screen capture below shows the work schedule editor with the Shift tab selected.
 ![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/ShiftEditor.png)
 
-The screen capture below shows the work schedule editor with the Rotations tab selected:
+The screen capture below shows the work schedule editor with the Rotations tab selected.  The rotation duration is displayed in the table.
 ![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/RotationEditor.png)
 
-The screen capture below shows the work schedule editor with the Teams tab selected:
+The screen capture below shows the work schedule editor with the Teams tab selected.  The average hours worked per week is displayed in the table.
 ![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/TeamEditor.png)
 
-The screen capture below shows the work schedule editor with the Non-working Periods tab selected:
+The screen capture below shows the work schedule editor with the Non-working Periods tab selected.
 ![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/NonWorkingEditor.png)
 
 To create a work schedule, click the "New" button and follow these steps:
