@@ -4,7 +4,6 @@ import org.point85.workschedule.persistence.PersistentWorkSchedule;
 import org.point85.workschedule.test.TestSnapSchedule;
 
 public class TestSnapPersistency extends TestSnapSchedule {
-	private PersistentWorkSchedule pws = new PersistentWorkSchedule();
 
 	public TestSnapPersistency() {
 		testDeletions = false;
@@ -13,67 +12,67 @@ public class TestSnapPersistency extends TestSnapSchedule {
 	@Override
 	public void testPanama() throws Exception {
 		super.testPanama();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void testLowNight() throws Exception {
 		super.testLowNight();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void test3TeamFixed24() throws Exception {
 		super.test3TeamFixed24();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void test21TeamFixed() throws Exception {
 		super.test21TeamFixed();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void test549() throws Exception {
 		super.test549();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void test8Plus12() throws Exception {
 		super.test8Plus12();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void test9to5() throws Exception {
 		super.test9to5();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void testDNO() throws Exception {
 		super.testDNO();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void testDupont() throws Exception {
 		super.testDupont();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void testICUInterns() throws Exception {
 		super.testICUInterns();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	@Override
 	public void testTwoTeam() throws Exception {
 		super.testTwoTeam();
-		pws.saveWorkSchedule(schedule);
+		PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 	}
 
 	public static void main(String[] args) {

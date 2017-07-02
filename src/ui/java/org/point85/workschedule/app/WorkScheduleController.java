@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.point85.workschedule.ShiftInstance;
 import org.point85.workschedule.WorkSchedule;
+import org.point85.workschedule.persistence.PersistentWorkSchedule;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -88,9 +89,14 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	void initWorkScheduleApp(WorkScheduleApp app) {
 		this.setApp(app);
 
+		// images
 		ImageView newView = new ImageView(new Image("images/Edit.png", 16, 16, true, true));
 		btEditor.setGraphic(newView);
 		btEditor.setContentDisplay(ContentDisplay.LEFT);
+		
+		ImageView instanceView = new ImageView(new Image("images/Shifts.png", 16, 16, true, true));
+		btShowShifts.setGraphic(instanceView);
+		btShowShifts.setContentDisplay(ContentDisplay.LEFT);
 
 		initializeWorkSchedule();
 
@@ -102,9 +108,23 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 		scheduleNames.clear();
 
 		// query for the work schedules
-		for (String name : getPersistentWorkSchedule().fetchNames()) {
+		for (String name : PersistentWorkSchedule.getInstance().fetchNames()) {
 			scheduleNames.add(name);
 		}
+	}
+
+	private void clearShiftInstances() {
+		this.workSchedule = null;
+		
+		this.dpPeriodStart.setValue(null);
+		this.tfStartTime.clear();
+		this.dpPeriodEnd.setValue(null);
+		this.tfEndTime.clear();
+
+		this.tfWorkingTime.clear();
+		this.tfNonWorkingTime.clear();
+		this.shiftInstanceList.clear();
+
 	}
 
 	private void initializeWorkSchedule() {
@@ -163,6 +183,9 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 			// refresh work schedule list
 			refreshScheduleNames();
 
+			// clear out previous data
+			clearShiftInstances();
+
 		} catch (Exception e) {
 			showErrorDialog(getApp().getPrimaryStage(), e);
 		}
@@ -171,12 +194,12 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	@FXML
 	private void handleScheduleSelection() {
 		try {
-			this.shiftInstanceList.clear();
+			clearShiftInstances();
 
 			String name = this.cbSchedules.getSelectionModel().getSelectedItem();
 
 			// work schedule
-			workSchedule = this.getPersistentWorkSchedule().fetchWorkScheduleByName(name);
+			workSchedule = PersistentWorkSchedule.getInstance().fetchWorkScheduleByName(name);
 
 		} catch (Exception e) {
 			showErrorDialog(getApp().getPrimaryStage(), e);
@@ -186,6 +209,10 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	@FXML
 	private void handleShowShifts() {
 		try {
+			if (workSchedule == null) {
+				throw new Exception("A work schedule must be chosen.");
+			}
+			
 			this.shiftInstanceList.clear();
 
 			// period start
@@ -225,7 +252,6 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 				List<ShiftInstance> instances = workSchedule.getShiftInstancesForDay(day);
 
 				for (ShiftInstance instance : instances) {
-					System.out.println(instance);
 					this.shiftInstanceList.add(instance);
 				}
 

@@ -146,12 +146,31 @@ public class WorkSchedule extends Named {
 	 */
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
+		
+		// non working periods
+		List<NonWorkingPeriod> nonWorkingPeriods = getNonWorkingPeriods();
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
 			ShiftInstance instance = team.getShiftInstanceForDay(day);
 
-			if (instance != null) {
+			if (instance == null) {
+				continue;
+			}
+			
+			// check to see if this is a non-working day
+			boolean addShift = true;
+			
+			LocalDate startDate = instance.getStartTime().toLocalDate();
+			
+			for (NonWorkingPeriod nonWorkingPeriod : nonWorkingPeriods) {
+				if (nonWorkingPeriod.isInPeriod(startDate)) {
+					addShift = false;
+					break;
+				}
+			}
+			
+			if (addShift) {
 				workingShifts.add(instance);
 			}
 		}
@@ -346,8 +365,8 @@ public class WorkSchedule extends Named {
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
-
-		// add up scheduled time by team
+		
+		// now add up scheduled time by team
 		for (Team team : getTeams()) {
 			sum = sum.plus(team.calculateWorkingTime(from, to));
 		}

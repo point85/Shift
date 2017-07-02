@@ -48,9 +48,6 @@ public class Team extends Named implements Comparable<Team> {
 	// shift rotation days
 	private Rotation rotation;
 
-	// cached epoch day
-	private transient long dayFrom = 0L;
-
 	/**
 	 * Default constructor
 	 */
@@ -84,13 +81,7 @@ public class Team extends Named implements Comparable<Team> {
 	}
 
 	private long getDayFrom() {
-		if (dayFrom == 0L) {
-			// cache the epoch day
-			if (rotationStart != null) {
-				dayFrom = rotationStart.toEpochDay();
-			}
-		}
-		return dayFrom;
+		return rotationStart.toEpochDay();
 	}
 
 	/**
@@ -197,6 +188,32 @@ public class Team extends Named implements Comparable<Team> {
 	}
 
 	/**
+	 * Check to see if this day is a day off
+	 * 
+	 * @param day
+	 *            Date to check
+	 * @return True if a day off
+	 * @throws Exception Exception
+	 */
+	public boolean isDayOff(LocalDate day) throws Exception {
+
+		boolean dayOff = false;
+
+		Rotation shiftRotation = getRotation();
+		int dayInRotation = getDayInRotation(day);
+
+		// shift or off shift
+		TimePeriod period = shiftRotation.getPeriods().get(dayInRotation - 1);
+
+		if (!period.isWorkingPeriod()) {
+			dayOff = true;
+		}
+
+		return dayOff;
+
+	}
+
+	/**
 	 * Calculate the schedule working time between the specified dates and times
 	 * 
 	 * @param from
@@ -220,7 +237,6 @@ public class Team extends Named implements Comparable<Team> {
 		LocalTime thisTime = from.toLocalTime();
 		LocalDate toDate = to.toLocalDate();
 		LocalTime toTime = to.toLocalTime();
-		int dayCount = getRotation().getDayCount();
 
 		// step through each day until done
 		while (thisDate.compareTo(toDate) < 1) {
@@ -233,36 +249,43 @@ public class Team extends Named implements Comparable<Team> {
 			ShiftInstance instance = getShiftInstanceForDay(thisDate);
 
 			Duration duration = null;
+
 			if (instance != null) {
 				lastShift = instance.getShift();
-				// check for crossing midnight
+				// check for last date
 				if (thisDate.compareTo(toDate) == 0) {
 					duration = lastShift.calculateWorkingTime(thisTime, toTime, true);
 				} else {
-
 					duration = lastShift.calculateWorkingTime(thisTime, LocalTime.MAX, true);
 				}
 				sum = sum.plus(duration);
 			} else {
 				lastShift = null;
-			}
+				
+				LocalDate yesterday = thisDate.plusDays(-1);
 
-			int n = 1;
-			if (getDayInRotation(thisDate) == dayCount) {
-				// move ahead by one rotation if possible
-				LocalDate rotationEndDate = thisDate.plusDays(dayCount);
+				if (!isDayOff(yesterday)) {
+					// this team could have time from the previous day
+					if (thisDate.compareTo(toDate) < 0) {
+						instance = getShiftInstanceForDay(yesterday);
+					}
 
-				if (rotationEndDate.compareTo(toDate) == -1) {
-					// move ahead by the rotation count
-					n = dayCount;
-					sum = sum.plus(getRotation().getWorkingTime());
+					if (instance != null) {
+						// add time after midnight
+						int afterMidnightSecond = instance.getShift().getEnd().toSecondOfDay();
+						int fromSecond = thisTime.toSecondOfDay();
+
+						if (afterMidnightSecond > fromSecond) {
+							sum = sum.plusSeconds(afterMidnightSecond - fromSecond);
+						}
+					}
 				}
 			}
 
-			// move ahead N days starting at midnight
-			thisDate = thisDate.plusDays(n);
+			// next day
+			thisDate = thisDate.plusDays(1);
 			thisTime = LocalTime.MIDNIGHT;
-		}
+		} // end day loop
 
 		return sum;
 	}

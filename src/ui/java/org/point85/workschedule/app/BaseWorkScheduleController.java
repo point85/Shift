@@ -5,8 +5,6 @@ import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.point85.workschedule.persistence.PersistentWorkSchedule;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -18,13 +16,6 @@ public class BaseWorkScheduleController {
 
 	// Reference to the main application
 	private WorkScheduleApp app;
-
-	// persistency support
-	private PersistentWorkSchedule persistentWorkSchedule = new PersistentWorkSchedule();
-
-	protected PersistentWorkSchedule getPersistentWorkSchedule() {
-		return this.persistentWorkSchedule;
-	}
 
 	protected WorkScheduleApp getApp() {
 		return this.app;

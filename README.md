@@ -231,7 +231,7 @@ The "Editor ..." button launches the editor (see below).  To display shift insta
 *  Select the schedule in the drop-down, e.g. DNO Plan.  
 *  Choose the beginning date from the picker and enter the beginning time of day (hour:minute)
 *  Choose the ending date from the picker and enter the ending time of day (hour:minute)
-*  Click the "Show Shifts" button.  The shift instances will be displayed in the table along with the total working and non-working time.
+*  Click the "Show Shifts" button.  The shift instances starting in each day will be displayed in the table along with the total working and non-working time for each such shift instance. 
 
 The screen capture below shows the work schedule editor with the Shift tab selected.
 ![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/ShiftEditor.png)

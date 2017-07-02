@@ -59,8 +59,14 @@ public class PersistentWorkSchedule {
 
 	// entity manager
 	private EntityManager em;
+	
+	private static PersistentWorkSchedule persistentWorkSchedule = new PersistentWorkSchedule();
 
-	public PersistentWorkSchedule() {
+	private PersistentWorkSchedule() {
+	}
+	
+	public static PersistentWorkSchedule getInstance() {
+		return persistentWorkSchedule;
 	}
 
 	// get the EntityManager, create if necessary

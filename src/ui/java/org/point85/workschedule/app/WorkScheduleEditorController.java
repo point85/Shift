@@ -14,6 +14,7 @@ import org.point85.workschedule.RotationSegment;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
+import org.point85.workschedule.persistence.PersistentWorkSchedule;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -545,7 +546,7 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 		if (scheduleName == null) {
 			return;
 		}
-		WorkSchedule schedule = this.getPersistentWorkSchedule().fetchWorkScheduleByName(scheduleName);
+		WorkSchedule schedule = PersistentWorkSchedule.getInstance().fetchWorkScheduleByName(scheduleName);
 
 		// attributes
 		this.displayAttributes(schedule);
@@ -819,7 +820,7 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 
 		try {
 			// delete
-			getPersistentWorkSchedule().deleteWorkSchedule(currentSchedule);
+			PersistentWorkSchedule.getInstance().deleteWorkSchedule(currentSchedule);
 
 			// reset editor
 			resetEditor();
@@ -875,7 +876,8 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 
 			if (schedule.getKey() == null) {
 				try {
-					WorkSchedule existing = getPersistentWorkSchedule().fetchWorkScheduleByName(schedule.getName());
+					WorkSchedule existing = PersistentWorkSchedule.getInstance()
+							.fetchWorkScheduleByName(schedule.getName());
 
 					if (existing != null) {
 						throw new Exception("Work schedule with name " + schedule.getName() + " already exists.");
@@ -886,14 +888,14 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 			}
 
 			// save the created or updated work schedule
-			getPersistentWorkSchedule().saveWorkSchedule(schedule);
+			PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
 
 			this.currentSchedule = schedule;
 
 		} catch (Exception e) {
 			// remove from persistence unit
 			if (schedule != null) {
-				getPersistentWorkSchedule().evictWorkSchedule(schedule);
+				PersistentWorkSchedule.getInstance().evictWorkSchedule(schedule);
 			}
 
 			showErrorDialog(dialogStage, e);
@@ -967,7 +969,7 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 	}
 
 	protected List<String> getScheduleNames() {
-		return getPersistentWorkSchedule().fetchNames();
+		return PersistentWorkSchedule.getInstance().fetchNames();
 	}
 
 	// new shift button clicked
@@ -1193,7 +1195,7 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 			}
 
 			// check for team reference
-			List<Team> referencingTeams = getPersistentWorkSchedule().getCrossReferences(rotation);
+			List<Team> referencingTeams = PersistentWorkSchedule.getInstance().getCrossReferences(rotation);
 
 			if (referencingTeams.size() != 0) {
 				String teamNames = "";

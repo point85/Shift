@@ -25,6 +25,7 @@ SOFTWARE.
 package org.point85.workschedule;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -44,7 +45,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 
 	// duration of period
 	private Duration duration;
-	
+
 	/**
 	 * Default constructor
 	 */
@@ -141,7 +142,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * Compare this non-working period to another such period by start date and
 	 * time of day
 	 * 
-	 * @return -1 if less than, 0 if equal and 1 if greater than
+	 * @return negative if less than, 0 if equal and positive if greater than
 	 */
 	@Override
 	public int compareTo(NonWorkingPeriod other) {
@@ -159,5 +160,25 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 
 	void setWorkSchedule(WorkSchedule workSchedule) {
 		this.workSchedule = workSchedule;
+	}
+
+	/**
+	 * Check to see if this day is contained in the non-working period
+	 * 
+	 * @param day Date to check
+	 * @return True if in the non-working period
+	 * @throws Exception Exception
+	 */
+	public boolean isInPeriod(LocalDate day) throws Exception {
+		boolean isInPeriod = false;
+
+		LocalDate periodStart = getStartDateTime().toLocalDate();
+		LocalDate periodEnd = getEndDateTime().toLocalDate();
+
+		if (day.compareTo(periodStart) >= 0 && day.compareTo(periodEnd) <= 0) {
+			isInPeriod = true;
+		}
+
+		return isInPeriod;
 	}
 }

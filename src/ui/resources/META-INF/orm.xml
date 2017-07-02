@@ -137,9 +137,6 @@
 			<many-to-one name="workSchedule" fetch="EAGER">
             	<join-column name="WS_KEY"/>
         	</many-to-one>
-			
-			<!-- transient attributes -->
-			<transient name="dayFrom"/>
 								
 		</attributes>
 	</entity>

@@ -213,8 +213,6 @@ public class TestWorkSchedule extends BaseTest {
 		}
 
 		// holidays
-		schedule.createNonWorkingPeriod("NEW YEARS", "New Years day", LocalDateTime.of(2016, 1, 1, 0, 0, 0),
-				Duration.ofHours(24));
 		schedule.createNonWorkingPeriod("MEMORIAL DAY", "Memorial day", LocalDateTime.of(2016, 5, 30, 0, 0, 0),
 				Duration.ofHours(24));
 		schedule.createNonWorkingPeriod("INDEPENDENCE DAY", "Independence day", LocalDateTime.of(2016, 7, 4, 0, 0, 0),
@@ -267,10 +265,6 @@ public class TestWorkSchedule extends BaseTest {
 			to = from.plusDays(i);
 			totalWorking = team1.calculateWorkingTime(from, to);
 			int dir = team1.getDayInRotation(to.toLocalDate());
-			
-			if (!totalWorking.equals(d)) {
-				System.out.println(d);
-			}
 
 			assertTrue(totalWorking.equals(d));
 

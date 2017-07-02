@@ -39,7 +39,7 @@
          <content>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <GridPane layoutX="133.0" layoutY="14.0" AnchorPane.bottomAnchor="525.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                  <GridPane layoutX="133.0" layoutY="14.0" prefHeight="100.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -86,10 +86,10 @@
                            <GridPane.margin>
                               <Insets right="10.0" />
                            </GridPane.margin></TextField>
-                        <Button fx:id="btShowShifts" mnemonicParsing="false" onAction="#handleShowShifts" prefWidth="100.0" text="Show Shifts" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                        <Button fx:id="btShowShifts" mnemonicParsing="false" onAction="#handleShowShifts" prefWidth="100.0" text="Shifts" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
-                  <TableView fx:id="tvShiftInstances" layoutX="230.0" layoutY="255.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+                  <TableView fx:id="tvShiftInstances" layoutX="230.0" layoutY="255.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="125.0">
                     <columns>
                       <TableColumn fx:id="dayColumn" prefWidth="100.0" text="Day" />
                       <TableColumn fx:id="teamNameColumn" prefWidth="100.0" text="Team" />

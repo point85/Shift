@@ -41,7 +41,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	private List<RotationSegment> rotationSegments = new ArrayList<>();
 
 	// list of working and non-working days
-	private List<TimePeriod> periods;
+	private transient List<TimePeriod> periods;
 
 	// name of the day off time period
 	private static final String DAY_OFF_NAME = "DAY_OFF";
