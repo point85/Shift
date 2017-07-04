@@ -268,7 +268,7 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 
 		// rotation working time
-		LocalDateTime from = LocalDateTime.of(referenceDate, LocalTime.of(7, 0, 0));
+		LocalDateTime from = LocalDateTime.of(referenceDate.plusDays(rotation.getDayCount()), LocalTime.of(7, 0, 0));
 		Duration duration = schedule.calculateWorkingTime(from, from.plusDays(3));
 		assertTrue(duration.equals(Duration.ofHours(72)));
 

@@ -91,7 +91,7 @@
                   </GridPane>
                   <TableView fx:id="tvShiftInstances" layoutX="230.0" layoutY="255.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="125.0">
                     <columns>
-                      <TableColumn fx:id="dayColumn" prefWidth="100.0" text="Day" />
+                      <TableColumn fx:id="dayColumn" prefWidth="100.0" text="Starting Day" />
                       <TableColumn fx:id="teamNameColumn" prefWidth="100.0" text="Team" />
                         <TableColumn fx:id="shiftNameColumn" prefWidth="100.0" text="Shift" />
                         <TableColumn fx:id="startTimeColumn" prefWidth="75.0" text="Start" />

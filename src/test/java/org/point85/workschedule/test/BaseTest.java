@@ -50,7 +50,7 @@ import org.point85.workschedule.WorkSchedule;
  */
 public abstract class BaseTest {
 	// reference date for start of shift rotations
-	protected LocalDate referenceDate = LocalDate.of(2016, 10, 31);
+	protected final LocalDate referenceDate = LocalDate.of(2016, 10, 31);
 
 	// partial test flags
 	protected static boolean testToString = false;

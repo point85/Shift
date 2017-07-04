@@ -44,9 +44,6 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 	// stage for the dialog editor
 	private Stage dialogStage;
 
-	// work schedule being edited
-	private WorkSchedule currentSchedule;
-
 	// current shift being edited
 	private Shift currentShift;
 
@@ -539,6 +536,11 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 
 		// display all defined work schedules
 		displaySchedules();
+		
+		// display the current work schedule
+		if (currentSchedule != null) {
+			displayAttributes(currentSchedule);
+		}
 	}
 
 	// update the editor upon selection of a work schedule or refresh
@@ -889,6 +891,11 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 
 			// save the created or updated work schedule
 			PersistentWorkSchedule.getInstance().saveWorkSchedule(schedule);
+
+			if (schedule.getKey() == null) {
+				// refresh to get the key
+				schedule = PersistentWorkSchedule.getInstance().fetchWorkScheduleByName(schedule.getName());
+			}
 
 			this.currentSchedule = schedule;
 

@@ -193,7 +193,8 @@ public class Team extends Named implements Comparable<Team> {
 	 * @param day
 	 *            Date to check
 	 * @return True if a day off
-	 * @throws Exception Exception
+	 * @throws Exception
+	 *             Exception
 	 */
 	public boolean isDayOff(LocalDate day) throws Exception {
 
@@ -232,17 +233,37 @@ public class Team extends Named implements Comparable<Team> {
 
 		Duration sum = Duration.ZERO;
 
-		Shift lastShift = null;
 		LocalDate thisDate = from.toLocalDate();
 		LocalTime thisTime = from.toLocalTime();
 		LocalDate toDate = to.toLocalDate();
 		LocalTime toTime = to.toLocalTime();
+		int dayCount = getRotation().getDayCount();
+
+		// get the working shift from yesterday
+		Shift lastShift = null;
+
+		LocalDate yesterday = thisDate.plusDays(-1);
+		ShiftInstance yesterdayInstance = getShiftInstanceForDay(yesterday);
+
+		if (yesterdayInstance != null) {
+			lastShift = yesterdayInstance.getShift();
+		}
 
 		// step through each day until done
 		while (thisDate.compareTo(toDate) < 1) {
 			if (lastShift != null && lastShift.spansMidnight()) {
-				Duration duration = lastShift.calculateWorkingTime(LocalTime.MIDNIGHT, toTime, false);
-				sum = sum.plus(duration);
+				// check for days in the middle of the time period
+				boolean lastDay = thisDate.compareTo(toDate) == 0 ? true : false;
+				
+				if (!lastDay || (lastDay && !toTime.equals(LocalTime.MIDNIGHT))) {
+					// add time after midnight in this day
+					int afterMidnightSecond = lastShift.getEnd().toSecondOfDay();
+					int fromSecond = thisTime.toSecondOfDay();
+
+					if (afterMidnightSecond > fromSecond) {
+						sum = sum.plusSeconds(afterMidnightSecond - fromSecond);
+					}
+				}
 			}
 
 			// today's shift
@@ -261,29 +282,21 @@ public class Team extends Named implements Comparable<Team> {
 				sum = sum.plus(duration);
 			} else {
 				lastShift = null;
-				
-				LocalDate yesterday = thisDate.plusDays(-1);
+			}
 
-				if (!isDayOff(yesterday)) {
-					// this team could have time from the previous day
-					if (thisDate.compareTo(toDate) < 0) {
-						instance = getShiftInstanceForDay(yesterday);
-					}
+			int n = 1;
+			if (getDayInRotation(thisDate) == dayCount) {
+				// move ahead by the rotation count if possible
+				LocalDate rotationEndDate = thisDate.plusDays(dayCount);
 
-					if (instance != null) {
-						// add time after midnight
-						int afterMidnightSecond = instance.getShift().getEnd().toSecondOfDay();
-						int fromSecond = thisTime.toSecondOfDay();
-
-						if (afterMidnightSecond > fromSecond) {
-							sum = sum.plusSeconds(afterMidnightSecond - fromSecond);
-						}
-					}
+				if (rotationEndDate.compareTo(toDate) < 0) {
+					n = dayCount;
+					sum = sum.plus(getRotation().getWorkingTime());
 				}
 			}
 
-			// next day
-			thisDate = thisDate.plusDays(1);
+			// move ahead n days starting at midnight
+			thisDate = thisDate.plusDays(n);
 			thisTime = LocalTime.MIDNIGHT;
 		} // end day loop
 

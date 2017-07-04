@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.point85.workschedule.ShiftInstance;
-import org.point85.workschedule.WorkSchedule;
 import org.point85.workschedule.persistence.PersistentWorkSchedule;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,9 +32,6 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 
 	// list of shift instances associated with the period of time
 	private ObservableList<ShiftInstance> shiftInstanceList = FXCollections.observableArrayList(new ArrayList<>());
-
-	// current work schedule
-	private WorkSchedule workSchedule;
 
 	@FXML
 	private Button btEditor;
@@ -93,7 +89,7 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 		ImageView newView = new ImageView(new Image("images/Edit.png", 16, 16, true, true));
 		btEditor.setGraphic(newView);
 		btEditor.setContentDisplay(ContentDisplay.LEFT);
-		
+
 		ImageView instanceView = new ImageView(new Image("images/Shifts.png", 16, 16, true, true));
 		btShowShifts.setGraphic(instanceView);
 		btShowShifts.setContentDisplay(ContentDisplay.LEFT);
@@ -114,8 +110,8 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	}
 
 	private void clearShiftInstances() {
-		this.workSchedule = null;
-		
+		this.currentSchedule = null;
+
 		this.dpPeriodStart.setValue(null);
 		this.tfStartTime.clear();
 		this.dpPeriodEnd.setValue(null);
@@ -178,7 +174,7 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	@FXML
 	private void handleEditor() {
 		try {
-			getApp().showEditorDialog();
+			getApp().showEditorDialog(currentSchedule);
 
 			// refresh work schedule list
 			refreshScheduleNames();
@@ -199,7 +195,7 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 			String name = this.cbSchedules.getSelectionModel().getSelectedItem();
 
 			// work schedule
-			workSchedule = PersistentWorkSchedule.getInstance().fetchWorkScheduleByName(name);
+			currentSchedule = PersistentWorkSchedule.getInstance().fetchWorkScheduleByName(name);
 
 		} catch (Exception e) {
 			showErrorDialog(getApp().getPrimaryStage(), e);
@@ -209,10 +205,10 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 	@FXML
 	private void handleShowShifts() {
 		try {
-			if (workSchedule == null) {
+			if (currentSchedule == null) {
 				throw new Exception("A work schedule must be chosen.");
 			}
-			
+
 			this.shiftInstanceList.clear();
 
 			// period start
@@ -235,11 +231,11 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 			LocalDateTime to = LocalDateTime.of(endDate, endTime);
 
 			// working time
-			Duration working = workSchedule.calculateWorkingTime(from, to);
+			Duration working = currentSchedule.calculateWorkingTime(from, to);
 			this.tfWorkingTime.setText(stringFromDuration(working));
 
 			// non working time
-			Duration nonWorking = workSchedule.calculateNonWorkingTime(from, to);
+			Duration nonWorking = currentSchedule.calculateNonWorkingTime(from, to);
 			this.tfNonWorkingTime.setText(stringFromDuration(nonWorking));
 
 			// show shift instances
@@ -249,7 +245,7 @@ public class WorkScheduleController extends BaseWorkScheduleController {
 
 			for (long i = 0; i < days; i++) {
 
-				List<ShiftInstance> instances = workSchedule.getShiftInstancesForDay(day);
+				List<ShiftInstance> instances = currentSchedule.getShiftInstancesForDay(day);
 
 				for (ShiftInstance instance : instances) {
 					this.shiftInstanceList.add(instance);

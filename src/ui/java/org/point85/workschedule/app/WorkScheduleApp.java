@@ -2,6 +2,8 @@ package org.point85.workschedule.app;
 
 import java.net.URL;
 
+import org.point85.workschedule.WorkSchedule;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -58,7 +60,7 @@ public class WorkScheduleApp extends Application {
 	}
 
 	// display the UOM editor as a dialog
-	void showEditorDialog() throws Exception {
+	void showEditorDialog(WorkSchedule schedule) throws Exception {
 		// Load the fxml file and create a new stage for the pop-up dialog.
 		FXMLLoader loader = new FXMLLoader();
 		String path = getFxmlPath() + "WorkScheduleEditor.fxml";
@@ -76,6 +78,7 @@ public class WorkScheduleApp extends Application {
 		// Set the schedule into the controller.
 		WorkScheduleEditorController controller = loader.getController();
 		controller.setDialogStage(dialogStage);
+		controller.currentSchedule = schedule;
 		controller.initializeEditor(this);
 
 		// Show the dialog and wait until the user closes it

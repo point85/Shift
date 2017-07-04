@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.point85.workschedule.WorkSchedule;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -16,6 +18,9 @@ public class BaseWorkScheduleController {
 
 	// Reference to the main application
 	private WorkScheduleApp app;
+	
+	// work schedule being edited
+	protected WorkSchedule currentSchedule;
 
 	protected WorkScheduleApp getApp() {
 		return this.app;

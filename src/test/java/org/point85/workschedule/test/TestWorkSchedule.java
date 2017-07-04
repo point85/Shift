@@ -253,7 +253,7 @@ public class TestWorkSchedule extends BaseTest {
 		Team team2 = schedule.createTeam("Team2", "Team #2", rotation2, startRotation);
 
 		// same day
-		LocalDateTime from = LocalDateTime.of(startRotation, shift1Start);
+		LocalDateTime from = LocalDateTime.of(startRotation.plusDays(7), shift1Start);
 		LocalDateTime to = null;
 
 		Duration totalWorking = null;
@@ -275,7 +275,7 @@ public class TestWorkSchedule extends BaseTest {
 		Duration totalSchedule = totalWorking;
 
 		// 21 days, team2
-		from = LocalDateTime.of(startRotation, shift2Start);
+		from = LocalDateTime.of(startRotation.plusDays(7), shift2Start);
 		d = Duration.ZERO;
 
 		for (int i = 0; i < 21; i++) {
@@ -372,7 +372,6 @@ public class TestWorkSchedule extends BaseTest {
 
 		LocalDate startRotation = LocalDate.of(2016, 12, 31);
 		Team team = schedule.createTeam("Team", "Team", rotation, startRotation);
-		team.setRotationStart(startRotation.plusDays(1));
 
 		// ok
 		schedule.calculateWorkingTime(LocalDateTime.of(2017, 1, 1, 7, 0, 0), LocalDateTime.of(2017, 2, 1, 0, 0, 0));
@@ -662,7 +661,7 @@ public class TestWorkSchedule extends BaseTest {
 		team.setRotationStart(startRotation);
 
 		// case #1
-		LocalDateTime from = LocalDateTime.of(startRotation, shiftStart);
+		LocalDateTime from = LocalDateTime.of(startRotation.plusDays(rotation.getDayCount()), shiftStart);
 		LocalDateTime to = from.plusDays(1);
 		Duration time = team.calculateWorkingTime(from, to);
 		assertTrue(time.equals(shiftDuration));
@@ -683,7 +682,7 @@ public class TestWorkSchedule extends BaseTest {
 		assertTrue(time.equals(shiftDuration.plus(shiftDuration)));
 
 		// case #5
-		from = LocalDateTime.of(startRotation, shiftStart.plusHours(6));
+		from = LocalDateTime.of(startRotation.plusDays(rotation.getDayCount()), shiftStart.plusHours(6));
 		to = from.plusDays(1);
 		time = team.calculateWorkingTime(from, to);
 		assertTrue(time.equals(halfShift));
@@ -714,7 +713,7 @@ public class TestWorkSchedule extends BaseTest {
 		team2.setRotationStart(startRotation);
 
 		// case #1
-		from = LocalDateTime.of(startRotation, shiftStart);
+		from = LocalDateTime.of(startRotation.plusDays(rotation.getDayCount()), shiftStart);
 		to = from.plusDays(1);
 		time = team2.calculateWorkingTime(from, to);
 		assertTrue(time.equals(shiftDuration));
@@ -735,7 +734,7 @@ public class TestWorkSchedule extends BaseTest {
 		assertTrue(time.equals(shiftDuration.plus(shiftDuration)));
 
 		// case #5
-		from = LocalDateTime.of(startRotation, LocalTime.MAX);
+		from = LocalDateTime.of(startRotation.plusDays(rotation.getDayCount()), LocalTime.MAX);
 		to = from.plusDays(1);
 		time = team2.calculateWorkingTime(from, to);
 		assertTrue(time.equals(halfShift));
@@ -841,8 +840,9 @@ public class TestWorkSchedule extends BaseTest {
 		period1 = schedule.createNonWorkingPeriod("Day1", "First test day", LocalDateTime.of(date, LocalTime.MIDNIGHT),
 				Duration.ofHours(24));
 
-		from = LocalDateTime.of(date, time.minusHours(2));
-		to = LocalDateTime.of(date, time.minusHours(1));
+		LocalDate mark = date.plusDays(rotation.getDayCount());
+		from = LocalDateTime.of(mark, time.minusHours(2));
+		to = LocalDateTime.of(mark, time.minusHours(1));
 
 		// case #11
 		duration = schedule.calculateWorkingTime(from, to);
@@ -854,10 +854,6 @@ public class TestWorkSchedule extends BaseTest {
 
 		duration = schedule.calculateNonWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(8)));
-
-		duration = schedule.calculateWorkingTime(from, to);
-		assertTrue(duration.equals(Duration.ofHours(0)));
-
 	}
 
 	@Test
@@ -883,66 +879,68 @@ public class TestWorkSchedule extends BaseTest {
 		Team team1 = schedule.createTeam("Team 1", "First team", rotation, referenceDate);
 		
 		// partial in Day 1
+		
 		LocalTime am7 = LocalTime.of(7, 0, 0);
-		LocalDateTime from = LocalDateTime.of(referenceDate, am7);
-		LocalDateTime to = LocalDateTime.of(referenceDate, am7.plusHours(1));
+		LocalDate testStart = referenceDate.plusDays(rotation.getDayCount()); 
+		LocalDateTime from = LocalDateTime.of(testStart, am7);
+		LocalDateTime to = LocalDateTime.of(testStart, am7.plusHours(1));
 		
 
 		//------------------------------------------------------------------
 		// from first day in rotation for Team1
-		from = LocalDateTime.of(referenceDate, LocalTime.MIDNIGHT);
-		to = LocalDateTime.of(referenceDate, LocalTime.MAX);
+		from = LocalDateTime.of(testStart, LocalTime.MIDNIGHT);
+		to = LocalDateTime.of(testStart, LocalTime.MAX);
 
 		Duration duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(14)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(1), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(1), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(29).plusMinutes(30)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(2), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(31).plusMinutes(30)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(3), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(3), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(43).plusMinutes(30)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(4), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(4), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(57).plusMinutes(30)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(5), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(5), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(73)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(6), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(6), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(75)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(7), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(7), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(87)));
 
 		// from third day in rotation for Team1
-		from = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MIDNIGHT);
-		to = LocalDateTime.of(referenceDate.plusDays(2), LocalTime.MAX);
+		from = LocalDateTime.of(testStart.plusDays(2), LocalTime.MIDNIGHT);
+		to = LocalDateTime.of(testStart.plusDays(2), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(2)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(3), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(3), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(14)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(4), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(4), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(28)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(5), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(5), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(43).plusMinutes(30)));
 
-		to = LocalDateTime.of(referenceDate.plusDays(6), LocalTime.MAX);
+		to = LocalDateTime.of(testStart.plusDays(6), LocalTime.MAX);
 		duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(45).plusMinutes(30)));
 	}

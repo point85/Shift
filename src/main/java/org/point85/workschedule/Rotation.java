@@ -26,6 +26,7 @@ package org.point85.workschedule;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,6 +90,9 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	public List<TimePeriod> getPeriods() {
 		if (periods == null) {
 			periods = new ArrayList<>();
+			
+			// sort by sequence number
+			Collections.sort(rotationSegments);
 
 			for (RotationSegment segment : rotationSegments) {
 				// add the on days
