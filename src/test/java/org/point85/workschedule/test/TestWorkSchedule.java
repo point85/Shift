@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.point85.workschedule.Break;
 import org.point85.workschedule.NonWorkingPeriod;
 import org.point85.workschedule.Rotation;
+import org.point85.workschedule.RotationSegment;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.ShiftInstance;
 import org.point85.workschedule.Team;
@@ -213,7 +214,7 @@ public class TestWorkSchedule extends BaseTest {
 		}
 
 		// holidays
-		schedule.createNonWorkingPeriod("MEMORIAL DAY", "Memorial day", LocalDateTime.of(2016, 5, 30, 0, 0, 0),
+		NonWorkingPeriod memorialDay = schedule.createNonWorkingPeriod("MEMORIAL DAY", "Memorial day", LocalDateTime.of(2016, 5, 30, 0, 0, 0),
 				Duration.ofHours(24));
 		schedule.createNonWorkingPeriod("INDEPENDENCE DAY", "Independence day", LocalDateTime.of(2016, 7, 4, 0, 0, 0),
 				Duration.ofHours(24));
@@ -298,10 +299,59 @@ public class TestWorkSchedule extends BaseTest {
 		// breaks
 		Duration allBreaks = Duration.ofMinutes(90);
 		assertTrue(shift1.calculateBreakTime().equals(allBreaks));
+		
+		// misc
+		WorkSchedule schedule2 = new WorkSchedule();
+		schedule2.setKey(1);
+		assertTrue(schedule2.getKey().equals(1));
+		schedule2.setVersion(1);
+		assertTrue(schedule2.getVersion().equals(1));
+		
+		Shift shift3 = new Shift();
+		shift3.setName("Shift3");
+		shift3.setKey(1);
+		assertTrue(shift3.getKey().equals(1));
+		assertTrue(shift3.getWorkSchedule() == null);
+		assertTrue(shift3.compareTo(shift3) == 0);
+		
+		Team team3 = new Team();
+		team3.setKey(1);
+		assertTrue(team3.getKey().equals(1));
+		assertTrue(team3.getWorkSchedule() == null);
+		
+		RotationSegment segment = new RotationSegment();
+		segment.setSequence(1);
+		segment.setStartingShift(shift2);
+		segment.setDaysOn(5);
+		segment.setDaysOff(2);
+		segment.setKey(1);
+		assertTrue(segment.getKey().equals(1));
+		assertTrue(segment.getRotation() == null);
+		
+		Rotation rotation3 = new Rotation();
+		rotation3.setName("Rotation3");
+		rotation3.setKey(1);
+		assertTrue(rotation3.getKey().equals(1));
+		assertTrue(rotation3.compareTo(rotation3) == 0);
+		assertTrue(rotation3.getRotationSegments().size() == 0);
+		
+		NonWorkingPeriod nwp = new NonWorkingPeriod();
+		nwp.setKey(1);
+		assertTrue(nwp.getKey().equals(1));
+		assertTrue(nwp.getWorkSchedule() == null);
+		
+		assertTrue(team1.getWorkSchedule().equals(schedule)); 
+				
+		assertTrue(!team1.isDayOff(startRotation));
+		
+		assertTrue(team1.compareTo(team1) == 0);
+		team3.setRotation(rotation1);
+		
+		assertTrue(!memorialDay.isInPeriod(LocalDate.of(2016, 1, 1)));
 
 		runBaseTest(schedule, Duration.ofHours(40), Duration.ofDays(7), LocalDate.of(2016, 1, 1));
 
-	}
+	} 
 
 	@Test
 	public void testExceptions() throws Exception {
@@ -356,6 +406,12 @@ public class TestWorkSchedule extends BaseTest {
 
 		try {
 			shift.setDuration(Duration.ofSeconds(0));
+			fail();
+		} catch (Exception e) {
+		}
+		
+		try {
+			shift.setDuration(Duration.ofSeconds(48*3600));
 			fail();
 		} catch (Exception e) {
 		}
