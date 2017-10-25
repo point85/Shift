@@ -114,9 +114,7 @@ abstract class TimePeriod extends Named {
 	}
 
 	// breaks are considered to be in the shift's working period
-	boolean isWorkingPeriod() {
-		return true;
-	}
+	abstract boolean isWorkingPeriod();
 
 	/**
 	 * Build a string value for this period

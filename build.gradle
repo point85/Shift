@@ -25,6 +25,11 @@ repositories {
 
 // dependent jars
 dependencies {
+	// https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink
+	compile group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.6.5'
+	
+	// https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc
+	testCompile group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '6.2.1.jre8'
 
 	// jUnit for testing
 	// see: http://junit.org/junit4/

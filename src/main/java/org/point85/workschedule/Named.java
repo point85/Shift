@@ -24,6 +24,8 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
+import java.util.Objects;
+
 /**
  * Class Named represents a named object such as a Shift or Team.
  * 
@@ -114,7 +116,7 @@ abstract class Named {
 	 */
 	@Override
 	public int hashCode() {
-		return getName().hashCode();
+		return Objects.hashCode(getName());
 	}
 	
 	/**

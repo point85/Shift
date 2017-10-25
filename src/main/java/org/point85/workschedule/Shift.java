@@ -315,4 +315,9 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 		}
 		return text;
 	}
+
+	@Override
+	public boolean isWorkingPeriod() {
+		return true;
+	}
 }

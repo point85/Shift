@@ -27,6 +27,11 @@ package org.point85.workschedule;
 import java.time.Duration;
 import java.time.LocalTime;
 
+/**
+ * Class DayOff represents a scheduled non-working period
+ * @author Kent
+ *
+ */
 class DayOff extends TimePeriod {
 
 	// Construct a period of time when not working

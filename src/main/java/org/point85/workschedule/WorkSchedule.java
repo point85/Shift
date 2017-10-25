@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 package org.point85.workschedule;
 
 import java.text.DecimalFormat;
@@ -51,8 +52,8 @@ public class WorkSchedule extends Named {
 	// resource bundle for exception messages
 	private static final ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
 
-	// cached time zone for working time calculations
-	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
+	// cached UTC time zone for working time calculations
+	private static final ZoneId ZONE_ID = ZoneId.of("Z");
 
 	// list of teams
 	private List<Team> teams = new ArrayList<>();
@@ -146,9 +147,6 @@ public class WorkSchedule extends Named {
 	 */
 	public List<ShiftInstance> getShiftInstancesForDay(LocalDate day) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
-		
-		// non working periods
-		List<NonWorkingPeriod> nonWorkingPeriods = getNonWorkingPeriods();
 
 		// for each team see if there is a working shift
 		for (Team team : teams) {
@@ -377,7 +375,7 @@ public class WorkSchedule extends Named {
 
 		// clip if negative
 		if (sum.isNegative()) {
-			sum = Duration.ofSeconds(0);
+			sum = Duration.ZERO;
 		}
 
 		return sum;
@@ -534,7 +532,7 @@ public class WorkSchedule extends Named {
 			if (periods.size() > 0) {
 				text += "\n" + sn + ":";
 
-				Duration totalMinutes = Duration.ofMinutes(0);
+				Duration totalMinutes = Duration.ZERO;
 
 				count = 1;
 				for (NonWorkingPeriod period : periods) {

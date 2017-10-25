@@ -121,7 +121,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	}
 
 	/**
-	 * Get a string representation of this non-working period
+	 * Build a string representation of this non-working period
 	 */
 	@Override
 	public String toString() {
@@ -142,6 +142,8 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * Compare this non-working period to another such period by start date and
 	 * time of day
 	 * 
+	 * @param other
+	 *            {@link NonWorkingPeriod}
 	 * @return negative if less than, 0 if equal and positive if greater than
 	 */
 	@Override
@@ -150,7 +152,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	}
 
 	/**
-	 * Get the work schedule that owns this team
+	 * Get the work schedule that owns this non-working period
 	 * 
 	 * @return {@link WorkSchedule}
 	 */
@@ -165,9 +167,11 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	/**
 	 * Check to see if this day is contained in the non-working period
 	 * 
-	 * @param day Date to check
+	 * @param day
+	 *            Date to check
 	 * @return True if in the non-working period
-	 * @throws Exception Exception
+	 * @throws Exception
+	 *             Exception
 	 */
 	public boolean isInPeriod(LocalDate day) throws Exception {
 		boolean isInPeriod = false;

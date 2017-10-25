@@ -50,4 +50,9 @@ public class Break extends TimePeriod {
 	public Break(String name, String description, LocalTime start, Duration duration) throws Exception {
 		super(name, description, start, duration);
 	}
+
+	@Override
+	boolean isWorkingPeriod() {
+		return true;
+	}
 }
