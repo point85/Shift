@@ -152,7 +152,7 @@ public class PersistentWorkSchedule {
 			getEntityManager().getTransaction().begin();
 
 			// merge this entity into the PU
-			getEntityManager().merge(schedule);
+			getEntityManager().persist(schedule);
 
 			// commit transaction
 			getEntityManager().getTransaction().commit();
