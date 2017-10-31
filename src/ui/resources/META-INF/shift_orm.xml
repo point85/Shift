@@ -55,24 +55,21 @@
 			</version>
 			
 			<!-- list of shifts -->
-			<one-to-many name="shifts" orphanRemoval="true" target-entity="Shift" mapped-by="workSchedule">
-				<private-owned/>
+			<one-to-many name="shifts" orphan-removal="true" target-entity="Shift" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
 			</one-to-many>	
 			
 			<!-- list of teams -->
-			<one-to-many name="teams" orphanRemoval="true" target-entity="Team" mapped-by="workSchedule">
-				<private-owned/>
+			<one-to-many name="teams" orphan-removal="true" target-entity="Team" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
 			</one-to-many>	
 			
 			<!-- list of non-working periods -->
-			<one-to-many name="nonWorkingPeriods" orphanRemoval="true" target-entity="NonWorkingPeriod" mapped-by="workSchedule">
-				<private-owned/>
+			<one-to-many name="nonWorkingPeriods" orphan-removal="true" target-entity="NonWorkingPeriod" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
@@ -105,8 +102,7 @@
 		
 		<attributes>			
 			<!-- rotation -->
-			<one-to-one name="rotation" orphanRemoval="true" target-entity="Rotation">
-				<private-owned/>
+			<one-to-one name="rotation" orphan-removal="true" target-entity="Rotation">
 				<join-column name="ROTATION_KEY"/>
 				<cascade>
 					<cascade-all/>
@@ -133,8 +129,7 @@
 			
 		<attributes>			
 			<!-- list of segments -->
-			<one-to-many name="rotationSegments" orphanRemoval="true" target-entity="RotationSegment" mapped-by="rotation">
-				<private-owned/>
+			<one-to-many name="rotationSegments" orphan-removal="true" target-entity="RotationSegment" mapped-by="rotation">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
@@ -169,8 +164,7 @@
         	</many-to-one>
 			
 			<!-- starting shift -->
-			<one-to-one name="startingShift" orphanRemoval="true" target-entity="Shift">
-				<private-owned/>
+			<one-to-one name="startingShift" orphan-removal="true" target-entity="Shift">
 				<join-column name="SHIFT_KEY"/>
 				<cascade>
 					<cascade-all/>
