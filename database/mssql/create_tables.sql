@@ -19,11 +19,10 @@ GO
 
 CREATE TABLE [dbo].[WORK_SCHEDULE](
 	[WS_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[NAME] [nvarchar](64) NOT NULL,
+	[NAME] [nvarchar](64) NULL,
 	[DESCRIPTION] [nvarchar](512) NULL,
-	[VERSION] [int] NOT NULL
+	[VERSION] [int] NULL
 ) ON [PRIMARY]
-
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [IX_NAME] ON [dbo].[WORK_SCHEDULE]
@@ -39,13 +38,12 @@ GO
 
 CREATE TABLE [dbo].[SHIFT](
 	[SHIFT_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[NAME] [nvarchar](64) NOT NULL,
+	[NAME] [nvarchar](64) NULL,
 	[DESCRIPTION] [nvarchar](128) NULL,
-	[START_TIME] [int] NOT NULL,
-	[DURATION] [bigint] NOT NULL,
-	[WS_KEY] [int] NOT NULL
+	[START_TIME] [time](7) NULL,
+	[DURATION] [bigint] NULL,
+	[WS_KEY] [int] NULL
 ) ON [PRIMARY]
-
 GO
 
 CREATE NONCLUSTERED INDEX [IX_NAME] ON [dbo].[SHIFT]
@@ -62,13 +60,12 @@ GO
 
 CREATE TABLE [dbo].[TEAM](
 	[TEAM_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[NAME] [nvarchar](64) NOT NULL,
+	[NAME] [nvarchar](64) NULL,
 	[DESCRIPTION] [nvarchar](128) NULL,
-	[WS_KEY] [int] NOT NULL,
-	[ROTATION_KEY] [int] NOT NULL,
+	[WS_KEY] [int] NULL,
+	[ROTATION_KEY] [int] NULL,
 	[ROTATION_START] [date] NULL
 ) ON [PRIMARY]
-
 GO
 
 CREATE NONCLUSTERED INDEX [IX_NAME] ON [dbo].[TEAM]
@@ -85,10 +82,9 @@ GO
 
 CREATE TABLE [dbo].[ROTATION](
 	[ROTATION_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[NAME] [nvarchar](64) NOT NULL,
+	[NAME] [nvarchar](64) NULL,
 	[DESCRIPTION] [nvarchar](128) NULL
 ) ON [PRIMARY]
-
 GO
 
 /****** ROTATION SEGMENT table ******/
@@ -98,13 +94,12 @@ GO
 
 CREATE TABLE [dbo].[ROTATION_SEGMENT](
 	[SEGMENT_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[ROTATION_KEY] [int] NOT NULL,
+	[ROTATION_KEY] [int] NULL,
 	[SEQUENCE] [smallint] NULL,
-	[SHIFT_KEY] [smallint] NOT NULL,
+	[SHIFT_KEY] [smallint] NULL,
 	[DAYS_ON] [smallint] NULL,
 	[DAYS_OFF] [smallint] NULL
 ) ON [PRIMARY]
-
 GO
 
 /****** NON-WORKING PERIOD table ******/
@@ -114,13 +109,12 @@ GO
 
 CREATE TABLE [dbo].[NON_WORKING_PERIOD](
 	[PERIOD_KEY] [int] IDENTITY(1,1) NOT NULL,
-	[NAME] [nvarchar](64) NOT NULL,
+	[NAME] [nvarchar](64) NULL,
 	[DESCRIPTION] [nvarchar](128) NULL,
 	[START_DATE_TIME] [datetime] NULL,
 	[DURATION] [bigint] NULL,
-	[WS_KEY] [int] NOT NULL
+	[WS_KEY] [int] NULL
 ) ON [PRIMARY]
-
 GO
 
 
