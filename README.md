@@ -220,7 +220,7 @@ Working shifts
 ```
 
 ## Work Schedule Application
-An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA (Java Persistence API) with FXML descriptors in orm.xml file.  EclipseLink is the JPA implementation for a Microsoft SQL Server database.
+An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA (Java Persistence API) with FXML descriptors in the shift_orm.xml file.  Hibernate is the JPA implementation for a Microsoft SQL Server 2008 database.
 
 The editor allows new schedules to be created and saved to the database as well as updated and deleted.
 
