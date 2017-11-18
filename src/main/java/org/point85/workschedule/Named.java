@@ -40,7 +40,7 @@ abstract class Named {
 	private String description;
 	
 	// database primary key
-	private Integer primaryKey;
+	private Long primaryKey;
 	
 	protected Named() {
 		
@@ -124,7 +124,7 @@ abstract class Named {
 	 * 
 	 * @return Key
 	 */
-	public Integer getKey() {
+	public Long getKey() {
 		return primaryKey;
 	}
 
@@ -134,7 +134,7 @@ abstract class Named {
 	 * @param key
 	 *            Key
 	 */
-	public void setKey(Integer key) {
+	public void setKey(Long key) {
 		this.primaryKey = key;
 	}
 

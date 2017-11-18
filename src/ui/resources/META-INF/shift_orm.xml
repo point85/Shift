@@ -13,7 +13,8 @@
         <attributes>
 			<!-- primary key -->
 			<id name="primaryKey">
-				<generated-value strategy="IDENTITY"/>
+            	<generated-value strategy="SEQUENCE" generator="SEQ_GEN"/>
+            	<sequence-generator name="SEQ_GEN" sequence-name="JPA_SEQ" allocation-size="10"/>
 			</id>
 			
 			<!-- name -->
@@ -55,21 +56,21 @@
 			</version>
 			
 			<!-- list of shifts -->
-			<one-to-many name="shifts" orphan-removal="true" target-entity="Shift" mapped-by="workSchedule">
+			<one-to-many name="shifts" target-entity="Shift" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
 			</one-to-many>	
 			
 			<!-- list of teams -->
-			<one-to-many name="teams" orphan-removal="true" target-entity="Team" mapped-by="workSchedule">
+			<one-to-many name="teams" target-entity="Team" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
 			</one-to-many>	
 			
 			<!-- list of non-working periods -->
-			<one-to-many name="nonWorkingPeriods" orphan-removal="true" target-entity="NonWorkingPeriod" mapped-by="workSchedule">
+			<one-to-many name="nonWorkingPeriods" target-entity="NonWorkingPeriod" mapped-by="workSchedule">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
@@ -129,7 +130,7 @@
 			
 		<attributes>			
 			<!-- list of segments -->
-			<one-to-many name="rotationSegments" orphan-removal="true" target-entity="RotationSegment" mapped-by="rotation">
+			<one-to-many name="rotationSegments" target-entity="RotationSegment" mapped-by="rotation">
 				<cascade>
 					<cascade-all/>
 				</cascade>	
@@ -150,7 +151,8 @@
 			<!-- primary key -->
 			<id name="primaryKey">
 				<column name="SEGMENT_KEY"/>
-				<generated-value strategy="IDENTITY"/>
+            	<generated-value strategy="SEQUENCE" generator="SEQ_GEN"/>
+            	<sequence-generator name="SEQ_GEN" sequence-name="JPA_SEQ" allocation-size="10"/>
 			</id>
 			
 			<!-- sequence -->
@@ -220,7 +222,7 @@
 	</named-query>
 	
 	<named-query name="TEAM.ByKey">
-		<query>SELECT team FROM Team team WHERE team.primaryKey = :key</query>
+		<query>SELECT team FROM Team team WHERE team.primaryKey = ?1</query>
 	</named-query>
 	
 	<named-native-query name="ROTATION.CrossRef">

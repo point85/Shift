@@ -10,17 +10,27 @@
 		<mapping-file>META-INF/shift_orm.xml</mapping-file>
 
         <properties>
-        	<property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2008Dialect"/>
+        	<property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2012Dialect"/>
 			
-         	<property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://machine:1433;databaseName=database"/>
-         	<property name="javax.persistence.jdbc.user" value="user"/>
-         	<property name="javax.persistence.jdbc.password" value="password"/>
+         	<property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://Kent-Acer:1433;databaseName=JPA"/>
+         	<property name="javax.persistence.jdbc.user" value="Point85"/>
+         	<property name="javax.persistence.jdbc.password" value="Point85"/>
          	<property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
          	
+         	<!-- lazy loading without a transaction -->
+         	<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+         	
+         	<!-- Configuring Connection Pool -->
+      		<property name="hibernate.c3p0.min_size" value="5" />
+      		<property name="hibernate.c3p0.max_size" value="20" />
+      		<property name="hibernate.c3p0.timeout" value="1000" />
+      		<property name="hibernate.c3p0.max_statements" value="50" />
+      		<property name="hibernate.c3p0.idle_test_period" value="2000" />
+         	
          	<!-- debugging -->
-         	<property name="hibernate.generate_statistics" value="true" />
-         	<property name="show_sql" value="true"/>
-        	<property name="format_sql" value="true"/>
+         	<!-- <property name="hibernate.generate_statistics" value="true" /> -->
+         	<!-- <property name="show_sql" value="true"/> -->
+        	<!-- <property name="format_sql" value="true"/> -->
         </properties>
     </persistence-unit>
 </persistence>

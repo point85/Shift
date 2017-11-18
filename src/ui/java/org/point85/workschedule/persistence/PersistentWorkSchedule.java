@@ -201,7 +201,7 @@ public class PersistentWorkSchedule {
 
 	// get any Team references to the Rotation
 	public List<Team> getCrossReferences(Rotation rotation) throws Exception {
-		Integer key = rotation.getKey();
+		Long key = rotation.getKey();
 
 		Query query = getEntityManager().createNamedQuery(NQ_ROTATION_CROSS_REF);
 		query.setParameter(1, key);
