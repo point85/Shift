@@ -174,6 +174,12 @@ public class Team extends Named implements Comparable<Team> {
 		ShiftInstance instance = null;
 
 		Rotation shiftRotation = getRotation();
+		
+		if (shiftRotation.getDuration().equals(Duration.ZERO)) {
+			// no instance for that day
+			return instance;
+		}
+		
 		int dayInRotation = getDayInRotation(day);
 
 		// shift or off shift

@@ -45,9 +45,9 @@ import java.util.ResourceBundle;
  * @author Kent Randall
  *
  */
-public class WorkSchedule extends Named {
+public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	// name of resource bundle with translatable strings for exception messages
-	private static final String MESSAGES_BUNDLE_NAME = "Message";
+	private static final String MESSAGES_BUNDLE_NAME = "WorkScheduleMessage";
 
 	// resource bundle for exception messages
 	private static final ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
@@ -155,19 +155,19 @@ public class WorkSchedule extends Named {
 			if (instance == null) {
 				continue;
 			}
-			
+
 			// check to see if this is a non-working day
 			boolean addShift = true;
-			
+
 			LocalDate startDate = instance.getStartTime().toLocalDate();
-			
+
 			for (NonWorkingPeriod nonWorkingPeriod : nonWorkingPeriods) {
 				if (nonWorkingPeriod.isInPeriod(startDate)) {
 					addShift = false;
 					break;
 				}
 			}
-			
+
 			if (addShift) {
 				workingShifts.add(instance);
 			}
@@ -324,7 +324,8 @@ public class WorkSchedule extends Named {
 	 * Get total duration of rotation across all teams.
 	 * 
 	 * @return Duration of rotation
-	 * @throws Exception Exception
+	 * @throws Exception
+	 *             Exception
 	 */
 	public Duration getRotationDuration() throws Exception {
 		Duration sum = Duration.ZERO;
@@ -363,7 +364,7 @@ public class WorkSchedule extends Named {
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		Duration sum = Duration.ZERO;
-		
+
 		// now add up scheduled time by team
 		for (Team team : getTeams()) {
 			sum = sum.plus(team.calculateWorkingTime(from, to));
@@ -566,5 +567,13 @@ public class WorkSchedule extends Named {
 	 */
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+
+	/**
+	 * Compare one work schedule to another
+	 */
+	@Override
+	public int compareTo(WorkSchedule other) {
+		return getName().compareTo(other.getName());
 	}
 }
