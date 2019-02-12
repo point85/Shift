@@ -27,7 +27,7 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-/****** sequence generator ******/r
+/****** sequence generator ******/
 IF OBJECT_ID('dbo.JPA_SEQ', 'SO') IS NOT NULL 
     DROP SEQUENCE dbo.JPA_SEQ
 GO
