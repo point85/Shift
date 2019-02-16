@@ -113,7 +113,8 @@ GO
 CREATE TABLE [dbo].[ROTATION](
 	[ROTATION_KEY] [bigint] NOT NULL,
 	[NAME] [nvarchar](64) NULL,
-	[DESCRIPTION] [nvarchar](128) NULL
+	[DESCRIPTION] [nvarchar](128) NULL,
+	[WS_KEY] [int] NULL
 ) ON [PRIMARY]
 GO
 

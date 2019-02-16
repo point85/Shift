@@ -51,6 +51,9 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	// 24-hour day off period
 	private static final DayOff DAY_OFF = initializeDayOff();
 
+	// owning work schedule
+	private WorkSchedule workSchedule;
+
 	/**
 	 * Default constructor
 	 */
@@ -61,14 +64,11 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	/**
 	 * Constructor
 	 * 
-	 * @param name
-	 *            Rotation name
-	 * @param description
-	 *            Description
-	 * @throws Exception
-	 *             Exception
+	 * @param name        Rotation name
+	 * @param description Description
+	 * @throws Exception Exception
 	 */
-	public Rotation(String name, String description) throws Exception {
+	Rotation(String name, String description) throws Exception {
 		super(name, description);
 	}
 
@@ -91,7 +91,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	public List<TimePeriod> getPeriods() {
 		if (periods == null) {
 			periods = new ArrayList<>();
-			
+
 			// sort by sequence number
 			Collections.sort(rotationSegments);
 
@@ -158,18 +158,14 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	}
 
 	/**
-	 * Add a working period to this rotation. A working period starts with a
-	 * shift and specifies the number of days on and days off
+	 * Add a working period to this rotation. A working period starts with a shift
+	 * and specifies the number of days on and days off
 	 * 
-	 * @param startingShift
-	 *            {@link Shift} that starts the period
-	 * @param daysOn
-	 *            Number of days on shift
-	 * @param daysOff
-	 *            Number of days off shift
+	 * @param startingShift {@link Shift} that starts the period
+	 * @param daysOn        Number of days on shift
+	 * @param daysOff       Number of days off shift
 	 * @return {@link RotationSegment}
-	 * @throws Exception
-	 *             Exception
+	 * @throws Exception Exception
 	 */
 	public RotationSegment addSegment(Shift startingShift, int daysOn, int daysOff) throws Exception {
 		if (startingShift == null) {
@@ -179,6 +175,19 @@ public class Rotation extends Named implements Comparable<Rotation> {
 		rotationSegments.add(segment);
 		segment.setSequence(rotationSegments.size());
 		return segment;
+	}
+
+	/**
+	 * Get the work schedule that owns this rotation
+	 * 
+	 * @return {@link WorkSchedule}
+	 */
+	public WorkSchedule getWorkSchedule() {
+		return workSchedule;
+	}
+
+	void setWorkSchedule(WorkSchedule workSchedule) {
+		this.workSchedule = workSchedule;
 	}
 
 	@Override
