@@ -260,15 +260,13 @@ To delete a work schedule, select it in the list view then click the "Delete" bu
 ## Project Structure
 Shift depends upon Java 8+ due to use of the java date and time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
 
-Shift, when built with Gradle, has the following structure:
- * `/build/docs/javadoc` javadoc files
- * `/build/libs` compiled shift.jar 
+Shift has the following structure:
+ * `/javadoc` javadoc  zip file
  * `/doc` documentation
  * `/src/main/java` - java source files
- * `/src/main/resources` - localizable Message.properties file to define error messages.
- * `/src/test/java` - JUnit test java source files 
- * `/src/ui/java` - java source files for JPA persistency and JavaFX 8 user interface for the application
- * `/src/ui/resources` - images and XML files for for JPA persistency
+ * `/src/main/resources` - localizable .properties file to define error messages.
+ * `/src/test/java` - JUnit test java source files and java source files for JPA persistency and JavaFX 8 user interface for the application
+ * `/src/test/resources` - images and XML files for for JPA persistency
  * `/database/mssql` - Microsoft SQL Server SQL script files for table and index generation
  
-When Shift is built with Maven, the javadoc and jar files are in the 'target' folder.
+The binary jar file can be accessed by clicking on the "releases" link.
