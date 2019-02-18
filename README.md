@@ -1,5 +1,5 @@
 # Shift
-The Shift library project manages work schedules.  A work schedule consists of one or more teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.  This library is used in an OEE project that can be found at https://github.com/point85/OEE-Designer.
+The Shift library project manages work schedules.  A work schedule consists of one or more teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.  This java library is used in an OEE project that can be found at https://github.com/point85/OEE-Designer.  The Shift library is also available in C# at https://github.com/point85/ShiftSharp.
 
 ## Concepts
 
