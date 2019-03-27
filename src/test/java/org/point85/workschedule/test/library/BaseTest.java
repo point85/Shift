@@ -53,7 +53,7 @@ public abstract class BaseTest {
 	protected final LocalDate referenceDate = LocalDate.of(2016, 10, 31);
 
 	// partial test flags
-	protected static boolean testToString = false;
+	protected static boolean testToString = true;
 
 	protected static boolean testDeletions = true;
 
@@ -252,7 +252,7 @@ public abstract class BaseTest {
 		testTeams(ws, hoursPerRotation, rotationDays);
 
 		// shift instances
-		testShiftInstances(ws, instanceReference);
+		testShiftInstances(ws, instanceReference.plusDays(rotationDays.toDays()));
 
 		if (testDeletions) {
 			testDeletions();

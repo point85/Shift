@@ -86,8 +86,21 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 	}
 
 	/**
-	 * Compare this non-working period to another such period by start time of
-	 * day
+	 * Determine if this time falls within the shift instance period
+	 * 
+	 * @param dateTime Date and time to check
+	 * @return True if the specified time is in this shift instance
+	 */
+	public boolean isInShiftInstance(LocalDateTime dateTime) {
+		if (dateTime.compareTo(startDateTime) >= 0 && dateTime.compareTo(getEndTime()) <= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Compare this non-working period to another such period by start time of day
 	 * 
 	 * @return -1 if less than, 0 if equal and 1 if greater than
 	 */

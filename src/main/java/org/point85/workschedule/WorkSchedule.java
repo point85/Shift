@@ -175,6 +175,33 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	}
 
 	/**
+	 * Get the list of shift instances for the specified date that start in that
+	 * date or cross over from midnight the previous day
+	 * 
+	 * @param day LocalDate
+	 * @return List of {@link ShiftInstance}
+	 * @throws Exception exception
+	 */
+	public List<ShiftInstance> getAllShiftInstancesForDay(LocalDate day) throws Exception {
+		// starting in this day
+		List<ShiftInstance> workingShifts = getShiftInstancesForDay(day);
+
+		// now check previous day
+		LocalDate yesterday = day.minusDays(1);
+
+		for (ShiftInstance instance : getShiftInstancesForDay(yesterday)) {
+			if (instance.getEndTime().toLocalDate().equals(day)) {
+				// shift ends in this day
+				workingShifts.add(instance);
+			}
+		}
+
+		Collections.sort(workingShifts);
+
+		return workingShifts;
+	}
+
+	/**
 	 * Get the list of shift instances for the specified date and time of day
 	 * 
 	 * @param dateTime Date and time of day
@@ -184,15 +211,16 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	public List<ShiftInstance> getShiftInstancesForTime(LocalDateTime dateTime) throws Exception {
 		List<ShiftInstance> workingShifts = new ArrayList<>();
 
-		// day
-		List<ShiftInstance> candidateShifts = getShiftInstancesForDay(dateTime.toLocalDate());
-
-		// check time now
+		// shifts from this date and yesterday
+		List<ShiftInstance> candidateShifts = getAllShiftInstancesForDay(dateTime.toLocalDate());
+		
 		for (ShiftInstance instance : candidateShifts) {
-			if (instance.getShift().isInShift(dateTime.toLocalTime())) {
+			if (instance.isInShiftInstance(dateTime)) {
 				workingShifts.add(instance);
 			}
 		}
+		
+		Collections.sort(workingShifts);
 
 		return workingShifts;
 	}

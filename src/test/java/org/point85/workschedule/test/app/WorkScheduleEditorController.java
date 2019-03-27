@@ -899,6 +899,8 @@ public class WorkScheduleEditorController extends BaseWorkScheduleController {
 
 			showErrorDialog(dialogStage, e);
 		}
+		
+		handleRefresh();
 
 		// show all schedules
 		displaySchedules();
