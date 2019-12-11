@@ -24,7 +24,8 @@
 <dependency>
     <groupId>org.hibernate</groupId>
     <artifactId>hibernate-hikaricp</artifactId>
-    <version>5.3.7.Final</version>
+    <version>5.4.9.Final</version>
+    <scope>test</scope>
 </dependency>
 
 <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
@@ -32,6 +33,7 @@
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-api</artifactId>
     <version>1.7.25</version>
+    <scope>test</scope>
 </dependency>
 
 <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
@@ -48,6 +50,7 @@
     <groupId>com.microsoft.sqlserver</groupId>
     <artifactId>mssql-jdbc</artifactId>
     <version>7.0.0.jre8</version>
+    <scope>test</scope>
 </dependency>
 
 <!-- jUnit for testing.  See: http://junit.org/junit4/ -->
@@ -55,6 +58,7 @@
   <groupId>junit</groupId>
   <artifactId>junit</artifactId>
   <version>4.12</version>
+  <scope>test</scope>
 </dependency>
 
 <!-- hamcrest for testing.  See:  http://hamcrest.org/ -->
