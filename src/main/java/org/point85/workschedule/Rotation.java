@@ -29,6 +29,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class Rotation maintains a sequenced list of shift and off-shift time
@@ -43,7 +44,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	private List<RotationSegment> rotationSegments = new ArrayList<>();
 
 	// list of working and non-working days
-	private transient List<TimePeriod> periods;
+	private List<TimePeriod> periods;
 
 	// name of the day off time period
 	private static final String DAY_OFF_NAME = "DAY_OFF";
@@ -194,6 +195,38 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	public int compareTo(Rotation other) {
 		return getName().compareTo(other.getName());
 	}
+	
+	/**
+	 * Compare this Rotation to another Rotation
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Rotation)) {
+			return false;
+		}
+		Rotation otherRotation = (Rotation) other;
+
+		// same work schedule
+		if (getWorkSchedule() != null && otherRotation.getWorkSchedule() != null) {
+			if (!getWorkSchedule().equals(otherRotation.getWorkSchedule())) {
+				return false;
+			}
+		}
+
+		return super.equals(other);
+	}
+	
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getWorkSchedule());
+	}
 
 	/**
 	 * Build a string representation of this rotation
@@ -219,9 +252,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 			periodsString += period.getName() + " (" + onOff + ")";
 		}
 
-		String text = named + "\n" + rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda
-				+ ": " + getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
-
-		return text;
+		return named + "\n" + rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda + ": "
+				+ getDuration().toDays() + ", " + rw + ": " + getWorkingTime();
 	}
 }

@@ -24,6 +24,8 @@ SOFTWARE.
 
 package org.point85.workschedule;
 
+import java.util.Objects;
+
 /**
  * This class represents part of an entire rotation. The segment starts with a
  * shift and includes a count of the number of days on followed by the number of
@@ -78,8 +80,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Set the starting shift
 	 * 
-	 * @param startingShift
-	 *            {@link Shift}
+	 * @param startingShift {@link Shift}
 	 */
 	public void setStartingShift(Shift startingShift) {
 		this.startingShift = startingShift;
@@ -97,8 +98,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Set the number of days on shift
 	 * 
-	 * @param daysOn
-	 *            Day count
+	 * @param daysOn Day count
 	 */
 	public void setDaysOn(int daysOn) {
 		this.daysOn = daysOn;
@@ -116,8 +116,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Set the number of days off shift
 	 * 
-	 * @param daysOff
-	 *            Day count
+	 * @param daysOff Day count
 	 */
 	public void setDaysOff(int daysOff) {
 		this.daysOff = daysOff;
@@ -135,8 +134,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Set the database record's primary key
 	 * 
-	 * @param primaryKey
-	 *            Key
+	 * @param primaryKey Key
 	 */
 	public void setKey(Integer primaryKey) {
 		this.primaryKey = primaryKey;
@@ -163,8 +161,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Get the sequence in the rotation
 	 * 
-	 * @param sequence
-	 *            Sequence
+	 * @param sequence Sequence
 	 */
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
@@ -173,8 +170,7 @@ public class RotationSegment implements Comparable<RotationSegment> {
 	/**
 	 * Compare this rotation segment to another one.
 	 * 
-	 * @param other
-	 *            rotation segment
+	 * @param other rotation segment
 	 * @return -1 if less than, 0 if equal and 1 if greater than
 	 */
 	@Override
@@ -186,5 +182,36 @@ public class RotationSegment implements Comparable<RotationSegment> {
 			value = 1;
 		}
 		return value;
+	}
+
+	/**
+	 * Compare this rotation segment to another rotation segment
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+
+		if (!(other instanceof RotationSegment)) {
+			return false;
+		}
+
+		boolean rotationMatch = getRotation().getName().equals(((RotationSegment) other).getRotation().getName());
+		boolean shiftMatch = getStartingShift().getName()
+				.equals(((RotationSegment) other).getStartingShift().getName());
+		boolean sequenceMatch = (getSequence() == ((RotationSegment) other).getSequence());
+
+		return rotationMatch && shiftMatch && sequenceMatch;
+
+	}
+
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(getRotation(), getStartingShift(), getSequence());
 	}
 }

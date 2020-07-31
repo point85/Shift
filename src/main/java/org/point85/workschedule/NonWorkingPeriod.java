@@ -27,6 +27,7 @@ package org.point85.workschedule;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Class NonWorkingPeriod represents named non-working, non-recurring periods.
@@ -71,10 +72,8 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	/**
 	 * Set period start date and time
 	 * 
-	 * @param startDateTime
-	 *            Period start
-	 * @throws Exception
-	 *             exception
+	 * @param startDateTime Period start
+	 * @throws Exception exception
 	 */
 	public void setStartDateTime(LocalDateTime startDateTime) throws Exception {
 		if (startDateTime == null) {
@@ -88,8 +87,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * Get period end date and time
 	 * 
 	 * @return Period end
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public LocalDateTime getEndDateTime() throws Exception {
 		return startDateTime.plus(duration);
@@ -107,10 +105,8 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	/**
 	 * Set duration
 	 * 
-	 * @param duration
-	 *            Duration
-	 * @throws Exception
-	 *             exception
+	 * @param duration Duration
+	 * @throws Exception exception
 	 */
 	public void setDuration(Duration duration) throws Exception {
 		if (duration == null || duration.getSeconds() == 0) {
@@ -139,16 +135,47 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	}
 
 	/**
-	 * Compare this non-working period to another such period by start date and
-	 * time of day
+	 * Compare this non-working period to another such period by start date and time
+	 * of day
 	 * 
-	 * @param other
-	 *            {@link NonWorkingPeriod}
+	 * @param other {@link NonWorkingPeriod}
 	 * @return negative if less than, 0 if equal and positive if greater than
 	 */
 	@Override
 	public int compareTo(NonWorkingPeriod other) {
 		return getStartDateTime().compareTo(other.getStartDateTime());
+	}
+
+	/**
+	 * Compare this NonWorkingPeriod to another NonWorkingPeriod
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof NonWorkingPeriod)) {
+			return false;
+		}
+		NonWorkingPeriod otherNonWorkingPeriod = (NonWorkingPeriod) other;
+
+		// same work schedule
+		if (getWorkSchedule() != null && otherNonWorkingPeriod.getWorkSchedule() != null) {
+			if (!getWorkSchedule().equals(otherNonWorkingPeriod.getWorkSchedule())) {
+				return false;
+			}
+		}
+
+		return super.equals(other);
+	}
+	
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getWorkSchedule());
 	}
 
 	/**
@@ -167,11 +194,9 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	/**
 	 * Check to see if this day is contained in the non-working period
 	 * 
-	 * @param day
-	 *            Date to check
+	 * @param day Date to check
 	 * @return True if in the non-working period
-	 * @throws Exception
-	 *             Exception
+	 * @throws Exception Exception
 	 */
 	public boolean isInPeriod(LocalDate day) throws Exception {
 		boolean isInPeriod = false;

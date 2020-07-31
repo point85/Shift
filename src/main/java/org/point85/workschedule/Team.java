@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
 /**
  * Class Team is a named group of individuals who rotate through a shift
@@ -157,8 +158,7 @@ public class Team extends Named implements Comparable<Team> {
 			throw new Exception(msg);
 		}
 
-		int dayInRotation = (int) (deltaDays % getRotation().getDuration().toDays()) + 1;
-		return dayInRotation;
+		return (int) (deltaDays % getRotation().getDuration().toDays()) + 1;
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class Team extends Named implements Comparable<Team> {
 		while (thisDate.compareTo(toDate) < 1) {
 			if (lastShift != null && lastShift.spansMidnight()) {
 				// check for days in the middle of the time period
-				boolean lastDay = thisDate.compareTo(toDate) == 0 ? true : false;
+				boolean lastDay = thisDate.compareTo(toDate) == 0;
 				
 				if (!lastDay || (lastDay && !toTime.equals(LocalTime.MIDNIGHT))) {
 					// add time after midnight in this day
@@ -267,7 +267,7 @@ public class Team extends Named implements Comparable<Team> {
 					int fromSecond = thisTime.toSecondOfDay();
 
 					if (afterMidnightSecond > fromSecond) {
-						sum = sum.plusSeconds(afterMidnightSecond - fromSecond);
+						sum = sum.plusSeconds((long)afterMidnightSecond - (long)fromSecond);
 					}
 				}
 			}
@@ -328,6 +328,38 @@ public class Team extends Named implements Comparable<Team> {
 	@Override
 	public int compareTo(Team other) {
 		return this.getName().compareTo(other.getName());
+	}
+	
+	/**
+	 * Compare this Team to another Team
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Team)) {
+			return false;
+		}
+		Team otherTeam = (Team) other;
+
+		// same work schedule
+		if (getWorkSchedule() != null && otherTeam.getWorkSchedule() != null) {
+			if (!getWorkSchedule().equals(otherTeam.getWorkSchedule())) {
+				return false;
+			}
+		}
+
+		return super.equals(other);
+	}
+	
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getWorkSchedule());
 	}
 
 	/**

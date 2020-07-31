@@ -10,12 +10,12 @@
 		<mapping-file>META-INF/shift_orm.xml</mapping-file>
 
         <properties>
-        	<property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2012Dialect"/>
+        	<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			
-         	<property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=SHIFT"/>
-         	<property name="javax.persistence.jdbc.user" value="Point85"/>
-         	<property name="javax.persistence.jdbc.password" value="Point85"/>
-         	<property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+         	<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost/OEE"/>
+         	<property name="javax.persistence.jdbc.user" value="SA"/>
+         	<property name="javax.persistence.jdbc.password" value=""/>
+         	<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
          	
          	<!-- lazy loading without a transaction -->
          	<property name="hibernate.enable_lazy_load_no_trans" value="true"/>

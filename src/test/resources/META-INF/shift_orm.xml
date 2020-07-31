@@ -9,13 +9,12 @@
 	<package>org.point85.workschedule</package>
 	
 	<mapped-superclass class="Named" access="FIELD">
-        <attributes>
+        <attributes>	
 			<!-- primary key -->
 			<id name="primaryKey">
-            	<generated-value strategy="SEQUENCE" generator="SEQ_GEN"/>
-            	<sequence-generator name="SEQ_GEN" sequence-name="JPA_SEQ" allocation-size="10"/>
+            	<generated-value strategy="IDENTITY"/>
 			</id>
-			
+					
 			<!-- name -->
 			<basic name="name">
 				<column name="NAME"/>
@@ -49,6 +48,12 @@
 		</attribute-override>
 		
 		<attributes>	
+			<!-- primary key -->
+			<id name="primaryKey">
+				<column name="WS_KEY" />
+            	<generated-value strategy="IDENTITY"/>
+			</id>
+			
 			<!-- version -->
 			<version name="version" >
 				<column name="VERSION"/> 
@@ -90,7 +95,13 @@
 		<attribute-override name="primaryKey"> <column name="SHIFT_KEY"/> 
 		</attribute-override>
 		
-		<attributes>						
+		<attributes>	
+			<!-- primary key -->
+			<id name="primaryKey">
+				<column name="SHIFT_KEY" />
+            	<generated-value strategy="IDENTITY"/>
+			</id>
+								
 			<!-- work schedule -->
 			<many-to-one name="workSchedule">
             	<join-column name="WS_KEY"/>
@@ -107,7 +118,13 @@
 		<attribute-override name="primaryKey"> <column name="TEAM_KEY"/> 
 		</attribute-override>
 		
-		<attributes>			
+		<attributes>	
+			<!-- primary key -->
+			<id name="primaryKey">
+				<column name="TEAM_KEY" />
+            	<generated-value strategy="IDENTITY"/>
+			</id>
+					
 			<!-- rotation -->
 			<one-to-one name="rotation" orphan-removal="true" target-entity="Rotation">
 				<join-column name="ROTATION_KEY"/>
@@ -134,7 +151,13 @@
 		<attribute-override name="primaryKey"> <column name="ROTATION_KEY"/> 
 		</attribute-override>
 			
-		<attributes>			
+		<attributes>	
+			<!-- primary key -->
+			<id name="primaryKey">
+				<column name="ROTATION_KEY" />
+            	<generated-value strategy="IDENTITY"/>
+			</id>
+					
 			<!-- list of segments -->
 			<one-to-many name="rotationSegments" target-entity="RotationSegment" mapped-by="rotation">
 				<cascade>
@@ -162,8 +185,7 @@
 			<!-- primary key -->
 			<id name="primaryKey">
 				<column name="SEGMENT_KEY"/>
-            	<generated-value strategy="SEQUENCE" generator="SEQ_GEN"/>
-            	<sequence-generator name="SEQ_GEN" sequence-name="JPA_SEQ" allocation-size="10"/>
+				<generated-value strategy="IDENTITY"/>
 			</id>
 			
 			<!-- sequence -->
@@ -202,7 +224,13 @@
 		<attribute-override name="primaryKey"> <column name="PERIOD_KEY"/> 
 		</attribute-override>
 			
-		<attributes>			
+		<attributes>
+			<!-- primary key -->
+			<id name="primaryKey">
+				<column name="PERIOD_KEY" />
+            	<generated-value strategy="IDENTITY"/>
+			</id>
+						
 			<!-- start date and time -->
 			<basic name="startDateTime">
 				<column name="START_DATE_TIME"/>
@@ -233,7 +261,7 @@
 	</named-query>
 	
 	<named-query name="TEAM.ByKey">
-		<query>SELECT team FROM Team team WHERE team.primaryKey = ?1</query>
+		<query>SELECT t FROM Team t WHERE t.primaryKey = ?1</query>
 	</named-query>
 	
 	<named-native-query name="ROTATION.CrossRef">

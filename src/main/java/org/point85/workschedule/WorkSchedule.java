@@ -62,9 +62,9 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	private List<Shift> shifts = new ArrayList<>();
 
 	// list of rotations
-	private final List<Rotation> rotations = new ArrayList<>();
+	private List<Rotation> rotations = new ArrayList<>();
 
-	// holidays and planned downtime
+	// holidays and planned down time
 	private List<NonWorkingPeriod> nonWorkingPeriods = new ArrayList<>();
 
 	// optimistic locking version
@@ -213,13 +213,13 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 
 		// shifts from this date and yesterday
 		List<ShiftInstance> candidateShifts = getAllShiftInstancesForDay(dateTime.toLocalDate());
-		
+
 		for (ShiftInstance instance : candidateShifts) {
 			if (instance.isInShiftInstance(dateTime)) {
 				workingShifts.add(instance);
 			}
 		}
-		
+
 		Collections.sort(workingShifts);
 
 		return workingShifts;
@@ -435,18 +435,16 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 				break;
 			}
 
-			if (fromSeconds <= endSeconds) {
-				// found a period, check edge conditions
-				if (fromSeconds > startSeconds) {
-					startSeconds = fromSeconds;
-				}
-
-				if (toSeconds < endSeconds) {
-					endSeconds = toSeconds;
-				}
-
-				sum = sum.plusSeconds(endSeconds - startSeconds);
+			// found a period, check edge conditions
+			if (fromSeconds > startSeconds) {
+				startSeconds = fromSeconds;
 			}
+
+			if (toSeconds < endSeconds) {
+				endSeconds = toSeconds;
+			}
+
+			sum = sum.plusSeconds(endSeconds - startSeconds);
 
 			if (toSeconds <= endSeconds) {
 				break;
@@ -497,7 +495,7 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 
 			List<ShiftInstance> instances = getShiftInstancesForDay(day);
 
-			if (instances.size() == 0) {
+			if (instances.isEmpty()) {
 				System.out.println("   " + getMessage("shifts.non.working"));
 			} else {
 				int count = 1;
@@ -554,7 +552,7 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 			// non-working periods
 			List<NonWorkingPeriod> periods = getNonWorkingPeriods();
 
-			if (periods.size() > 0) {
+			if (!periods.isEmpty()) {
 				text += "\n" + sn + ":";
 
 				Duration totalMinutes = Duration.ZERO;
@@ -598,5 +596,29 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	@Override
 	public int compareTo(WorkSchedule other) {
 		return getName().compareTo(other.getName());
+	}
+
+	/**
+	 * Compare this WorkSchedule to another WorkSchedule
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof WorkSchedule)) {
+			return false;
+		}
+
+		return super.equals(other);
+	}
+
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

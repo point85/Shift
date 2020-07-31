@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class Shift is a scheduled working time period, and can include breaks.
@@ -66,8 +67,7 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	/**
 	 * Add a break period to this shift
 	 * 
-	 * @param breakPeriod
-	 *            {@link Break}
+	 * @param breakPeriod {@link Break}
 	 */
 	public void addBreak(Break breakPeriod) {
 		if (!this.breaks.contains(breakPeriod)) {
@@ -78,8 +78,7 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	/**
 	 * Remove a break from this shift
 	 * 
-	 * @param breakPeriod
-	 *            {@link Break}
+	 * @param breakPeriod {@link Break}
 	 */
 	public void removeBreak(Break breakPeriod) {
 		if (this.breaks.contains(breakPeriod)) {
@@ -90,17 +89,12 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	/**
 	 * Create a break for this shift
 	 * 
-	 * @param name
-	 *            Name of break
-	 * @param description
-	 *            Description of break
-	 * @param startTime
-	 *            Start of break
-	 * @param duration
-	 *            Duration of break
+	 * @param name        Name of break
+	 * @param description Description of break
+	 * @param startTime   Start of break
+	 * @param duration    Duration of break
 	 * @return {@link Break}
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public Break createBreak(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		Break period = new Break(name, description, startTime, duration);
@@ -119,16 +113,13 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	}
 
 	/**
-	 * Calculate the working time between the specified times of day. The shift
-	 * must not span midnight.
+	 * Calculate the working time between the specified times of day. The shift must
+	 * not span midnight.
 	 * 
-	 * @param from
-	 *            starting time
-	 * @param to
-	 *            Ending time
+	 * @param from starting time
+	 * @param to   Ending time
 	 * @return Duration of working time
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public Duration calculateWorkingTime(LocalTime from, LocalTime to) throws Exception {
 
@@ -144,31 +135,27 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	 * Check to see if this shift crosses midnight
 	 * 
 	 * @return True if the shift extends over midnight, otherwise false
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public boolean spansMidnight() throws Exception {
 		int startSecond = toRoundedSecond(getStart());
 		int endSecond = toRoundedSecond(getEnd());
-		return endSecond <= startSecond ? true : false;
+		return endSecond <= startSecond;
 	}
 
 	/**
 	 * Calculate the working time between the specified times of day
 	 * 
-	 * @param from
-	 *            starting time
-	 * @param to
-	 *            Ending time
-	 * @param beforeMidnight
-	 *            If true, and a shift spans midnight, calculate the time before
-	 *            midnight. Otherwise calculate the time after midnight.
+	 * @param from           starting time
+	 * @param to             Ending time
+	 * @param beforeMidnight If true, and a shift spans midnight, calculate the time
+	 *                       before midnight. Otherwise calculate the time after
+	 *                       midnight.
 	 * @return Duration of working time
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public Duration calculateWorkingTime(LocalTime from, LocalTime to, boolean beforeMidnight) throws Exception {
-		Duration duration = Duration.ZERO;
+		Duration duration;
 
 		int startSecond = toRoundedSecond(getStart());
 		int endSecond = toRoundedSecond(getEnd());
@@ -214,7 +201,7 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 			toSecond = endSecond;
 		}
 
-		duration = Duration.ofSeconds(toSecond - fromSecond);
+		duration = Duration.ofSeconds((long) toSecond - (long) fromSecond);
 
 		return duration;
 	}
@@ -222,11 +209,9 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	/**
 	 * Test if the specified time falls within the shift
 	 * 
-	 * @param time
-	 *            {@link LocalTime}
+	 * @param time {@link LocalTime}
 	 * @return True if in the shift
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public boolean isInShift(LocalTime time) throws Exception {
 		boolean answer = false;
@@ -267,9 +252,9 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	public Duration calculateBreakTime() {
 		Duration sum = Duration.ZERO;
 
-		List<Break> breaks = this.getBreaks();
+		List<Break> breakList = getBreaks();
 
-		for (Break b : breaks) {
+		for (Break b : breakList) {
 			sum = sum.plus(b.getDuration());
 		}
 
@@ -306,7 +291,7 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	public String toString() {
 		String text = super.toString();
 
-		if (getBreaks().size() > 0) {
+		if (!getBreaks().isEmpty()) {
 			text += "\n      " + getBreaks().size() + " " + WorkSchedule.getMessage("breaks") + ":";
 		}
 
@@ -319,5 +304,37 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	@Override
 	public boolean isWorkingPeriod() {
 		return true;
+	}
+
+	/**
+	 * Compare this Shift to another Shift
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Shift)) {
+			return false;
+		}
+		Shift otherShift = (Shift) other;
+
+		// same work schedule
+		if (getWorkSchedule() != null && otherShift.getWorkSchedule() != null) {
+			if (!getWorkSchedule().equals(otherShift.getWorkSchedule())) {
+				return false;
+			}
+		}
+
+		return super.equals(other);
+	}
+	
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getWorkSchedule());
 	}
 }

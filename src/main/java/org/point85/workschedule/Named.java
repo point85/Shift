@@ -38,12 +38,12 @@ abstract class Named {
 
 	// description
 	private String description;
-	
+
 	// database primary key
 	private Long primaryKey;
-	
+
 	protected Named() {
-		
+
 	}
 
 	protected Named(String name, String description) throws Exception {
@@ -63,10 +63,8 @@ abstract class Named {
 	/**
 	 * Set name
 	 * 
-	 * @param name
-	 *            Name
-	 * @throws Exception
-	 *             exception
+	 * @param name Name
+	 * @throws Exception exception
 	 */
 	public void setName(String name) throws Exception {
 		if (name == null) {
@@ -87,8 +85,7 @@ abstract class Named {
 	/**
 	 * Set description
 	 * 
-	 * @param description
-	 *            Description
+	 * @param description Description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -102,13 +99,17 @@ abstract class Named {
 	@Override
 	public boolean equals(Object other) {
 
-		if (other == null || !(other instanceof Named)) {
+		if (!(other instanceof Named)) {
+			return false;
+		}
+
+		if (getName() == null || ((Named) other).getName() == null) {
 			return false;
 		}
 
 		return getName().equals(((Named) other).getName());
 	}
-
+	
 	/**
 	 * Get the hash code
 	 * 
@@ -118,7 +119,7 @@ abstract class Named {
 	public int hashCode() {
 		return Objects.hashCode(getName());
 	}
-	
+
 	/**
 	 * Get the database record's primary key
 	 * 
@@ -131,8 +132,7 @@ abstract class Named {
 	/**
 	 * Set the database record's primary key
 	 * 
-	 * @param key
-	 *            Key
+	 * @param key Key
 	 */
 	public void setKey(Long key) {
 		this.primaryKey = key;

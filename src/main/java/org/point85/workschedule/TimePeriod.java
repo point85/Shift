@@ -36,7 +36,7 @@ import java.time.LocalTime;
  */
 abstract class TimePeriod extends Named {
 	private static final int SECONDS_PER_DAY = 24 * 60 * 60;
-	
+
 	// starting time of day
 	private LocalTime startTime;
 
@@ -46,7 +46,7 @@ abstract class TimePeriod extends Named {
 	protected TimePeriod() {
 		super();
 	}
-	
+
 	protected TimePeriod(String name, String description, LocalTime startTime, Duration duration) throws Exception {
 		super(name, description);
 		setStart(startTime);
@@ -61,19 +61,18 @@ abstract class TimePeriod extends Named {
 	public Duration getDuration() {
 		return duration;
 	}
-	
+
 	/**
 	 * Set duration
 	 * 
-	 * @param duration
-	 *            Period duration
+	 * @param duration Period duration
 	 * @throws Exception exception
 	 */
 	public void setDuration(Duration duration) throws Exception {
 		if (duration == null || duration.getSeconds() == 0) {
 			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
 		}
-		
+
 		if (duration.getSeconds() > SECONDS_PER_DAY) {
 			throw new Exception(WorkSchedule.getMessage("duration.not.allowed"));
 		}
@@ -88,12 +87,11 @@ abstract class TimePeriod extends Named {
 	public LocalTime getStart() {
 		return startTime;
 	}
-	
+
 	/**
 	 * Set period start time
 	 * 
-	 * @param startTime
-	 *            Start time
+	 * @param startTime Start time
 	 * @throws Exception exception
 	 */
 	public void setStart(LocalTime startTime) throws Exception {
@@ -115,6 +113,30 @@ abstract class TimePeriod extends Named {
 
 	// breaks are considered to be in the shift's working period
 	abstract boolean isWorkingPeriod();
+
+	/**
+	 * Compare this TimePeriod to another TimePeriod
+	 * 
+	 * @return true if equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof TimePeriod)) {
+			return false;
+		}
+
+		return super.equals(other);
+	}
+
+	/**
+	 * Get the hash code
+	 * 
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
 	/**
 	 * Build a string value for this period
