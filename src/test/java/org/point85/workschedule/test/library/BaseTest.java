@@ -49,8 +49,16 @@ import org.point85.workschedule.WorkSchedule;
  *
  */
 public abstract class BaseTest {
+	protected static double DELTA2 = 0.01d;
+	protected static double DELTA3 = 0.001d;
+	protected static double DELTA4 = 0.0001d;
+	
 	// reference date for start of shift rotations
 	protected final LocalDate referenceDate = LocalDate.of(2016, 10, 31);
+	
+	// a later date and time
+	protected final LocalDate laterDate = LocalDate.of(2021, 10, 1);
+	protected final LocalTime laterTime = LocalTime.of(7, 0, 0);
 
 	// partial test flags
 	protected static boolean testToString = true;
@@ -286,5 +294,10 @@ public abstract class BaseTest {
 			schedule.deleteNonWorkingPeriod(period);
 		}
 		assertTrue(schedule.getNonWorkingPeriods().size() == 0);
+	}
+	
+	protected boolean isCloseTo(double actualValue, double expectedValue, double delta) {
+		double diff = Math.abs(actualValue - expectedValue);
+		return (diff <= delta) ? true : false;
 	}
 }

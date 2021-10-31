@@ -34,6 +34,7 @@ import java.time.LocalTime;
 import org.junit.Test;
 import org.point85.workschedule.Rotation;
 import org.point85.workschedule.Shift;
+import org.point85.workschedule.Team;
 import org.point85.workschedule.WorkSchedule;
 
 public class TestSnapSchedule extends BaseTest {
@@ -41,7 +42,6 @@ public class TestSnapSchedule extends BaseTest {
 	@Test
 	public void testLowNight() throws Exception {
 		String description = "Low night demand";
-
 		schedule = new WorkSchedule("Low Night Demand Plan", description);
 
 		// 3 shifts
@@ -68,6 +68,25 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team5", "Fifth team", rotation, referenceDate.minusDays(14));
 		schedule.createTeam("Team6", "Sixth team", rotation, referenceDate.minusDays(35));
 
+		// specific checks
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 896 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 6048 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 1344 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 1008 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 22.22f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 224 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 37 * 3600 + 20 * 60);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(224), Duration.ofDays(42), referenceDate);
 	}
 
@@ -90,6 +109,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(3));
 		schedule.createTeam("Team3", "Third team", rotation, referenceDate.minusDays(6));
+
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 672 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 648 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 216 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 216 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 33.33f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 72 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 56 * 3600);
+		}
 
 		runBaseTest(schedule, Duration.ofHours(72), Duration.ofDays(9), referenceDate);
 	}
@@ -119,6 +156,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team1", "First team", rotation, referenceDate);
 		schedule.createTeam("Team2", "Second team", rotation, referenceDate.minusDays(14));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 320 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 1344 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 320 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 672 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 23.81f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 160 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 40 * 3600);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(160), Duration.ofDays(28), referenceDate);
 	}
 
@@ -137,6 +192,24 @@ public class TestSnapSchedule extends BaseTest {
 
 		// 1 team, 1 shift
 		schedule.createTeam("Team", "One team", rotation, referenceDate);
+
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 160 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 168 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 40 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 168 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 23.81f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 40 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 40 * 3600);
+		}
 
 		runBaseTest(schedule, Duration.ofHours(40), Duration.ofDays(7), referenceDate);
 	}
@@ -179,6 +252,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(14));
 		schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(21));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 672 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 2688 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 672 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 672 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 25.00f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 168 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 42 * 3600);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(168), Duration.ofDays(28), referenceDate);
 	}
 
@@ -211,6 +302,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 		schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(1));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 1223 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 384 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 174 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 96 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 45.31f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 43 * 3600 + 30 * 60);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 76 * 3600 + 7 * 60 + 30);
+		}
+
 		runBaseTest(schedule, Duration.ofMinutes(2610), Duration.ofDays(4), referenceDate);
 	}
 
@@ -242,6 +351,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(14));
 		schedule.createTeam("Team 4", "Forth team", rotation, referenceDate.minusDays(21));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 672 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 2688 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 672 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 672 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 25.00f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 168 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 42 * 3600);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(168), Duration.ofDays(28), referenceDate);
 	}
 
@@ -267,10 +394,23 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 2", "Second team", rotation, referenceDate.minusDays(1));
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(2));
 
-		// rotation working time
-		LocalDateTime from = LocalDateTime.of(referenceDate.plusDays(rotation.getDayCount()), LocalTime.of(7, 0, 0));
-		Duration duration = schedule.calculateWorkingTime(from, from.plusDays(3));
-		assertTrue(duration.equals(Duration.ofHours(72)));
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 672 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 216 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 72 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 72 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 33.33f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 24 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 56 * 3600);
+		}
 
 		runBaseTest(schedule, Duration.ofHours(24), Duration.ofDays(3), referenceDate);
 	}
@@ -348,6 +488,24 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 20", "6th night team", nightRotation, referenceDate.plusDays(35));
 		schedule.createTeam("Team 21", "7th night team", nightRotation, referenceDate.plusDays(42));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 3360 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 24696 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 5880 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 1176 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 23.81f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 280 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 40 * 3600);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(280), Duration.ofDays(49), referenceDate.plusDays(49));
 
 	}
@@ -375,6 +533,27 @@ public class TestSnapSchedule extends BaseTest {
 
 		schedule.createTeam("Team 1", "First team", team1Rotation, referenceDate);
 		schedule.createTeam("Team 2", "Second team", team2Rotation, referenceDate);
+
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 1320 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 48 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 24 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			workingTime = team.calculateWorkingTime(from, to);
+			System.out.println("Team: " + team.getName() + " WT: " + workingTime);
+
+			assertTrue(team.getRotation().getDuration().getSeconds() == 24 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 50.00f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 12 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 84 * 3600);
+		}
 
 		runBaseTest(schedule, Duration.ofHours(12), Duration.ofDays(1), referenceDate);
 	}
@@ -422,6 +601,25 @@ public class TestSnapSchedule extends BaseTest {
 		schedule.createTeam("Team 3", "Third team", rotation, referenceDate.minusDays(7));
 		schedule.createTeam("Team 4", "Fourth team", rotation, referenceDate.minusDays(35));
 
+		LocalDateTime from = LocalDateTime.of(laterDate, laterTime);
+		LocalDateTime to = LocalDateTime.of(laterDate.plusDays(28), laterTime);
+
+		Duration workingTime = schedule.calculateWorkingTime(from, to);
+		Duration nonWorkingTime = schedule.calculateNonWorkingTime(from, to);
+		assertTrue(workingTime.getSeconds() == 672 * 3600);
+		assertTrue(nonWorkingTime.getSeconds() == 0 * 3600);
+
+		assertTrue(schedule.getRotationDuration().getSeconds() == 5376 * 3600);
+		assertTrue(schedule.getRotationWorkingTime().getSeconds() == 1344 * 3600);
+
+		for (Team team : schedule.getTeams()) {
+			assertTrue(team.getRotation().getDuration().getSeconds() == 1344 * 3600);
+			assertTrue(isCloseTo(team.getPercentageWorked(), 25.00f, DELTA2));
+			assertTrue(team.getRotation().getWorkingTime().getSeconds() == 336 * 3600);
+			assertTrue(team.getHoursWorkedPerWeek().getSeconds() == 42 * 3600);
+		}
+
 		runBaseTest(schedule, Duration.ofHours(336), Duration.ofDays(56), referenceDate);
 	}
+
 }
