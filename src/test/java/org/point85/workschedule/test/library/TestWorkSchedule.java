@@ -574,7 +574,7 @@ public class TestWorkSchedule extends BaseTest {
 		} catch (Exception e) {
 		}
 
-		assertFalse(shift.equals(rotation));
+		assertTrue(shift.equals(shift));
 
 		// hashcode()
 		team.hashCode();

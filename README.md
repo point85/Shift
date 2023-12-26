@@ -1,5 +1,5 @@
 # Shift
-The Shift library project manages work schedules.  A work schedule consists of one or more teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.  This java library is used in an OEE project that can be found at https://github.com/point85/OEE-Designer.  The Shift library is also available in C# at https://github.com/point85/ShiftSharp.
+The Shift library project manages work schedules.  A work schedule consists of one or more teams who rotate through a sequence of shift and off-shift periods of time.  The Shift project allows breaks during shifts to be defined as well as non-working periods of time (e.g. holidays and scheduled maintenance periods) that are applicable to the entire work schedule.  This Java library is used in an OEE project that can be found at https://github.com/point85/OEE-Designer.  The Shift library is also available in C# at https://github.com/point85/ShiftSharp and in Python at https://github.com/point85/PyShift.
 
 ## Concepts
 
@@ -219,44 +219,6 @@ Working shifts
    (1) Team: Green, Shift: 24 Hour, Start : 2017-02-07T07:00, End : 2017-02-08T07:00
 ```
 
-## Work Schedule Application
-An example work schedule application has been built to demonstrate fundamental capabilities of the library.  The user interface is implemented in JavaFX 8 and database persistency is provided by JPA 2.2 (Java Persistence API) with FXML descriptors in the shift_orm.xml file.  Hibernate is the JPA implementation for a Microsoft SQL Server 2008 database.
-
-The editor allows new schedules to be created and saved to the database as well as updated and deleted.
-
-The screen capture below shows shift instances for the month of June, 2017 with the DNO schedule selected.
-![DNO Instances Diagram](https://github.com/point85/shift/blob/master/doc/ShiftInstances.png)
-
-The "Editor ..." button launches the editor (see below).  To display shift instances, follow these steps:
-*  Select the schedule in the drop-down, e.g. DNO Plan.  
-*  Choose the beginning date from the picker and enter the beginning time of day (hour:minute)
-*  Choose the ending date from the picker and enter the ending time of day (hour:minute)
-*  Click the "Show Shifts" button.  The shift instances starting in each day will be displayed in the table along with the total working and non-working time for each such shift instance. 
-
-The screen capture below shows the work schedule editor with the Shift tab selected.
-![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/ShiftEditor.png)
-
-The screen capture below shows the work schedule editor with the Rotations tab selected.  The rotation duration is displayed in the table.
-![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/RotationEditor.png)
-
-The screen capture below shows the work schedule editor with the Teams tab selected.  The average hours worked per week is displayed in the table.
-![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/TeamEditor.png)
-
-The screen capture below shows the work schedule editor with the Non-working Periods tab selected.
-![Schedule Editor Diagram](https://github.com/point85/shift/blob/master/doc/NonWorkingEditor.png)
-
-To create a work schedule, click the "New" button and follow these steps:
-*  Enter a name and description.
-*  Select the Shifts tab.  Click New and enter the shift information.  Click Add to create a shift.  To update a shift, select it in the table, edit the information and click Update.  Click Remove to delete it.
-*  Follow these steps for the Rotations, Teams and Non-working Periods tabs.
-*  Click the "Save" button.  The new work schedule will appear in the list view on the left
-
-To edit a work schedule, select it in the list view.  It's properties will be displayed on the right.  Change properties as required, then click the "Save" button.
-
-To refresh the state of the work schedule that is selected in the list view from the database, click the "Refresh" button.
-
-To delete a work schedule, select it in the list view then click the "Delete" button.
-
 ## Project Structure
 Shift depends upon Java 8+ due to use of the java date and time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
 
@@ -265,8 +227,6 @@ Shift has the following structure:
  * `/doc` documentation
  * `/src/main/java` - java source files
  * `/src/main/resources` - localizable .properties file to define error messages.
- * `/src/test/java` - JUnit test java source files and java source files for JPA persistency and JavaFX 8 user interface for the application
- * `/src/test/resources` - images and XML files for for JPA persistency
- * `/database/mssql` - Microsoft SQL Server SQL script files for table and index generation
+ * `/src/test/java` - JUnit test java source files
  
 The binary jar file can be accessed by clicking on the "releases" link.

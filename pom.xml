@@ -4,7 +4,7 @@
 
   <groupId>org.point85</groupId>
   <artifactId>workschedule</artifactId>
-  <version>1.1.2</version>
+  <version>1.1.3</version>
   <packaging>jar</packaging>
 
   <name>workschedule</name>
@@ -12,27 +12,18 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-	<maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+	<maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
 
 <dependencies>
-
-<!-- HIBERNATE JPA -->
-<!-- HikariCP -->
-<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-hikaricp -->
-<dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>hibernate-hikaricp</artifactId>
-    <version>5.4.9.Final</version>
-    <scope>test</scope>
-</dependency>
 
 <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-api</artifactId>
-    <version>1.7.25</version>
+    <version>1.7.36</version>
     <scope>test</scope>
 </dependency>
 
@@ -40,43 +31,26 @@
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-log4j12</artifactId>
-    <version>1.7.25</version>
+    <version>1.7.36</version>
     <scope>test</scope>
 </dependency>
 
-<!-- SQL Server DATABASE -->
-<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
-<dependency>
-    <groupId>com.microsoft.sqlserver</groupId>
-    <artifactId>mssql-jdbc</artifactId>
-    <version>7.0.0.jre8</version>
-    <scope>test</scope>
-</dependency>
-
-<!-- HSQLDB DATABASE for testing -->
-<!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
-<dependency>
-    <groupId>org.hsqldb</groupId>
-    <artifactId>hsqldb</artifactId>
-    <version>2.4.1</version>
-    <scope>test</scope>
-</dependency>
-
-<!-- jUnit for testing.  See: http://junit.org/junit4/ -->
+<!-- jUnit for testing.  https://mvnrepository.com/artifact/junit/junit -->
 <dependency> 
   <groupId>junit</groupId>
   <artifactId>junit</artifactId>
-  <version>4.13.1</version>
+  <version>4.13.2</version>
   <scope>test</scope>
 </dependency>
 
-<!-- hamcrest for testing.  See:  http://hamcrest.org/ -->
+<!-- hamcrest for testing.  https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library -->
 <dependency>
     <groupId>org.hamcrest</groupId>
     <artifactId>hamcrest-library</artifactId>
     <version>1.3</version>
     <scope>test</scope>
 </dependency>
+
 </dependencies>
 
 <build>
