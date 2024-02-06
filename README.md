@@ -218,6 +218,15 @@ Working shifts
 [7] Day: 2017-02-07
    (1) Team: Green, Shift: 24 Hour, Start : 2017-02-07T07:00, End : 2017-02-08T07:00
 ```
+## Maven Central Repository
+Add this dependency to your pom.xml file:
+```java
+<dependency>
+<groupId>org.point85</groupId>
+<artifactId>workschedule</artifactId>
+<version>1.1.4</version>
+</dependency>
+```
 
 ## Project Structure
 Shift depends upon Java 8+ due to use of the java date and time classes.  The unit tests depend on JUnit (http://junit.org/junit4/) and Hamcrest (http://hamcrest.org/).
