@@ -1,85 +1,154 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.point85</groupId>
-  <artifactId>workschedule</artifactId>
-  <version>1.1.3</version>
-  <packaging>jar</packaging>
-
-  <name>workschedule</name>
-  <url>http://maven.apache.org</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-	<maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.release>11</maven.compiler.release>
-  </properties>
-
-<dependencies>
-
-<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-api</artifactId>
-    <version>1.7.36</version>
-    <scope>test</scope>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-    <version>1.7.36</version>
-    <scope>test</scope>
-</dependency>
-
-<!-- jUnit for testing.  https://mvnrepository.com/artifact/junit/junit -->
-<dependency> 
-  <groupId>junit</groupId>
-  <artifactId>junit</artifactId>
-  <version>4.13.2</version>
-  <scope>test</scope>
-</dependency>
-
-<!-- hamcrest for testing.  https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library -->
-<dependency>
-    <groupId>org.hamcrest</groupId>
-    <artifactId>hamcrest-library</artifactId>
-    <version>1.3</version>
-    <scope>test</scope>
-</dependency>
-
-</dependencies>
-
-<build>
-    <sourceDirectory>.</sourceDirectory>
-    <plugins>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.point85</groupId>
+	<artifactId>workschedule</artifactId>
+	<version>1.1.4</version>
+	<packaging>jar</packaging>
+	<name>Work Schedule</name>
+	<description>Work schedule with shifts and teams.</description>
+	<url>https://github.com/point85/Shift</url>
+	<licenses>
+		<license>
+			<name>MIT</name>
+			<url>https://mit-license.org</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>Point85</id>
+			<name>Kent W. Randall</name>
+			<email>point85.llc@gmail.com</email>
+		</developer>
+	</developers>
+	<scm>
+		<url>https://svn.apache.org/viewvc/maven</url>
+	</scm>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.release>11</maven.compiler.release>
+	</properties>
+	<dependencies>
+		<!-- jUnit for testing.  https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- hamcrest for testing.  https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	<build>
+		<sourceDirectory>.</sourceDirectory>
+		<plugins>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<includes>
+						<include>src/main/java/**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>src/test/*.*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			
+			<!-- For publishing to Central -->
         <plugin>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
-        <configuration>
-        <includes>
-            <include>src/main/java/**/*.java</include>
-        </includes>
-        <excludes>
-            <exclude>src/test/*.*</exclude>
-        </excludes>
-        </configuration>
-        </plugin>
-      
-      <plugin>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-  		<groupId>org.apache.maven.plugins</groupId>
-  		<artifactId>maven-surefire-plugin</artifactId>
-  		<version>2.20.1</version>
-  		<configuration>
-    		<skipTests>true</skipTests>
-  		</configuration>
-	  </plugin>
-    </plugins>
-</build>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.3.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+            <tokenAuth>true</tokenAuth>
+          </configuration>
+        </plugin>			 
+			
+			<!-- for public key signing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/sources</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<failOnError>false</failOnError>
+					<sourcepath>src/main/java</sourcepath>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
