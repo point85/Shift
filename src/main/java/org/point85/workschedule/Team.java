@@ -30,7 +30,11 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class Team is a named group of individuals who rotate through a shift
@@ -48,6 +52,15 @@ public class Team extends Named implements Comparable<Team> {
 
 	// shift rotation days
 	private Rotation rotation;
+
+	// assigned members
+	private List<TeamMember> assignedMembers = new ArrayList<>();
+
+	// member exceptions
+	private List<TeamMemberException> memberExceptions = new ArrayList<>();
+
+	// team member exception cache by shift instance start
+	private Map<LocalDateTime, TeamMemberException> exceptionCache;
 
 	/**
 	 * Default constructor
@@ -74,8 +87,7 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Get rotation start
 	 * 
-	 * @param rotationStart
-	 *            Starting date of rotation
+	 * @param rotationStart Starting date of rotation
 	 */
 	public void setRotationStart(LocalDate rotationStart) {
 		this.rotationStart = rotationStart;
@@ -97,8 +109,7 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Set the shift rotation for this team
 	 * 
-	 * @param rotation
-	 *            {@link Rotation}
+	 * @param rotation {@link Rotation}
 	 */
 	public void setRotation(Rotation rotation) {
 		this.rotation = rotation;
@@ -108,8 +119,7 @@ public class Team extends Named implements Comparable<Team> {
 	 * Get the duration of the shift rotation
 	 * 
 	 * @return Duration
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public Duration getRotationDuration() throws Exception {
 		return getRotation().getDuration();
@@ -120,8 +130,7 @@ public class Team extends Named implements Comparable<Team> {
 	 * duration
 	 * 
 	 * @return Percentage
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public float getPercentageWorked() throws Exception {
 		return ((float) getRotation().getWorkingTime().getSeconds()) / ((float) getRotationDuration().getSeconds())
@@ -142,11 +151,9 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Get the day number in the rotation for this local date
 	 * 
-	 * @param date
-	 *            LocalDate
+	 * @param date LocalDate
 	 * @return day number in the rotation, starting at 1
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public int getDayInRotation(LocalDate date) throws Exception {
 		// calculate total number of days from start of rotation
@@ -164,22 +171,20 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Get the {@link ShiftInstance} for the specified day
 	 * 
-	 * @param day
-	 *            Day with a shift instance
+	 * @param day Day with a shift instance
 	 * @return {@link ShiftInstance}
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public ShiftInstance getShiftInstanceForDay(LocalDate day) throws Exception {
 		ShiftInstance instance = null;
 
 		Rotation shiftRotation = getRotation();
-		
+
 		if (shiftRotation.getDuration().equals(Duration.ZERO)) {
 			// no instance for that day
 			return instance;
 		}
-		
+
 		int dayInRotation = getDayInRotation(day);
 
 		// shift or off shift
@@ -196,11 +201,9 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Check to see if this day is a day off
 	 * 
-	 * @param day
-	 *            Date to check
+	 * @param day Date to check
 	 * @return True if a day off
-	 * @throws Exception
-	 *             Exception
+	 * @throws Exception Exception
 	 */
 	public boolean isDayOff(LocalDate day) throws Exception {
 
@@ -223,13 +226,10 @@ public class Team extends Named implements Comparable<Team> {
 	/**
 	 * Calculate the schedule working time between the specified dates and times
 	 * 
-	 * @param from
-	 *            Starting date and time of day
-	 * @param to
-	 *            Ending date and time of day
+	 * @param from Starting date and time of day
+	 * @param to   Ending date and time of day
 	 * @return Duration of working time
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public Duration calculateWorkingTime(LocalDateTime from, LocalDateTime to) throws Exception {
 		if (from.isAfter(to)) {
@@ -260,14 +260,14 @@ public class Team extends Named implements Comparable<Team> {
 			if (lastShift != null && lastShift.spansMidnight()) {
 				// check for days in the middle of the time period
 				boolean lastDay = thisDate.compareTo(toDate) == 0;
-				
+
 				if (!lastDay || (lastDay && !toTime.equals(LocalTime.MIDNIGHT))) {
 					// add time after midnight in this day
 					int afterMidnightSecond = lastShift.getEnd().toSecondOfDay();
 					int fromSecond = thisTime.toSecondOfDay();
 
 					if (afterMidnightSecond > fromSecond) {
-						sum = sum.plusSeconds((long)afterMidnightSecond - (long)fromSecond);
+						sum = sum.plusSeconds((long) afterMidnightSecond - (long) fromSecond);
 					}
 				}
 			}
@@ -329,7 +329,7 @@ public class Team extends Named implements Comparable<Team> {
 	public int compareTo(Team other) {
 		return this.getName().compareTo(other.getName());
 	}
-	
+
 	/**
 	 * Compare this Team to another Team
 	 * 
@@ -351,7 +351,7 @@ public class Team extends Named implements Comparable<Team> {
 
 		return super.equals(other);
 	}
-	
+
 	/**
 	 * Get the hash code
 	 * 
@@ -373,16 +373,126 @@ public class Team extends Named implements Comparable<Team> {
 
 		String rs = WorkSchedule.getMessage("rotation.start");
 		String avg = WorkSchedule.getMessage("team.hours");
+		String members = WorkSchedule.getMessage("team.members");
 
 		String text = "";
 		try {
 			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + getRotation() + ", " + rpct + ": "
-					+ df.format(getPercentageWorked()) + "%" + ", " + avg + ": " + getHoursWorkedPerWeek();
+					+ df.format(getPercentageWorked()) + "%" + ", " + avg + ": " + getHoursWorkedPerWeek() + "\n"
+					+ members;
 
+			for (TeamMember member : getAssignedMembers()) {
+				text += "\n\t" + member;
+			}
 		} catch (Exception e) {
 			// ignore
 		}
 
 		return text;
+	}
+
+	public List<TeamMember> getAssignedMembers() {
+		return assignedMembers;
+	}
+
+	/**
+	 * Add a member to this team
+	 * 
+	 * @param member {@link TeamMember}
+	 */
+	public void addMember(TeamMember member) {
+		if (!this.assignedMembers.contains(member)) {
+			this.assignedMembers.add(member);
+		}
+	}
+
+	/**
+	 * Remove a member from this team
+	 * 
+	 * @param member {@link TeamMember}
+	 */
+	public void removeMember(TeamMember member) {
+		if (this.assignedMembers.contains(member)) {
+			this.assignedMembers.remove(member);
+		}
+	}
+
+	/*
+	 * True if member is assigned to this team
+	 */
+	public boolean hasMember(TeamMember member) {
+		return this.assignedMembers.contains(member);
+	}
+
+	public List<TeamMemberException> getMemberExceptions() {
+		return memberExceptions;
+	}
+
+	/**
+	 * Add a member exception for this team
+	 * 
+	 * @param memberException {@link TeamMemberException}
+	 */
+	public void addMemberException(TeamMemberException memberException) {
+		this.memberExceptions.add(memberException);
+
+		// invalidate cache
+		this.exceptionCache = null;
+	}
+
+	/**
+	 * Remove a member exception for this team
+	 * 
+	 * @param memberException {@link TeamMemberException}
+	 */
+	public void removeMember(TeamMemberException memberException) {
+		this.memberExceptions.remove(memberException);
+
+		// invalidate cache
+		this.exceptionCache = null;
+	}
+
+	/**
+	 * Build a list of team member for the specified shift start
+	 * 
+	 * @param shiftStart Shift instance starting date and time
+	 * @return List of [@link TeamMember]
+	 */
+	public List<TeamMember> getMembers(LocalDateTime shiftStart) {
+		List<TeamMember> members = new ArrayList<>();
+
+		// build the cache if not already done
+		buildMemberCache();
+
+		// assigned to the team
+		for (TeamMember member : getAssignedMembers()) {
+			members.add(member);
+		}
+
+		// any exceptions?
+		TeamMemberException tme = exceptionCache.get(shiftStart);
+		if (tme != null) {
+			if (tme.getAddition() != null) {
+				members.add(tme.getAddition());
+			}
+
+			if (tme.getRemoval() != null) {
+				members.remove(tme.getRemoval());
+			}
+		}
+		return members;
+	}
+
+	private void buildMemberCache() {
+		if (exceptionCache == null) {
+			// create it
+			exceptionCache = new ConcurrentHashMap<>();
+		}
+
+		exceptionCache.clear();
+
+		for (TeamMemberException tme : getMemberExceptions()) {
+			exceptionCache.put(tme.getDateTime(), tme);
+		}
 	}
 }

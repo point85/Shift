@@ -145,9 +145,16 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 		String s = WorkSchedule.getMessage("shift");
 		String ps = WorkSchedule.getMessage("period.start");
 		String pe = WorkSchedule.getMessage("period.end");
+		String members = WorkSchedule.getMessage("team.members");
 
-		return " " + t + ": " + getTeam().getName() + ", " + s + ": " + getShift().getName() + ", " + ps + ": "
-				+ getStartTime() + ", " + pe + ": " + getEndTime();
+		String text = " " + t + ": " + getTeam().getName() + " (" + team.getDescription() + ")" + ", " + s + ": " + getShift().getName() + ", " + ps + ": "
+				+ getStartTime() + ", " + pe + ": " + getEndTime() + "\n" + members;
+
+		for (TeamMember member : getTeam().getMembers(getStartTime())) {
+			text += "\n\t" + member;
+		}
+
+		return text;
 	}
 
 }

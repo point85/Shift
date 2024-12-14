@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -42,6 +43,8 @@ import org.point85.workschedule.Rotation;
 import org.point85.workschedule.RotationSegment;
 import org.point85.workschedule.Shift;
 import org.point85.workschedule.Team;
+import org.point85.workschedule.TeamMember;
+import org.point85.workschedule.TeamMemberException;
 import org.point85.workschedule.WorkSchedule;
 
 public class TestWorkSchedule extends BaseTest {
@@ -1008,7 +1011,7 @@ public class TestWorkSchedule extends BaseTest {
 		LocalDateTime to = LocalDateTime.of(testStart, am7.plusHours(1));
 		Duration duration = team1.calculateWorkingTime(from, to);
 		assertTrue(duration.equals(Duration.ofHours(1)));
-		
+
 		// ------------------------------------------------------------------
 		// from first day in rotation for Team1
 		from = LocalDateTime.of(testStart, LocalTime.MIDNIGHT);
@@ -1068,4 +1071,113 @@ public class TestWorkSchedule extends BaseTest {
 		assertTrue(duration.equals(Duration.ofHours(45).plusMinutes(30)));
 	}
 
+	@Test
+	public void testTeamMembers() throws Exception {
+		WorkSchedule schedule = new WorkSchedule("Restaurant", "Two shifts");
+
+		// day shift (12 hours)
+		Shift day = schedule.createShift("Day", "Green", LocalTime.of(6, 0, 0), Duration.ofHours(12));
+
+		// night shift (3 hours)
+		Shift night = schedule.createShift("Night", "Blue", LocalTime.of(18, 0, 0), Duration.ofHours(3));
+
+		// day shift rotation, 1 days ON, 0 OFF
+		Rotation dayRotation = schedule.createRotation("Day", "One day on, 6 off");
+		dayRotation.addSegment(day, 1, 6);
+
+		Rotation nightRotation = schedule.createRotation("Night", "One day on, 6 off");
+		nightRotation.addSegment(night, 1, 6);
+
+		// day teams
+		LocalDate greenStart = LocalDate.of(2024, 7, 28);
+		Team sundayDay = schedule.createTeam("SundayDay", "Sunday day", dayRotation, greenStart);
+		Team mondayDay = schedule.createTeam("MondayDay", "Monday day", dayRotation, greenStart.plusDays(1));
+		Team tuesdayDay = schedule.createTeam("TuesdayDay", "Tuesday day", dayRotation, greenStart.plusDays(2));
+		Team wednesdayDay = schedule.createTeam("WednesdayDay", "Wednesday day", dayRotation, greenStart.plusDays(3));
+		Team thursdayDay = schedule.createTeam("ThursdayDay", "Thursday day", dayRotation, greenStart.plusDays(4));
+		Team fridayDay = schedule.createTeam("FridayDay", "Friday day", dayRotation, greenStart.plusDays(5));
+		Team saturdayDay = schedule.createTeam("SaturdayDay", "Saturday day", dayRotation, greenStart.plusDays(6));
+
+		// night teams
+		LocalDate blueStart = LocalDate.of(2024, 7, 29);
+		Team mondayNight = schedule.createTeam("MondayNight", "Monday night", nightRotation, blueStart);
+		Team tuesdayNight = schedule.createTeam("TuesdayNight", "Tuesday night", nightRotation, blueStart.plusDays(1));
+		Team wednesdayNight = schedule.createTeam("WednesdayNight", "Wednesday night", nightRotation,
+				blueStart.plusDays(2));
+		Team thursdayNight = schedule.createTeam("ThursdayNight", "Thursday night", nightRotation,
+				blueStart.plusDays(3));
+		Team fridayNight = schedule.createTeam("FridayNight", "Friday night", nightRotation, blueStart.plusDays(4));
+		Team saturdayNight = schedule.createTeam("SaturdayNight", "Saturday night", nightRotation,
+				blueStart.plusDays(5));
+
+		// chef members
+		TeamMember one = new TeamMember("Chef, One", "Chef", "1");
+		TeamMember two = new TeamMember("Chef, Two", "Chef", "2");
+		TeamMember three = new TeamMember("Chef, Three", "Chef", "3");
+		TeamMember four = new TeamMember("Chef, Four", "Chef", "4");
+		TeamMember five = new TeamMember("Chef, Five", "Chef", "5");
+		TeamMember six = new TeamMember("Chef, Six", "Chef", "6");
+		TeamMember seven = new TeamMember("Chef, Seven", "Chef", "7");
+
+		// helper members
+		TeamMember eight = new TeamMember("Helper, One", "Helper", "8");
+		TeamMember nine = new TeamMember("Helper, Two", "Helper", "9");
+
+		// day members
+		sundayDay.addMember(one);
+		sundayDay.addMember(two);
+		sundayDay.addMember(eight);
+		mondayDay.addMember(one);
+		mondayDay.addMember(two);
+		mondayDay.addMember(nine);
+		tuesdayDay.addMember(three);
+		wednesdayDay.addMember(four);
+		thursdayDay.addMember(five);
+		fridayDay.addMember(six);
+		saturdayDay.addMember(seven);
+
+		// night members
+		mondayNight.addMember(four);
+		tuesdayNight.addMember(five);
+		wednesdayNight.addMember(six);
+		thursdayNight.addMember(seven);
+		fridayNight.addMember(one);
+		saturdayNight.addMember(two);
+
+		schedule.printShiftInstances(LocalDate.of(2024, 8, 4), LocalDate.of(2024, 8, 11));
+
+		for (Team team : schedule.getTeams()) {
+			System.out.println(team.toString());
+		}
+
+		assertTrue(sundayDay.hasMember(two));
+
+		sundayDay.removeMember(two);
+
+		assertTrue(!sundayDay.hasMember(two));
+
+		// member exceptions
+		TeamMember ten = new TeamMember("Ten", "Ten description", "10");
+
+		// replace one with ten
+		LocalDateTime exceptionShift = LocalDateTime.of(LocalDate.of(2024, 8, 11), LocalTime.of(7, 0, 0));
+		TeamMemberException replacement = new TeamMemberException(exceptionShift);
+		replacement.setRemoval(one);
+		replacement.setAddition(ten);
+		sundayDay.addMemberException(replacement);
+
+		List<TeamMember> members = sundayDay.getAssignedMembers();
+
+		assertTrue(members.contains(one));
+		assertTrue(!members.contains(ten));
+
+		members = sundayDay.getMembers(exceptionShift);
+
+		assertTrue(!members.contains(one));
+		assertTrue(members.contains(ten));
+
+		for (Team team : schedule.getTeams()) {
+			System.out.println(team.toString());
+		}
+	}
 }

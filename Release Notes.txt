@@ -2,12 +2,8 @@
 						   RELEASE NOTES
 
 (1)  1.1.4, February 6, 2024:  
-	- Created a Maven repository at org.point85.workschedule:
-	<dependency>
-		<groupId>org.point85</groupId>
-		<artifactId>workschedule</artifactId>
-		<version>1.1.4</version>
-	</dependency>
-
 	- Upgraded hamcrest to 2.2
 	- Removed unused Maven dependencies
+	
+(1)  1.2.0, December 15, 2024:  
+	- Added members for a team and exceptions for assigned personel 	
