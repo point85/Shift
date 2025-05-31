@@ -262,7 +262,7 @@ Add this dependency to your pom.xml file:
 <dependency>
 <groupId>org.point85</groupId>
 <artifactId>workschedule</artifactId>
-<version>1.2.0</version>
+<version>1.2.1</version>
 </dependency>
 ```
 
