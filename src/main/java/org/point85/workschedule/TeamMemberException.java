@@ -1,6 +1,7 @@
 package org.point85.workschedule;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * This class provides information for adding or removing a team member for a
@@ -53,5 +54,22 @@ public class TeamMemberException {
 
 	public void setRemoval(TeamMember removal) {
 		this.removal = removal;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+
+		TeamMemberException that = (TeamMemberException) obj;
+		return Objects.equals(dateTime, that.dateTime) && Objects.equals(reason, that.reason)
+				&& Objects.equals(addition, that.addition) && Objects.equals(removal, that.removal);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dateTime, reason, addition, removal);
 	}
 }

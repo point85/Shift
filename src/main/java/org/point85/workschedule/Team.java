@@ -248,7 +248,7 @@ public class Team extends Named implements Comparable<Team> {
 		// get the working shift from yesterday
 		Shift lastShift = null;
 
-		LocalDate yesterday = thisDate.plusDays(-1);
+		LocalDate yesterday = thisDate.minusDays(1);
 		ShiftInstance yesterdayInstance = getShiftInstanceForDay(yesterday);
 
 		if (yesterdayInstance != null) {
@@ -417,8 +417,10 @@ public class Team extends Named implements Comparable<Team> {
 		}
 	}
 
-	/*
-	 * True if member is assigned to this team
+	/**
+	 * Check if member is assigned to this team
+	 * @param member {@link TeamMember}
+	 * @return True if member is assigned to this team
 	 */
 	public boolean hasMember(TeamMember member) {
 		return this.assignedMembers.contains(member);
@@ -445,7 +447,7 @@ public class Team extends Named implements Comparable<Team> {
 	 * 
 	 * @param memberException {@link TeamMemberException}
 	 */
-	public void removeMember(TeamMemberException memberException) {
+	public void removeMemberException(TeamMemberException memberException) {
 		this.memberExceptions.remove(memberException);
 
 		// invalidate cache
@@ -453,10 +455,10 @@ public class Team extends Named implements Comparable<Team> {
 	}
 
 	/**
-	 * Build a list of team member for the specified shift start
+	 * Build a list of team members for the specified shift start
 	 * 
 	 * @param shiftStart Shift instance starting date and time
-	 * @return List of [@link TeamMember]
+	 * @return List of {@link TeamMember}
 	 */
 	public List<TeamMember> getMembers(LocalDateTime shiftStart) {
 		List<TeamMember> members = new ArrayList<>();
@@ -483,7 +485,7 @@ public class Team extends Named implements Comparable<Team> {
 		return members;
 	}
 
-	private void buildMemberCache() {
+	private synchronized void buildMemberCache() {
 		if (exceptionCache == null) {
 			// create it
 			exceptionCache = new ConcurrentHashMap<>();

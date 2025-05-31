@@ -97,7 +97,7 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 	}
 
 	/**
-	 * Compare this non-working period to another such period by start time of day
+	 * Compare this shift instance to another such instance by start time of day
 	 * 
 	 * @return -1 if less than, 0 if equal and 1 if greater than
 	 */
@@ -120,7 +120,7 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 
 		boolean teamMatch = getTeam().getName().equals(((ShiftInstance) other).getTeam().getName());
 		boolean shiftMatch = getShift().getName().equals(((ShiftInstance) other).getShift().getName());
-		boolean startMatch = (getStartTime() == ((ShiftInstance) other).getStartTime());
+		boolean startMatch = getStartTime().equals(((ShiftInstance) other).getStartTime());
 
 		return teamMatch && shiftMatch && startMatch;
 

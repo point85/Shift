@@ -304,15 +304,14 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 		}
 
 		// can't be in use
-		for (Shift inUseShift : shifts) {
-			for (Team team : teams) {
-				Rotation rotation = team.getRotation();
+		for (Team team : teams) {
+			Rotation rotation = team.getRotation();
 
-				for (TimePeriod period : rotation.getPeriods()) {
-					if (period.equals(inUseShift)) {
-						String msg = MessageFormat.format(WorkSchedule.getMessage("shift.in.use"), shift.getName());
-						throw new Exception(msg);
-					}
+			for (TimePeriod period : rotation.getPeriods()) {
+				if (period.equals(shift)) {
+					String msg = MessageFormat.format(WorkSchedule.getMessage("shift.in.use"), shift.getName(),
+							shift.getWorkSchedule().getName(), team.getName());
+					throw new Exception(msg);
 				}
 			}
 		}

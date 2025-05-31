@@ -108,7 +108,10 @@ abstract class TimePeriod extends Named {
 	 * @throws Exception exception
 	 */
 	public LocalTime getEnd() throws Exception {
-		return startTime.plus(duration);
+		long startSeconds = startTime.toSecondOfDay();
+		long durationSeconds = duration.getSeconds();
+		long endSeconds = (startSeconds + durationSeconds) % SECONDS_PER_DAY;
+		return LocalTime.ofSecondOfDay(endSeconds);
 	}
 
 	// breaks are considered to be in the shift's working period

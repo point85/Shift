@@ -109,7 +109,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 	 * @throws Exception exception
 	 */
 	public void setDuration(Duration duration) throws Exception {
-		if (duration == null || duration.getSeconds() == 0) {
+		if (duration == null || duration.isZero() || duration.isNegative()) {
 			throw new Exception(WorkSchedule.getMessage("duration.not.defined"));
 		}
 
@@ -167,7 +167,7 @@ public class NonWorkingPeriod extends Named implements Comparable<NonWorkingPeri
 
 		return super.equals(other);
 	}
-	
+
 	/**
 	 * Get the hash code
 	 * 

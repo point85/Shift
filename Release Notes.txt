@@ -5,5 +5,13 @@
 	- Upgraded hamcrest to 2.2
 	- Removed unused Maven dependencies
 	
-(1)  1.2.0, December 15, 2024:  
+(2)  1.2.0, December 15, 2024:  
 	- Added members for a team and exceptions for assigned personel 	
+
+(3)  1.2.1, May 30, 2025: 	
+	- Fix WorkSchedule.deleteShift() bug
+	- Team.calculateWorkingTime() calls minusDays(1), remove member exception method, build cache synch
+	- Rotation: invalidate cache
+	- Use isZero() in NonWorkingPeriod.setDuration()
+	- Shift Instance: use rquals()
+	- TeamMemberException:  add equals() and hashcode() methods

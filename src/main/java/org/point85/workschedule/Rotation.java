@@ -175,6 +175,10 @@ public class Rotation extends Named implements Comparable<Rotation> {
 		RotationSegment segment = new RotationSegment(startingShift, daysOn, daysOff, this);
 		rotationSegments.add(segment);
 		segment.setSequence(rotationSegments.size());
+
+		// invalidate periods cache
+		periods = null;
+
 		return segment;
 	}
 
@@ -195,7 +199,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 	public int compareTo(Rotation other) {
 		return getName().compareTo(other.getName());
 	}
-	
+
 	/**
 	 * Compare this Rotation to another Rotation
 	 * 
@@ -217,7 +221,7 @@ public class Rotation extends Named implements Comparable<Rotation> {
 
 		return super.equals(other);
 	}
-	
+
 	/**
 	 * Get the hash code
 	 * 
