@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.point85</groupId>
 	<artifactId>workschedule</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 	<packaging>jar</packaging>
 	<name>Work Schedule</name>
 	<description>Work schedule with shifts and teams.</description>
