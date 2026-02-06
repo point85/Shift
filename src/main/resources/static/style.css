@@ -1,0 +1,555 @@
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #0f1117;
+    --bg-card: #1a1d27;
+    --bg-input: #252836;
+    --border: #2e3245;
+    --text: #e4e6f0;
+    --text-muted: #8b8fa3;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --success: #10b981;
+    --danger: #ef4444;
+    --radius: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ===== Header ===== */
+header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.locale-toggle {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg-input);
+    border-radius: var(--radius);
+    padding: 2px;
+}
+
+.locale-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.locale-btn.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ===== Main ===== */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem;
+}
+
+/* ===== Tabs ===== */
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+}
+
+.tab {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.65rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--text);
+    background: var(--bg-input);
+}
+
+.tab.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.tab-icon {
+    font-size: 1.1rem;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===== Cards ===== */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.card h3 {
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem;
+    color: var(--text);
+}
+
+/* ===== Buttons ===== */
+.btn {
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-secondary {
+    background: var(--bg-input);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+}
+
+.btn-accent {
+    background: var(--accent);
+    color: #000;
+}
+
+.btn-accent:hover {
+    background: var(--accent-hover);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-small {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+    background: var(--bg-input);
+    color: var(--text-muted);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.btn-small:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+}
+
+.btn-icon:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.actions-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* ===== Forms ===== */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.input {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+select.input {
+    cursor: pointer;
+}
+
+/* ===== Schedule List ===== */
+.schedules-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.schedule-item {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.schedule-info h3 {
+    font-size: 1rem;
+    color: #fff;
+    margin: 0;
+}
+
+.schedule-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.schedule-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--primary);
+}
+
+.meta-badge.holiday {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--accent);
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* ===== Results ===== */
+.results-area {
+    margin-top: 1rem;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.results-table th,
+.results-table td {
+    text-align: left;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+.results-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.results-table tr:hover td {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.result-summary {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.summary-item label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.summary-item .value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 0.25rem;
+}
+
+.holiday-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.holiday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+}
+
+.holiday-name {
+    font-weight: 500;
+}
+
+.holiday-date {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ===== Modal ===== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: var(--text);
+}
+
+.shift-row, .rotation-row, .team-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.shift-row .input, .rotation-row .input, .team-row .input {
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ===== Toast ===== */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    z-index: 200;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    background: var(--success);
+    color: #fff;
+}
+
+.toast.error {
+    background: var(--danger);
+    color: #fff;
+}
+
+/* ===== Footer ===== */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+}
+
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    header { padding: 1rem; }
+    main { padding: 1rem; }
+    .header-content { flex-direction: column; align-items: flex-start; }
+    .form-row { flex-direction: column; }
+    .form-row .btn { width: 100%; justify-content: center; }
+    .tabs { flex-wrap: nowrap; }
+    .tab span:not(.tab-icon) { display: none; }
+    .schedule-item { flex-direction: column; }
+}

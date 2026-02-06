@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbetsschema - Work Schedule Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Arbetsschema</h1>
+            <p class="subtitle">Work Schedule Manager</p>
+            <div class="locale-toggle">
+                <button id="btn-sv" class="locale-btn active" onclick="setLocale('sv')">Svenska</button>
+                <button id="btn-en" class="locale-btn" onclick="setLocale('en')">English</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Navigation tabs -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="schedules" onclick="showTab('schedules')">
+                <span class="tab-icon">&#128197;</span>
+                <span data-i18n="nav.schedules">Scheman</span>
+            </button>
+            <button class="tab" data-tab="shifts" onclick="showTab('shifts')">
+                <span class="tab-icon">&#9200;</span>
+                <span data-i18n="nav.shifts">Skiftinstanser</span>
+            </button>
+            <button class="tab" data-tab="working-time" onclick="showTab('working-time')">
+                <span class="tab-icon">&#128200;</span>
+                <span data-i18n="nav.workingTime">Arbetstid</span>
+            </button>
+            <button class="tab" data-tab="holidays" onclick="showTab('holidays')">
+                <span class="tab-icon">&#127470;&#127480;</span>
+                <span data-i18n="nav.holidays">Helgdagar</span>
+            </button>
+        </nav>
+
+        <!-- Schedules Tab -->
+        <section id="tab-schedules" class="tab-content active">
+            <div class="card">
+                <h2 data-i18n="schedules.title">Hantera scheman</h2>
+                <div class="actions-bar">
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        <span>+</span> <span data-i18n="schedules.create">Skapa schema</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadSchedules()">
+                        <span data-i18n="schedules.refresh">Uppdatera</span>
+                    </button>
+                </div>
+                <div id="schedules-list" class="schedules-list">
+                    <p class="empty-state" data-i18n="schedules.empty">Inga scheman skapade. Klicka "Skapa schema" eller ladda exempelschemat.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="schedules.quickStart">Snabbstart</h2>
+                <p data-i18n="schedules.quickStartDesc">Ladda ett exempel p&aring; tillverkningsschema med 3 skift och 3 lag:</p>
+                <button class="btn btn-accent" onclick="createSampleSchedule()">
+                    <span data-i18n="schedules.loadSample">Ladda exempelschema</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Shift Instances Tab -->
+        <section id="tab-shifts" class="tab-content">
+            <div class="card">
+                <h2 data-i18n="shifts.title">Skiftinstanser f&ouml;r datum</h2>
+                <form onsubmit="lookupShifts(event)" class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="shifts.schedule">Schema:</label>
+                        <select id="shift-schedule-select" class="input"></select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="shifts.date">Datum:</label>
+                        <input type="date" id="shift-date" class="input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" data-i18n="shifts.lookup">S&ouml;k</button>
+                </form>
+                <div id="shift-results" class="results-area"></div>
+            </div>
+        </section>
+
+        <!-- Working Time Tab -->
+        <section id="tab-working-time" class="tab-content">
+            <div class="card">
+                <h2 data-i18n="workingTime.title">Ber&auml;kna arbetstid</h2>
+                <form onsubmit="calcWorkingTime(event)" class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="workingTime.schedule">Schema:</label>
+                        <select id="wt-schedule-select" class="input"></select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="workingTime.from">Fr&aring;n:</label>
+                        <input type="datetime-local" id="wt-from" class="input" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="workingTime.to">Till:</label>
+                        <input type="datetime-local" id="wt-to" class="input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" data-i18n="workingTime.calculate">Ber&auml;kna</button>
+                </form>
+                <div id="wt-results" class="results-area"></div>
+            </div>
+        </section>
+
+        <!-- Holidays Tab -->
+        <section id="tab-holidays" class="tab-content">
+            <div class="card">
+                <h2 data-i18n="holidays.title">Svenska helgdagar</h2>
+                <form onsubmit="addHolidays(event)" class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="holidays.schedule">Schema:</label>
+                        <select id="hol-schedule-select" class="input"></select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="holidays.year">&Aring;r:</label>
+                        <input type="number" id="hol-year" class="input" value="2026" min="2000" max="2100" required>
+                    </div>
+                    <button type="submit" class="btn btn-accent" data-i18n="holidays.add">L&auml;gg till helgdagar</button>
+                </form>
+                <div id="hol-results" class="results-area"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Create Schedule Modal -->
+    <div id="create-modal" class="modal" onclick="closeModalOutside(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="modal.title">Skapa nytt schema</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="createSchedule(event)">
+                <div class="form-group">
+                    <label data-i18n="modal.name">Namn:</label>
+                    <input type="text" id="sched-name" class="input" required placeholder="t.ex. Tillverkning">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="modal.description">Beskrivning:</label>
+                    <input type="text" id="sched-desc" class="input" placeholder="t.ex. 24/7 tillverkningsschema">
+                </div>
+
+                <h3 data-i18n="modal.shifts">Skift</h3>
+                <div id="shifts-container">
+                    <div class="shift-row">
+                        <input type="text" class="input shift-name" placeholder="Namn" value="Dag" required>
+                        <input type="time" class="input shift-start" value="07:00" required>
+                        <input type="text" class="input shift-duration" placeholder="PT8H" value="PT8H" required>
+                        <button type="button" class="btn-icon remove-shift" onclick="removeShiftRow(this)">&times;</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-small" onclick="addShiftRow()">+ <span data-i18n="modal.addShift">L&auml;gg till skift</span></button>
+
+                <h3 data-i18n="modal.rotations">Rotationer</h3>
+                <div id="rotations-container">
+                    <div class="rotation-row">
+                        <input type="text" class="input rot-name" placeholder="Rotationsnamn" value="DagRot" required>
+                        <input type="text" class="input rot-shift" placeholder="Skiftnamn" value="Dag" required>
+                        <input type="number" class="input rot-on" placeholder="Dagar p&aring;" value="5" min="1" required>
+                        <input type="number" class="input rot-off" placeholder="Dagar av" value="2" min="0" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-small" onclick="addRotationRow()">+ <span data-i18n="modal.addRotation">L&auml;gg till rotation</span></button>
+
+                <h3 data-i18n="modal.teams">Lag</h3>
+                <div id="teams-container">
+                    <div class="team-row">
+                        <input type="text" class="input team-name" placeholder="Lagnamn" value="Lag A" required>
+                        <input type="text" class="input team-rotation" placeholder="Rotationsnamn" value="DagRot" required>
+                        <input type="date" class="input team-start" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-small" onclick="addTeamRow()">+ <span data-i18n="modal.addTeam">L&auml;gg till lag</span></button>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" data-i18n="modal.cancel">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="modal.save">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <footer>
+        <p>Arbetsschema v2.0 &mdash; Built on <a href="https://github.com/point85/Shift" target="_blank">Point85 Shift</a> &mdash; Spring Boot REST API</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
