@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  shift-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx256m

@@ -1,0 +1,7 @@
+.git
+target/
+*.md
+doc/
+javadoc/
+dist/
+*.bat

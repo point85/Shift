@@ -49,8 +49,34 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 	// name of resource bundle with translatable strings for exception messages
 	private static final String MESSAGES_BUNDLE_NAME = "WorkScheduleMessage";
 
-	// resource bundle for exception messages
-	private static final ResourceBundle messages = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, Locale.getDefault());
+	// ThreadLocal for per-request locale support
+	private static final ThreadLocal<Locale> currentLocale = new ThreadLocal<>();
+
+	/**
+	 * Set the locale for the current thread (used by the REST layer per request)
+	 *
+	 * @param locale Locale to use for messages
+	 */
+	public static void setLocale(Locale locale) {
+		currentLocale.set(locale);
+	}
+
+	/**
+	 * Clear the locale for the current thread (call after request completes)
+	 */
+	public static void clearLocale() {
+		currentLocale.remove();
+	}
+
+	/**
+	 * Get the current effective locale
+	 *
+	 * @return Current locale (thread-local if set, otherwise JVM default)
+	 */
+	public static Locale getEffectiveLocale() {
+		Locale locale = currentLocale.get();
+		return locale != null ? locale : Locale.getDefault();
+	}
 
 	// cached UTC time zone for working time calculations
 	private static final ZoneId ZONE_ID = ZoneId.of("Z");
@@ -88,9 +114,10 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 		super(name, description);
 	}
 
-	// get a particular message by its key
+	// get a particular message by its key using the current locale
 	static String getMessage(String key) {
-		return messages.getString(key);
+		ResourceBundle bundle = ResourceBundle.getBundle(MESSAGES_BUNDLE_NAME, getEffectiveLocale());
+		return bundle.getString(key);
 	}
 
 	/**
