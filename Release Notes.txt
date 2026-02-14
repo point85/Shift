@@ -15,3 +15,25 @@
 	- Use isZero() in NonWorkingPeriod.setDuration()
 	- Shift Instance: use rquals()
 	- TeamMemberException:  add equals() and hashcode() methods
+	
+(4)  1.2.2, February 14, 2026: 		
+	- By Claude Sonnet 4.5
+Bugs Fixed:
+Named.java - Fixed equals/hashCode contract violation
+
+Changed equals() to use Objects.equals() for proper null handling
+Changed hashCode() to use Objects.hash() for consistency
+Fixed toString() to handle null description gracefully
+RotationSegment.java - Added null safety checks
+
+Added defensive null checks before calling getName() on rotation and shift to prevent NullPointerException
+ShiftInstance.java - Added null safety checks
+
+Added defensive null checks in equals() method to prevent NullPointerException
+
+Performance Improvements:
+Team.java - Optimized cache synchronization
+
+Replaced ConcurrentHashMap with HashMap since the method is already synchronized
+Improved cache initialization logic to avoid unnecessary clear operations
+Optimized string concatenation in toString() methods (replaced += with StringBuilder)

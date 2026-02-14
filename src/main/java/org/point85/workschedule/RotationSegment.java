@@ -196,13 +196,21 @@ public class RotationSegment implements Comparable<RotationSegment> {
 			return false;
 		}
 
-		boolean rotationMatch = getRotation().getName().equals(((RotationSegment) other).getRotation().getName());
-		boolean shiftMatch = getStartingShift().getName()
-				.equals(((RotationSegment) other).getStartingShift().getName());
-		boolean sequenceMatch = (getSequence() == ((RotationSegment) other).getSequence());
+		RotationSegment otherSegment = (RotationSegment) other;
+		
+		if (getRotation() == null || otherSegment.getRotation() == null) {
+			return false;
+		}
+		
+		if (getStartingShift() == null || otherSegment.getStartingShift() == null) {
+			return false;
+		}
+
+		boolean rotationMatch = getRotation().getName().equals(otherSegment.getRotation().getName());
+		boolean shiftMatch = getStartingShift().getName().equals(otherSegment.getStartingShift().getName());
+		boolean sequenceMatch = (getSequence() == otherSegment.getSequence());
 
 		return rotationMatch && shiftMatch && sequenceMatch;
-
 	}
 
 	/**

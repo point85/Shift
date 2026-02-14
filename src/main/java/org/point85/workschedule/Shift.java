@@ -289,16 +289,16 @@ public class Shift extends TimePeriod implements Comparable<Shift> {
 	 */
 	@Override
 	public String toString() {
-		String text = super.toString();
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		if (!getBreaks().isEmpty()) {
-			text += "\n      " + getBreaks().size() + " " + WorkSchedule.getMessage("breaks") + ":";
+			sb.append("\n      ").append(getBreaks().size()).append(" ").append(WorkSchedule.getMessage("breaks")).append(":");
 		}
 
 		for (Break breakPeriod : getBreaks()) {
-			text += "\n      " + breakPeriod.toString();
+			sb.append("\n      ").append(breakPeriod.toString());
 		}
-		return text;
+		return sb.toString();
 	}
 
 	@Override

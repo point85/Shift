@@ -117,13 +117,26 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 		if (!(other instanceof ShiftInstance)) {
 			return false;
 		}
+		
+		ShiftInstance otherInstance = (ShiftInstance) other;
+		
+		if (getTeam() == null || otherInstance.getTeam() == null) {
+			return false;
+		}
+		
+		if (getShift() == null || otherInstance.getShift() == null) {
+			return false;
+		}
+		
+		if (getStartTime() == null || otherInstance.getStartTime() == null) {
+			return false;
+		}
 
-		boolean teamMatch = getTeam().getName().equals(((ShiftInstance) other).getTeam().getName());
-		boolean shiftMatch = getShift().getName().equals(((ShiftInstance) other).getShift().getName());
-		boolean startMatch = getStartTime().equals(((ShiftInstance) other).getStartTime());
+		boolean teamMatch = getTeam().getName().equals(otherInstance.getTeam().getName());
+		boolean shiftMatch = getShift().getName().equals(otherInstance.getShift().getName());
+		boolean startMatch = getStartTime().equals(otherInstance.getStartTime());
 
 		return teamMatch && shiftMatch && startMatch;
-
 	}
 
 	/**
@@ -147,14 +160,18 @@ public class ShiftInstance implements Comparable<ShiftInstance> {
 		String pe = WorkSchedule.getMessage("period.end");
 		String members = WorkSchedule.getMessage("team.members");
 
-		String text = " " + t + ": " + getTeam().getName() + " (" + team.getDescription() + ")" + ", " + s + ": " + getShift().getName() + ", " + ps + ": "
-				+ getStartTime() + ", " + pe + ": " + getEndTime() + "\n" + members;
+		StringBuilder text = new StringBuilder();
+		text.append(" ").append(t).append(": ").append(getTeam().getName()).append(" (")
+			.append(team.getDescription()).append(")").append(", ").append(s).append(": ")
+			.append(getShift().getName()).append(", ").append(ps).append(": ")
+			.append(getStartTime()).append(", ").append(pe).append(": ").append(getEndTime())
+			.append("\n").append(members);
 
 		for (TeamMember member : getTeam().getMembers(getStartTime())) {
-			text += "\n\t" + member;
+			text.append("\n\t").append(member);
 		}
 
-		return text;
+		return text.toString();
 	}
 
 }

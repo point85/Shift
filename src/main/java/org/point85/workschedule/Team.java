@@ -31,10 +31,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class Team is a named group of individuals who rotate through a shift
@@ -375,20 +375,21 @@ public class Team extends Named implements Comparable<Team> {
 		String avg = WorkSchedule.getMessage("team.hours");
 		String members = WorkSchedule.getMessage("team.members");
 
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		try {
-			text = super.toString() + ", " + rs + ": " + getRotationStart() + ", " + getRotation() + ", " + rpct + ": "
-					+ df.format(getPercentageWorked()) + "%" + ", " + avg + ": " + getHoursWorkedPerWeek() + "\n"
-					+ members;
+			text.append(super.toString()).append(", ").append(rs).append(": ").append(getRotationStart()).append(", ")
+				.append(getRotation()).append(", ").append(rpct).append(": ")
+				.append(df.format(getPercentageWorked())).append("%").append(", ").append(avg).append(": ")
+				.append(getHoursWorkedPerWeek()).append("\n").append(members);
 
 			for (TeamMember member : getAssignedMembers()) {
-				text += "\n\t" + member;
+				text.append("\n\t").append(member);
 			}
 		} catch (Exception e) {
 			// ignore
 		}
 
-		return text;
+		return text.toString();
 	}
 
 	public List<TeamMember> getAssignedMembers() {
@@ -487,11 +488,10 @@ public class Team extends Named implements Comparable<Team> {
 
 	private synchronized void buildMemberCache() {
 		if (exceptionCache == null) {
-			// create it
-			exceptionCache = new ConcurrentHashMap<>();
+			exceptionCache = new HashMap<>();
+		} else {
+			exceptionCache.clear();
 		}
-
-		exceptionCache.clear();
 
 		for (TeamMemberException tme : getMemberExceptions()) {
 			exceptionCache.put(tme.getDateTime(), tme);

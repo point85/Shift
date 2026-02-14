@@ -525,50 +525,51 @@ public class WorkSchedule extends Named implements Comparable<WorkSchedule> {
 		String sn = getMessage("schedule.non");
 		String stn = getMessage("schedule.total");
 
-		String text = sch + ": " + super.toString();
+		StringBuilder text = new StringBuilder(sch).append(": ").append(super.toString());
 		try {
-			text += "\n" + rd + ": " + getRotationDuration() + ", " + sw + ": " + getRotationWorkingTime();
+			text.append("\n").append(rd).append(": ").append(getRotationDuration()).append(", ")
+				.append(sw).append(": ").append(getRotationWorkingTime());
 
 			// shifts
-			text += "\n" + sf + ": ";
+			text.append("\n").append(sf).append(": ");
 			int count = 1;
 			for (Shift shift : getShifts()) {
-				text += "\n   (" + count + ") " + shift;
+				text.append("\n   (").append(count).append(") ").append(shift);
 				count++;
 			}
 
 			// teams
-			text += "\n" + st + ": ";
+			text.append("\n").append(st).append(": ");
 			count = 1;
 			float teamPercent = 0.0f;
 			for (Team team : this.getTeams()) {
-				text += "\n   (" + count + ") " + team;
+				text.append("\n   (").append(count).append(") ").append(team);
 				teamPercent += team.getPercentageWorked();
 				count++;
 			}
-			text += "\n" + sc + ": " + df.format(teamPercent) + "%";
+			text.append("\n").append(sc).append(": ").append(df.format(teamPercent)).append("%");
 
 			// non-working periods
 			List<NonWorkingPeriod> periods = getNonWorkingPeriods();
 
 			if (!periods.isEmpty()) {
-				text += "\n" + sn + ":";
+				text.append("\n").append(sn).append(":");
 
 				Duration totalMinutes = Duration.ZERO;
 
 				count = 1;
 				for (NonWorkingPeriod period : periods) {
 					totalMinutes = totalMinutes.plusMinutes(period.getDuration().toMinutes());
-					text += "\n   (" + count + ") " + period;
+					text.append("\n   (").append(count).append(") ").append(period);
 					count++;
 				}
-				text += "\n" + stn + ": " + totalMinutes;
+				text.append("\n").append(stn).append(": ").append(totalMinutes);
 			}
 		} catch (Exception e) {
 			// ignore
 		}
 
-		return text;
+		return text.toString();
 	}
 
 	/**

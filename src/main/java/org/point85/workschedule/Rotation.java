@@ -245,15 +245,15 @@ public class Rotation extends Named implements Comparable<Rotation> {
 		String on = WorkSchedule.getMessage("rotation.on");
 		String off = WorkSchedule.getMessage("rotation.off");
 
-		String periodsString = "";
+		StringBuilder periodsString = new StringBuilder();
 
 		for (TimePeriod period : getPeriods()) {
 			if (periodsString.length() > 0) {
-				periodsString += ", ";
+				periodsString.append(", ");
 			}
 
 			String onOff = period.isWorkingPeriod() ? on : off;
-			periodsString += period.getName() + " (" + onOff + ")";
+			periodsString.append(period.getName()).append(" (").append(onOff).append(")");
 		}
 
 		return named + "\n" + rper + ": [" + periodsString + "], " + rd + ": " + getDuration() + ", " + rda + ": "

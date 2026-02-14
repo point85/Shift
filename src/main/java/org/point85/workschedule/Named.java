@@ -103,11 +103,8 @@ abstract class Named {
 			return false;
 		}
 
-		if (getName() == null || ((Named) other).getName() == null) {
-			return false;
-		}
-
-		return getName().equals(((Named) other).getName());
+		Named otherNamed = (Named) other;
+		return Objects.equals(getName(), otherNamed.getName());
 	}
 	
 	/**
@@ -117,7 +114,7 @@ abstract class Named {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getName());
+		return Objects.hash(getName());
 	}
 
 	/**
@@ -143,6 +140,7 @@ abstract class Named {
 	 */
 	@Override
 	public String toString() {
-		return getName() + " (" + getDescription() + ")";
+		String desc = getDescription();
+		return getName() + (desc != null ? " (" + desc + ")" : "");
 	}
 }
